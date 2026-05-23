@@ -1,0 +1,341 @@
+// Udyoga Sakha — Prisma Schema
+// npx prisma migrate dev --name init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── Enums ─────────────────────────────────────────────────────────────────────
+
+enum RoleType {
+  INTERN
+  FRESHER
+  JOB_SEEKER
+  FREELANCER
+  CONSULTANT
+  HIRING_MANAGER
+  RECRUITER
+  TRAINER
+  VENDOR
+  MODERATOR_ROLE
+  RFP_PROVIDER
+}
+
+enum MarketField {
+  IT_FIELD
+  NON_IT_FIELD
+  SERVICES
+}
+
+enum MarketSegment {
+  IT_DEVELOPERS
+  IT_DESIGNERS
+  IT_PRODUCT_OWNERS
+  IT_DATA_AI
+  NON_IT_ARTS_MEDIA
+  NON_IT_COMMERCE
+  NON_IT_EDUCATION
+  NON_IT_SPIRITUAL
+  NON_IT_MANAGEMENT
+  NON_IT_HEALTHCARE
+  NON_IT_ENGINEERING
+  SERVICES_CONSULTANCY
+  SERVICES_TRAINING
+  SERVICES_RECRUITMENT
+  SERVICES_VENDOR
+}
+
+enum WorkMode {
+  WFH
+  ON_SITE
+  HYBRID
+  OFF_SITE
+}
+
+enum ListingType {
+  JOB_OPENING
+  INTERNSHIP
+  RFP_TENDER
+  TRAINING_PROGRAM
+  CONSULTANCY_NEED
+  VENDOR_REQUIREMENT
+}
+
+enum PaymentType {
+  PAID
+  UNPAID
+  STIPEND
+  NEGOTIABLE
+}
+
+enum CertOpt {
+  YES
+  NO
+}
+
+enum EmpOption {
+  EXISTS
+  NOT_EXISTS
+}
+
+enum ProfileStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum UserRole {
+  PARTICIPANT
+  MODERATOR
+  ADMIN
+}
+
+enum DocumentType {
+  RESUME
+  CERTIFICATE
+  PORTFOLIO
+  COVER_LETTER
+  PHOTO
+}
+
+enum Industry {
+  IT_SOFTWARE
+  HEALTHCARE
+  FINANCE_BANKING
+  GOVERNMENT_PSU
+  EDUCATION
+  ENGINEERING
+  MARKETING
+  SERVICES
+  OTHER
+}
+
+enum ExperienceLevel {
+  ANY
+  FRESHER_0_1
+  EXP_1_3
+  EXP_3_5
+  EXP_5_8
+  EXP_8_PLUS
+}
+
+enum Duration {
+  SHORT_TERM
+  MEDIUM_TERM
+  LONG_TERM
+  PERMANENT
+  PROJECT_BASED
+}
+
+// ── Models ────────────────────────────────────────────────────────────────────
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  phone        String?
+  name         String
+  passwordHash String     @map("password_hash")
+  roles        UserRole[]
+  city         String?
+
+  profiles         CandidateProfile[] @relation("UserProfiles")
+  listings         JobListing[]       @relation("ListingOwner")
+  reviewedProfiles CandidateProfile[] @relation("ProfileReviewer")
+  reviewedListings JobListing[]       @relation("ListingReviewer")
+  refreshTokens    RefreshToken[]
+  notifications    Notification[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
+
+  @@map("users")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+model JobListing {
+  id                  String          @id @default(uuid())
+  organisationName    String          @map("organisation_name")
+  contactPerson       String?         @map("contact_person")
+  contactEmail        String?         @map("contact_email")
+  contactPhone        String?         @map("contact_phone")
+  listingType         ListingType     @map("listing_type")
+  targetRoleType      RoleType        @map("target_role_type")
+  title               String
+  industry            Industry        @default(OTHER)
+  location            String          @default("")
+  payment             PaymentType     @default(PAID)
+  salary              String?
+  workMode            WorkMode        @default(ON_SITE)    @map("work_mode")
+  certificateProvided CertOpt         @default(NO)         @map("certificate_provided")
+  employmentOption    EmpOption       @default(NOT_EXISTS) @map("employment_option")
+  experienceRequired  ExperienceLevel @default(ANY)        @map("experience_required")
+  duration            Duration        @default(PERMANENT)
+  skills              String[]
+  facilities          String[]
+  description         String          @default("")
+  experienceDetail    String?         @map("experience_detail")
+  responsibilities    String[]
+  requirements        String[]
+  marketField         MarketField     @map("market_field")
+  status              ProfileStatus   @default(PENDING)
+  icon                String?
+  postedById          String?         @map("posted_by_id")
+  reviewedById        String?         @map("reviewed_by_id")
+  reviewedAt          DateTime?       @map("reviewed_at")
+  rejectionReason     String?         @map("rejection_reason")
+  postedAt            DateTime        @default(now()) @map("posted_at")
+
+  postedBy   User? @relation("ListingOwner",   fields: [postedById],   references: [id])
+  reviewedBy User? @relation("ListingReviewer", fields: [reviewedById], references: [id])
+
+  @@index([status])
+  @@index([targetRoleType])
+  @@index([marketField])
+  @@map("job_listings")
+}
+
+model CandidateProfile {
+  id       String   @id @default(uuid())
+  userId   String   @map("user_id")
+  roleType RoleType @map("role_type")
+
+  // Personal
+  fullName    String  @map("full_name")
+  dateOfBirth String? @map("date_of_birth")
+  gender      String?
+  phone       String?
+  email       String?
+  city        String?
+  skills      String[]
+  summary     String?
+
+  // Education
+  highestDegree  String? @map("highest_degree")
+  specialization String?
+  institution    String?
+  yearOfPassing  Int?    @map("year_of_passing")
+  grade          String?
+
+  // Role-specific extra fields (stored as JSON key→value pairs)
+  roleFields Json @default("{}") @map("role_fields")
+
+  // Submission details
+  appliedFor        String        @map("applied_for")
+  appliedAt         String        @map("applied_at_org")
+  payment           PaymentType   @default(PAID)
+  certificate       CertOpt       @default(NO)
+  workMode          WorkMode      @default(ON_SITE)    @map("work_mode")
+  employmentOption  EmpOption     @default(NOT_EXISTS) @map("employment_option")
+  marketSegment     MarketSegment @map("market_segment")
+  preferredLocation String?       @map("preferred_location")
+
+  // Moderator review
+  status          ProfileStatus @default(PENDING)
+  rejectionReason String?       @map("rejection_reason")
+  marketField     MarketField?  @map("market_field")
+  submittedAt     DateTime      @default(now()) @map("submitted_at")
+  reviewedAt      DateTime?     @map("reviewed_at")
+  reviewedById    String?       @map("reviewed_by_id")
+
+  user        User                @relation("UserProfiles",   fields: [userId],       references: [id], onDelete: Cascade)
+  reviewer    User?               @relation("ProfileReviewer", fields: [reviewedById], references: [id])
+  experiences ExperienceEntry[]
+  documents   CandidateDocument[]
+
+  @@unique([userId, roleType])
+  @@index([status])
+  @@index([roleType])
+  @@map("candidate_profiles")
+}
+
+model ExperienceEntry {
+  id           String  @id @default(uuid())
+  profileId    String  @map("profile_id")
+  title        String
+  company      String
+  fromDate     String? @map("from_date")
+  toDate       String? @map("to_date")
+  description  String?
+  displayOrder Int     @default(0) @map("display_order")
+
+  profile CandidateProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@map("experience_entries")
+}
+
+model CandidateDocument {
+  id           String       @id @default(uuid())
+  profileId    String       @map("profile_id")
+  documentType DocumentType @map("document_type")
+  filename     String
+  mimeType     String       @map("mime_type")
+  sizeBytes    Int          @map("size_bytes")
+  storageKey   String       @map("storage_key")
+  approvedAt   DateTime?    @map("approved_at")
+  uploadedAt   DateTime     @default(now()) @map("uploaded_at")
+
+  profile CandidateProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@index([profileId])
+  @@map("candidate_documents")
+}
+
+// ── Audit Log ─────────────────────────────────────────────────────────────────
+// Immutable append-only table. Rows are NEVER updated or deleted.
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  entityType String   @map("entity_type")
+  entityId   String   @map("entity_id")
+  action     String
+  actorId    String?  @map("actor_id")
+  actorEmail String?  @map("actor_email")
+  oldState   Json?    @map("old_state")
+  newState   Json?    @map("new_state")
+  metadata   Json?
+  ts         DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([actorId])
+  @@index([ts])
+  @@map("audit_log")
+}
+
+// ── Notifications ─────────────────────────────────────────────────────────────
+// In-app notifications. Email/SMS are dispatched via BullMQ stubs
+// and will not create rows here — they go to the external provider.
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  subject   String
+  body      String
+  read      Boolean  @default(false)
+  link      String?  // optional deep-link e.g. "/profile/JOB_SEEKER"
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([createdAt])
+  @@map("notifications")
+}

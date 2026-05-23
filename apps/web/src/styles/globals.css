@@ -1,0 +1,221 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,300;1,400&family=Raleway:wght@300;400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --navy:#03091A; --deep:#060D2A; --mid:#0A1540;
+  --gold:#D4A017; --gold2:#E8B84B; --gold3:#F5D07A;
+  --goldglow:rgba(212,160,23,0.35); --goldglow2:rgba(212,160,23,0.10);
+  --white:#FFF; --offwhite:#EEF2FF; --muted:#7B91C9; --faint:#4A5E99;
+  --border:rgba(212,160,23,0.25); --bf:rgba(255,255,255,0.07);
+  --ok:#4ADE80; --err:#FF6B6B; --warn:#F59E0B; --info:#60A5FA;
+  --card:linear-gradient(160deg,rgba(13,30,90,0.92) 0%,rgba(6,13,42,0.97) 100%);
+}
+
+html { scroll-behavior: smooth; }
+body { font-family:'Raleway',sans-serif; background:var(--navy); color:var(--offwhite); overflow-x:hidden; }
+
+/* Gold card */
+.gc {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:18px;
+  box-shadow:0 8px 28px rgba(0,0,0,0.4),inset 0 1px 0 rgba(212,160,23,0.1);
+  position:relative; overflow:hidden; transition:all 0.3s;
+}
+.gc::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--gold2),transparent); }
+.gc-hover:hover { transform:translateY(-5px); box-shadow:0 18px 48px rgba(0,0,0,0.6),0 0 28px var(--goldglow2); border-color:rgba(212,160,23,0.4); }
+
+/* Buttons */
+.btn-gold { background:linear-gradient(135deg,var(--gold),var(--gold2)); color:var(--navy); box-shadow:0 5px 20px var(--goldglow); font-weight:700; text-transform:uppercase; letter-spacing:0.8px; transition:all 0.25s; }
+.btn-gold:hover { transform:translateY(-2px); box-shadow:0 8px 28px var(--goldglow); }
+.btn-outline { background:transparent; color:var(--gold3); border:1.5px solid var(--border); transition:all 0.25s; }
+.btn-outline:hover { background:rgba(212,160,23,0.08); border-color:var(--gold2); }
+
+/* Form inputs */
+.fi { width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(212,160,23,0.18); color:var(--white); border-radius:10px; padding:11px 14px; font-family:'Raleway',sans-serif; font-size:13px; transition:all 0.2s; outline:none; }
+.fi::placeholder { color:var(--faint); }
+.fi:focus { border-color:var(--gold2); background:rgba(212,160,23,0.05); box-shadow:0 0 0 3px rgba(212,160,23,0.07); }
+select.fi { appearance:none; cursor:pointer; }
+select.fi option { background:#0A1540; }
+textarea.fi { resize:vertical; min-height:90px; }
+.il { font-size:10px; font-weight:700; color:var(--gold3); letter-spacing:1.5px; text-transform:uppercase; display:block; margin-bottom:6px; }
+
+/* Tags / pills */
+.jtag { padding:2px 9px; border-radius:50px; font-size:9px; font-weight:700; background:rgba(212,160,23,0.08); border:1px solid rgba(212,160,23,0.2); color:var(--gold3); display:inline-block; }
+.jtag-wfh  { background:rgba(74,222,128,0.07);  border-color:rgba(74,222,128,0.18);  color:var(--ok);   }
+.jtag-paid { background:rgba(212,160,23,0.12); color:var(--gold2); }
+.jtag-cert { background:rgba(96,165,250,0.08);  border-color:rgba(96,165,250,0.18);  color:var(--info); }
+
+/* Status pills */
+.status-pending  { background:rgba(245,158,11,0.1);  border:1px solid rgba(245,158,11,0.3);  color:var(--warn); }
+.status-approved { background:rgba(74,222,128,0.1);  border:1px solid rgba(74,222,128,0.3);  color:var(--ok);   }
+.status-rejected { background:rgba(255,107,107,0.1); border:1px solid rgba(255,107,107,0.3); color:var(--err);  }
+
+/* Table */
+.rt { width:100%; border-collapse:collapse; }
+.rt th { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--gold3); padding:12px 14px; text-align:left; border-bottom:1px solid var(--bf); background:rgba(212,160,23,0.04); }
+.rt td { padding:12px 14px; font-size:12px; color:var(--offwhite); border-bottom:1px solid var(--bf); vertical-align:middle; }
+.rt tr:hover td { background:rgba(212,160,23,0.03); }
+
+/* Ornament */
+.orn { display:flex; align-items:center; justify-content:center; gap:8px; margin:10px 0 0; }
+.ol  { width:50px; height:1px; background:linear-gradient(90deg,transparent,var(--gold2)); }
+.ol-r{ width:50px; height:1px; background:linear-gradient(90deg,var(--gold2),transparent); }
+.od  { width:5px; height:5px; background:var(--gold2); transform:rotate(45deg); box-shadow:0 0 6px var(--goldglow); }
+
+/* Gold text gradient */
+.gold-text { background:linear-gradient(135deg,var(--gold),var(--gold3)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.cinzel { font-family:'Cinzel',serif; }
+
+/* Animations */
+@keyframes pulse { 0%,100%{transform:scale(1);}50%{transform:scale(1.5);opacity:0.6;} }
+@keyframes float { 0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);} }
+.float-anim { animation:float 5s ease-in-out infinite; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:rgba(212,160,23,0.2); border-radius:4px; }
+
+/* Filter pill */
+.filter-pill { padding:6px 14px; border-radius:50px; font-size:11px; font-weight:600; cursor:pointer; transition:all 0.2s; font-family:'Raleway',sans-serif; }
+.filter-pill-off { background:rgba(255,255,255,0.04); border:1px solid var(--bf); color:var(--muted); }
+.filter-pill-off:hover { border-color:rgba(212,160,23,0.3); color:var(--offwhite); }
+.filter-pill-on  { background:rgba(212,160,23,0.12); border:1px solid rgba(212,160,23,0.4); color:var(--gold3); }
+
+/* ── Responsive layout helpers ─────────────────────────────────────────────── */
+
+/* Two-panel layout: main content + sidebar. Stacks vertically below 900px. */
+.layout-with-sidebar {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+}
+@media (max-width: 900px) {
+  .layout-with-sidebar {
+    grid-template-columns: 1fr;
+  }
+  .layout-sidebar-col {
+    display: none;
+  }
+}
+
+/* Two-column form grid. Collapses to 1 column below 640px. */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 18px;
+}
+@media (max-width: 640px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .form-grid > * { grid-column: span 1 !important; }
+}
+
+/* Text + card two-column section (home about, etc.) */
+.two-col-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+}
+@media (max-width: 860px) {
+  .two-col-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Moderator panel: sidebar + main. On mobile: sidebar becomes top tab strip. */
+.mod-layout {
+  display: flex;
+}
+.mod-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+}
+@media (max-width: 768px) {
+  .mod-layout    { flex-direction: column; }
+  .mod-sidebar   {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    overflow-x: auto;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border);
+    padding: 0 !important;
+    position: sticky;
+    top: 68px;
+    z-index: 10;
+    background: linear-gradient(180deg,rgba(6,13,42,0.99),rgba(3,9,26,1));
+  }
+  .mod-sidebar-item {
+    padding: 10px 14px !important;
+    font-size: 10px !important;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .mod-sidebar-title { display: none; }
+  .mod-main { padding: 16px !important; }
+}
+
+/* Stats row: 4 cols → 2 cols on mobile */
+.stats-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+@media (max-width: 640px) {
+  .stats-4 { grid-template-columns: 1fr 1fr; }
+}
+
+/* Jobs filter sidebar: hidden on mobile */
+.jobs-sidebar {
+  width: 260px;
+  flex-shrink: 0;
+}
+@media (max-width: 768px) {
+  .jobs-sidebar { display: none; }
+}
+
+/* Table wrapper: horizontal scroll on mobile */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+@media (max-width: 768px) {
+  .table-scroll .rt th,
+  .table-scroll .rt td { white-space: nowrap; }
+}
+
+/* Document upload 2×2 grid → 1 col on very small screens */
+.doc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+@media (max-width: 480px) {
+  .doc-grid { grid-template-columns: 1fr; }
+}
+
+/* Mobile profile info strip — hidden on desktop */
+.mobile-only-profile-strip { display: none; }
+@media (max-width: 900px) {
+  .mobile-only-profile-strip { display: flex; }
+  /* When toggled open, the sidebar shows above the form on mobile */
+  .layout-sidebar-col-open {
+    display: block !important;
+    order: -1;
+  }
+}
+
+/* Jobs page: mobile filter button shows, sidebar slides in */
+@media (max-width: 768px) {
+  .mobile-filter-btn { display: flex !important; }
+  .jobs-sidebar-open {
+    display: flex !important;
+    position: fixed;
+    top: 68px; left: 0; bottom: 0;
+    z-index: 40;
+    width: 280px !important;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.6);
+  }
+}

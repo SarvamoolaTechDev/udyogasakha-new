@@ -1,0 +1,12 @@
+{
+  "name": "udyogasakha",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev:api": "cd apps/api && npm run dev",
+    "dev:web": "cd apps/web && npm run dev",
+    "db:migrate": "cd apps/api && npx prisma migrate dev",
+    "db:seed":   "cd apps/api && npm run db:seed",
+    "db:studio": "cd apps/api && npx prisma studio"
+  }
+}
