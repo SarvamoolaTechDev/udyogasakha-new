@@ -24,6 +24,16 @@ export class AuthService {
       data: { email: dto.email, name: dto.name, phone: dto.phone, passwordHash: hash, roles: [UserRole.PARTICIPANT] },
     });
 
+    // Create account-level profile and trust stub in the same transaction
+    await this.prisma.$transaction([
+      this.prisma.userProfile.create({
+        data: { userId: user.id, fullName: dto.name, participantType: 'INDIVIDUAL' },
+      }),
+      this.prisma.trustRecord.create({
+        data: { userId: user.id, currentLevel: 'L0' },
+      }),
+    ]);
+
     await this.audit.log({
       entityType: 'user',
       entityId:   user.id,

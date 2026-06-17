@@ -14,6 +14,9 @@ import { ListingsModule } from './modules/listings/listings.module';
 import { ProfilesModule } from './modules/profiles/profiles.module';
 import { MarketModule } from './modules/market/market.module';
 import { DocumentsModule } from './modules/documents/documents.module';
+import { UserDocumentsModule } from './modules/user-documents/user-documents.module';
+import { VerificationModule } from './modules/verification/verification.module';
+import { ReportsModule } from './modules/reports/reports.module';
 import { HealthModule } from './modules/health/health.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
@@ -56,6 +59,9 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     ProfilesModule,
     MarketModule,
     DocumentsModule,
+    UserDocumentsModule,
+    VerificationModule,
+    ReportsModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

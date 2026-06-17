@@ -1,10 +1,25 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { ProfileStatus, MarketField } from '@prisma/client';
+import { ProfileStatus, MarketField, MarketSegment } from '@prisma/client';
 import { parsePage, paginate } from '../../common/pagination';
 import { AuditService } from '../audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UpsertProfileDto, AddExperienceDto } from './dto/profile.dto';
+
+/**
+ * Derives the three-bucket market field from the candidate's own segment selection.
+ * This is deterministic — no moderator input required.
+ *
+ * IT_FIELD     : IT_DEVELOPERS | IT_DESIGNERS | IT_PRODUCT_OWNERS | IT_DATA_AI
+ * NON_IT_FIELD : NON_IT_ARTS_MEDIA | NON_IT_COMMERCE | NON_IT_EDUCATION |
+ *                NON_IT_SPIRITUAL | NON_IT_MANAGEMENT | NON_IT_HEALTHCARE | NON_IT_ENGINEERING
+ * SERVICES     : SERVICES_CONSULTANCY | SERVICES_TRAINING | SERVICES_RECRUITMENT | SERVICES_VENDOR
+ */
+function deriveMarketField(segment: MarketSegment): MarketField {
+  if (segment.startsWith('IT_'))       return MarketField.IT_FIELD;
+  if (segment.startsWith('SERVICES_')) return MarketField.SERVICES;
+  return MarketField.NON_IT_FIELD;
+}
 
 @Injectable()
 export class ProfilesService {
@@ -21,10 +36,15 @@ export class ProfilesService {
     const skills = Array.isArray(dto.skills)
       ? dto.skills
       : (dto.skills || '').split(',').map((s: string) => s.trim()).filter(Boolean);
+
+    // Derive market field from the candidate's own segment selection — no moderator needed
+    const marketField = deriveMarketField(dto.marketSegment);
+
     const data = {
       ...dto, userId, skills,
+      marketField,                  // set on submission, not on approval
       status: ProfileStatus.PENDING, submittedAt: new Date(),
-      reviewedAt: null, reviewedById: null, rejectionReason: null, marketField: null,
+      reviewedAt: null, reviewedById: null, rejectionReason: null,
     };
 
     const profile = existing
@@ -122,16 +142,24 @@ export class ProfilesService {
 
   // ── Moderator state changes — audit + notify ──────────────────────────────
 
-  async approve(id: string, modId: string, marketField: MarketField) {
+  async approve(id: string, modId: string) {
     const before = await this.prisma.candidateProfile.findUnique({
       where: { id },
       include: { user: { select: { email: true, name: true } } },
     });
     if (!before) throw new NotFoundException('Profile not found');
 
+    // marketField is already set from the candidate's own submission — just flip status
     const after = await this.prisma.candidateProfile.update({
       where: { id },
-      data: { status: ProfileStatus.APPROVED, reviewedById: modId, reviewedAt: new Date(), marketField },
+      data: { status: ProfileStatus.APPROVED, reviewedById: modId, reviewedAt: new Date() },
+    });
+
+    // Upgrade trust level to L1 on first profile approval (stub — full engine deferred)
+    await this.prisma.trustRecord.upsert({
+      where:  { userId: before.userId },
+      update: { currentLevel: 'L1', lastUpdated: new Date() },
+      create: { userId: before.userId, currentLevel: 'L1' },
     });
 
     await this.audit.log({
@@ -140,7 +168,6 @@ export class ProfilesService {
       newState: { status: after.status, marketField: after.marketField, reviewedAt: after.reviewedAt },
     });
 
-    // Notify the profile owner
     await this.notify.send({
       userId:  before.userId,
       subject: 'Your profile has been approved! 🎉',

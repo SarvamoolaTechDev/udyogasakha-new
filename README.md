@@ -2,94 +2,242 @@
 
 India's unified employment ecosystem for 11 role types across IT, Non-IT and Services sectors.
 
+---
+
+## Monorepo Structure
+
+```
+udyogasakha/
+├── apps/
+│   ├── api/        NestJS backend              → http://localhost:3001
+│   ├── web/        Next.js member portal        → http://localhost:3000
+│   ├── admin/      Next.js admin/mod portal     → http://localhost:3002
+│   └── mobile/     React Native + Expo app      → iOS & Android
+├── packages/
+│   └── types/      Shared TypeScript enums
+├── docker-compose.yml
+└── turbo.json
+```
+
+---
+
 ## Quick Start
 
-```bash
-# 1. Start services
-docker compose up -d
+### Prerequisites
+- Node.js 20+
+- Docker Desktop (for PostgreSQL + Redis)
+- For mobile: Expo Go app on your phone, or iOS Simulator / Android Emulator
 
-# 2. API
+### 1 — Start services
+```bash
+docker compose up -d
+```
+
+### 2 — Backend API
+```bash
 cd apps/api
-cp .env.example .env        # set JWT_SECRET and JWT_REFRESH_SECRET
+cp .env.example .env        # fill JWT_SECRET and JWT_REFRESH_SECRET with random 32+ char strings
 npm install
 npx prisma migrate dev --name init
 npm run db:seed
-npm run dev                 # → http://localhost:3001
-                            # → http://localhost:3001/api/docs (Swagger)
+npm run dev                 # http://localhost:3001
+                            # http://localhost:3001/api/docs  (Swagger UI)
+```
 
-# 3. Web (new terminal)
+### 3 — Member portal
+```bash
 cd apps/web
 cp .env.example .env
 npm install
-npm run dev                 # → http://localhost:3000
+npm run dev                 # http://localhost:3000
 ```
+
+### 4 — Admin portal
+```bash
+cd apps/admin
+cp .env.example .env
+npm install
+npm run dev                 # http://localhost:3002
+```
+
+### 5 — Mobile app
+```bash
+cd apps/mobile
+npm install
+npm run dev                 # Scan QR with Expo Go, or press i (iOS) / a (Android)
+```
+
+> **Physical device note:** Edit `apps/mobile/src/lib/api.ts` and replace `localhost`
+> with your machine's LAN IP (e.g. `192.168.1.100`) so the phone can reach the API.
+
+---
 
 ## Default Credentials
 
-| Role        | Email                       | Password    |
-|-------------|----------------------------|-------------|
-| Admin       | admin@udyogasakha.in       | Admin@1234  |
-| Moderator   | moderator@udyogasakha.in   | Admin@1234  |
-| Demo user   | demo@example.com           | Test@1234   |
+| Role      | Email                     | Password    | Portal       |
+|-----------|--------------------------|-------------|--------------|
+| Admin     | admin@udyogasakha.in     | Admin@1234  | Admin + Mobile |
+| Moderator | moderator@udyogasakha.in | Admin@1234  | Admin + Mobile |
+| Demo user | demo@example.com         | Test@1234   | Web + Mobile  |
 
-## Web Pages
+---
 
-| Route                | Description |
-|----------------------|-------------|
-| `/`                  | Landing — hero, 11 roles, about, how it works |
-| `/jobs`              | Browse listings — filter sidebar, search, pagination |
-| `/jobs/[id]`         | Full job detail — requirements, facilities, apply |
-| `/post`              | Post a job / RFP — enters moderator queue |
-| `/profile`           | Role picker — 11 role type cards with live status |
-| `/profile/[role]`    | Full candidate profile form for chosen role |
-| `/moderator`         | Moderator panel — review, approve, market mapping |
-| `/notifications`     | In-app notifications — mark read, filter |
-| `/settings`          | Account settings + change password |
-| `/audit`             | Audit log — recent / by entity / by actor |
-| `/admin/users`       | Admin user list with search and pagination |
-| `/admin/users/[id]`  | Admin user detail with profile statuses |
-| `/login`             | Sign in |
-| `/register`          | Create account |
+## Member Portal — `apps/web` (port 3000)
 
-## API Endpoints (port 3001)
+Public + authenticated pages for candidates and organisations.
 
-| Module         | Key Routes |
-|----------------|------------|
-| `auth`         | register, login, refresh, logout, change-password |
-| `users`        | GET/PATCH me, GET /users (admin), GET /users/:id |
-| `listings`     | browse, post, edit, get by ID, similar, moderate |
-| `profiles`     | upsert per role, experience, documents, moderate |
-| `market`       | stats, by-role, all-approved |
-| `documents`    | upload, list (with URLs), delete |
-| `notifications`| list, unread-count, mark-read, mark-all-read |
-| `audit`        | recent, by-entity, by-actor |
-| `health`       | liveness, readiness |
+| Route              | Description |
+|--------------------|-------------|
+| `/`                | Landing — hero, 11 role grid, about, how it works, testimonials |
+| `/jobs`            | Browse listings — filter sidebar (5 dimensions), search, pagination |
+| `/jobs/[id]`       | Job detail — responsibilities, facilities, apply button |
+| `/post`            | Post a job / RFP — enters moderator review queue |
+| `/profile`         | Role picker — 11 role cards with live status badges |
+| `/profile/[role]`  | Role profile form — personal, education, experience, documents |
+| `/notifications`   | In-app notifications — mark read, unread filter |
+| `/settings`        | Account info, edit name/city/phone, change password |
+| `/login`           | Sign in |
+| `/register`        | Create account |
 
-## Phase 1 Status
+---
 
-**Backend:** Complete. All modules built, DTOs typed, validation, rate limiting, pagination,
-audit log (12 events), notifications (BullMQ + stubs), StorageService abstraction.
+## Admin Portal — `apps/admin` (port 3002)
 
-**Frontend:** Complete. 14 pages, mobile responsive, form validation, skeleton loading states,
-notification bell, auth store, JWT middleware.
+Separate Next.js application. **Access restricted to MODERATOR and ADMIN roles only.**
+Moderators use this for the bulk of their review work.
 
-**Pending client decision before building:**
-- Trust levels L0–L4 vs role types + moderator approval
-- Opportunity/Engagement lifecycle vs listing + profile model
-- Per-user KYC documents vs per-role portfolio documents
-- Deterministic vs moderator-assigned market mapping
-- Governance module (EGC, DEP, CoI)
-- Separate admin portal vs embedded moderator page
+| Route          | Description |
+|----------------|-------------|
+| `/login`       | Admin sign in — rejects accounts without MODERATOR or ADMIN role |
+| `/moderation`  | Review pending profiles and job listings — approve / reject with one tap |
+| `/users`       | Paginated user list with search — view roles, profile count, join date |
+| `/users/[id]`  | User detail — all profile statuses, recent audit trail |
+| `/audit`       | Immutable audit log — recent / filter by entity ID / filter by actor ID |
+
+---
+
+## Mobile App — `apps/mobile` (iOS + Android)
+
+Single React Native + Expo codebase compiled to both platforms.
+Uses React Navigation with bottom tabs. Authenticates against the same backend API.
+
+### Member screens (all authenticated users)
+
+| Screen          | Description |
+|-----------------|-------------|
+| Home            | Role grid, live job count, browse and profile CTAs |
+| Jobs            | Infinite scroll listing with filter pills and search |
+| Job Detail      | Full listing — skills, responsibilities, apply button |
+| Post a Job      | Mobile form with auth-gate prompt for unauthenticated users |
+| Profile Hub     | 11 role cards with live status badges from API |
+| Role Profile    | Personal form, submission details, experience list (add/delete) |
+| Notifications   | Paginated list, tap to mark read, mark all read |
+| Settings        | Account info, edit form, change password, sign out |
+
+### Moderator screens (MODERATOR and ADMIN roles only)
+
+Moderators see an additional **Moderation** tab in the bottom bar.
+Intended for quick actions on the go — detailed bulk work should use the Admin portal.
+
+| Screen           | Description |
+|------------------|-------------|
+| Moderation Queue | Pending / Approved / Rejected tabs with paginated profile cards |
+| Profile Review   | Full profile detail with Approve and Reject actions |
+
+---
+
+## API Modules — `apps/api` (port 3001)
+
+All endpoints prefixed `/api/v1`. Swagger UI at `/api/docs` in dev/staging.
+
+| Module              | Key Endpoints |
+|---------------------|---------------|
+| `auth`              | register, login, refresh, logout, change-password |
+| `users`             | GET/PATCH me, GET /users (admin), GET /users/:id |
+| `listings`          | browse, post, edit, get by ID, similar, moderate (approve/reject) |
+| `profiles`          | upsert per role, experience, documents, moderate |
+| `market`            | stats, by-role, all-approved |
+| `documents`         | upload, list (with URLs), delete — per-role portfolio docs |
+| `user-documents`    | upload, list, delete — per-user KYC / identity documents |
+| `verification`      | request L1 verification, moderator approve/reject |
+| `reports`           | submit abuse report, moderator resolve/dismiss |
+| `notifications`     | list, unread-count, mark-read, mark-all-read |
+| `audit`             | recent, by-entity, by-actor |
+| `health`            | liveness (`GET /health`), readiness (`GET /health/ready`) |
+
+---
+
+## Database — 13 Models
+
+| Model                | Purpose |
+|----------------------|---------|
+| `User`               | Core identity — email, passwordHash, roles[] |
+| `RefreshToken`       | JWT refresh tokens with replay detection |
+| `UserProfile`        | Account-level display info — one per user |
+| `UserDocument`       | KYC identity documents per user (shared across all roles) |
+| `TrustRecord`        | Trust level stub — L0 on register, L1 on first approval |
+| `JobListing`         | Listings posted by organisations / recruiters |
+| `CandidateProfile`   | Per-role profiles submitted by candidates (11 types) |
+| `ExperienceEntry`    | Experience entries within a role profile |
+| `CandidateDocument`  | Per-role portfolio documents (resume, certificate, portfolio) |
+| `VerificationRequest`| Formal L1 document verification workflow |
+| `Report`             | Abuse / misconduct reports submitted by members |
+| `AuditLog`           | Immutable append-only record of all state changes |
+| `Notification`       | In-app notifications (email/SMS via BullMQ stubs) |
+
+---
+
+## Market Mapping
+
+Candidates self-select their market segment during profile submission.
+The parent market field is derived automatically — moderators do not assign it.
+
+| Market Field | Sub-segments (candidate selects one) |
+|---|---|
+| **IT Field**     | Developers · Designers · Product Owners · Data/AI |
+| **Non-IT Field** | Arts/Media · Commerce · Education · Spiritual · Management · Healthcare · Engineering |
+| **Services**     | Consultancy · Training · Recruitment · Vendor |
+
+---
 
 ## 11 Role Types
 
-`INTERN` `FRESHER` `JOB_SEEKER` `FREELANCER` `CONSULTANT`
-`HIRING_MANAGER` `RECRUITER` `TRAINER` `VENDOR` `MODERATOR_ROLE` `RFP_PROVIDER`
+`INTERN` · `FRESHER` · `JOB_SEEKER` · `FREELANCER` · `CONSULTANT`
+`HIRING_MANAGER` · `RECRUITER` · `TRAINER` · `VENDOR` · `MODERATOR_ROLE` · `RFP_PROVIDER`
 
-## Market Segments
+Each role has its own dedicated profile form with role-specific fields, independent moderation, and an independent status. A user can maintain profiles for multiple roles simultaneously.
 
-| Field | Sub-segments |
-|---|---|
-| **IT Field** | Developers, Designers, Product Owners, Data/AI |
-| **Non-IT Field** | Arts/Media, Commerce, Education, Spiritual, Management, Healthcare, Engineering |
-| **Services** | Consultancy, Training, Recruitment, Vendor |
+---
+
+## Infrastructure
+
+| Component      | Technology | Notes |
+|----------------|------------|-------|
+| API framework  | NestJS 10  | Modular, TypeScript, Swagger |
+| ORM            | Prisma 5   | Type-safe queries, migrations |
+| Database       | PostgreSQL 16 | Primary data store |
+| Cache / Queue  | Redis 7 + BullMQ | Job queue for async notifications |
+| File storage   | Local filesystem (Phase 1) | StorageService abstraction — swap to S3/R2 with one line change |
+| Rate limiting  | @nestjs/throttler | Global 60/min, auth 10/min |
+| Audit logging  | Append-only DB table | 12 event types, actor + timestamp |
+| Error tracking | Sentry (stub) | Set SENTRY_DSN in .env to activate |
+| Build pipeline | Turborepo | `turbo run dev/build/lint` across all apps |
+
+---
+
+## Pending Client Decisions
+
+The following items are deferred until client sign-off. None block Phase 1 operation.
+
+| Item | Description |
+|------|-------------|
+| Trust levels L2–L4 | Full trust engine with community endorsement and domain expert certification |
+| Engagement lifecycle | Application → Engagement → Feedback tracking (vs current listing-only model) |
+| Governance module | EGC, DEP, CoI declarations (depends on trust levels L3–L4) |
+| S3/R2 storage | Replace local filesystem with cloud object storage |
+| Email provider | Wire AWS SES / Resend into NotificationsService.sendEmail() stub |
+| SMS / OTP | Wire MSG91 / Twilio into NotificationsService.sendSms() stub |
+| Social login | Google OAuth2 / LinkedIn OAuth2 via Passport.js |
+| Separate admin deploy | Move admin portal to internal network / VPN |
+| Meilisearch | Full-text search to replace PostgreSQL ILIKE queries |
+| Payment gateway | Razorpay for registration and certification fees (Phase 2) |

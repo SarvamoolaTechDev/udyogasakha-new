@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Patch, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { ProfilesService } from './profiles.service';
-import { UpsertProfileDto, AddExperienceDto, ApproveProfileDto, RejectProfileDto } from './dto/profile.dto';
+import { UpsertProfileDto, AddExperienceDto, RejectProfileDto } from './dto/profile.dto';
 import { JwtAuthGuard, RolesGuard, Roles, CurrentUser } from '../../common/guards/auth.guards';
 import { UserRole } from '@prisma/client';
 
@@ -81,13 +81,12 @@ export class ProfilesController {
   @Patch(':id/approve')
   @UseGuards(RolesGuard)
   @Roles(UserRole.MODERATOR, UserRole.ADMIN)
-  @ApiOperation({ summary: '[Moderator] Approve a profile with market field assignment' })
+  @ApiOperation({ summary: '[Moderator] Approve a profile — market field already set by candidate' })
   approve(
     @Param('id') id: string,
     @CurrentUser('id') modId: string,
-    @Body() dto: ApproveProfileDto,
   ) {
-    return this.svc.approve(id, modId, dto.marketField);
+    return this.svc.approve(id, modId);
   }
 
   @Patch(':id/reject')

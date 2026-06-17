@@ -5,8 +5,7 @@ import {
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  RoleType, PaymentType, WorkMode, CertOpt, EmpOption,
-  MarketSegment, MarketField,
+  RoleType, PaymentType, WorkMode, CertOpt, EmpOption, MarketSegment,
 } from '@prisma/client';
 
 export class UpsertProfileDto {
@@ -141,9 +140,8 @@ export class AddExperienceDto {
 }
 
 export class ApproveProfileDto {
-  @ApiProperty({ enum: MarketField })
-  @IsEnum(MarketField)
-  marketField: MarketField;
+  // marketField is derived automatically from the candidate's own marketSegment selection.
+  // Moderator approval just confirms the profile — no market assignment needed.
 }
 
 export class RejectProfileDto {

@@ -1,13 +1,12 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-// Routes that require a valid JWT cookie
-const PROTECTED = ['/profile', '/post', '/moderator', '/notifications', '/settings', '/admin', '/audit'];
+// Member-facing routes that require a logged-in session
+const PROTECTED = ['/profile', '/post', '/notifications', '/settings'];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
   const token = req.cookies.get('udyoga_token')?.value;
-
   const isProtected = PROTECTED.some(p => pathname === p || pathname.startsWith(p + '/'));
 
   if (isProtected && !token) {
