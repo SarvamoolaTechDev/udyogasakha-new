@@ -47,7 +47,7 @@ export default function RoleProfilePage() {
   const [showInfo, setShowInfo]     = useState(false); // mobile sidebar toggle
   const [completion,  setCompletion]  = useState(35);
 
-  const { register, handleSubmit, setValue, formState:{ errors } } = useForm({ defaultValues:{ roleType:role } });
+  const { register, handleSubmit, setValue, formState:{ errors } } = useForm<Record<string, any>>({ defaultValues:{ roleType:role } });
   const expForm = useForm();
 
   // ── Load existing profile ────────────────────────────────────────────────
@@ -69,7 +69,7 @@ export default function RoleProfilePage() {
 
   // ── Load existing documents ──────────────────────────────────────────────
   const { data: existingDocs = [] } = useQuery({
-    queryKey: ['docs', profile?.id],
+    queryKey: ['docs', (profile as any)?.id],
     queryFn:  () => docsApi.getForProfile((profile as any).id),
     enabled:  !!(profile as any)?.id,
   });

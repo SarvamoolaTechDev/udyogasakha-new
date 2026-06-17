@@ -1,17 +1,28 @@
 'use client';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
 
+
+//export default function Login() { return <h1>Login</h1>; }
+
+  export default function LoginPage() {          // ← new wrapper, this is the default export
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
 type FormValues = { email: string; password: string };
 
 const Err = ({ msg }: { msg?: string }) =>
   msg ? <p style={{ color:'var(--err)', fontSize:'11px', marginTop:'4px' }}>{msg}</p> : null;
 
-export default function LoginPage() {
+function LoginForm() {
   const [serverError, setServerError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();

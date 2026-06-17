@@ -16,7 +16,7 @@ export default function PostJobPage() {
   const [done, setDone] = useState(false);
   const [ref,  setRef]  = useState('');
 
-  const { register, handleSubmit, formState: { errors } } = useForm();
+  const { register, handleSubmit, formState: { errors } } = useForm<Record<string, any>>();
 
   const mut = useMutation({
     mutationFn: (d: any) => listingsApi.post({

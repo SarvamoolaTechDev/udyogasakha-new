@@ -9,8 +9,8 @@ export class MarketService {
 
   async getStats() {
     const [profiles, listings] = await this.prisma.$transaction([
-      this.prisma.candidateProfile.groupBy({ by: ['marketField', 'status'], _count: { _all: true } }),
-      this.prisma.jobListing.groupBy({       by: ['marketField', 'status'], _count: { _all: true } }),
+      this.prisma.candidateProfile.groupBy({ by: ['marketField', 'status'], _count: { _all: true }}) as any,
+      this.prisma.jobListing.groupBy({       by: ['marketField', 'status'], _count: { _all: true }} ) as any,
     ]);
 
     const sum = (data: any[], field: MarketField, status?: ProfileStatus) =>
@@ -38,12 +38,15 @@ export class MarketService {
   }
 
   async getByRole() {
-    const data = await this.prisma.candidateProfile.groupBy({
+    const rawResult: any = await this.prisma.candidateProfile.groupBy({
       by: ['roleType'],
-      where: { status: ProfileStatus.APPROVED },
+      where: { status: ProfileStatus.APPROVED as any},
       _count: { _all: true },
     });
-    return data.map(d => ({ role: d.roleType, count: d._count._all }));
+    return rawResult.map((d : any) => ({
+      role: d.roleType,
+      count: d._count._all
+    }));
   }
 
   async getAllApproved(rawPage?: string, rawLimit?: string) {
