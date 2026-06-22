@@ -1,17 +1,17 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/admin/users/[id]/page": "app/admin/users/[id]/page.js",
-  "/admin/users/page": "app/admin/users/page.js",
   "/audit/page": "app/audit/page.js",
-  "/jobs/[id]/page": "app/jobs/[id]/page.js",
+  "/admin/users/[id]/page": "app/admin/users/[id]/page.js",
+  "/login/page": "app/login/page.js",
   "/jobs/page": "app/jobs/page.js",
-  "/moderator/page": "app/moderator/page.js",
+  "/admin/users/page": "app/admin/users/page.js",
+  "/jobs/[id]/page": "app/jobs/[id]/page.js",
   "/notifications/page": "app/notifications/page.js",
+  "/moderator/page": "app/moderator/page.js",
+  "/profile/page": "app/profile/page.js",
   "/post/page": "app/post/page.js",
   "/profile/[role]/page": "app/profile/[role]/page.js",
-  "/profile/page": "app/profile/page.js",
   "/register/page": "app/register/page.js",
   "/settings/page": "app/settings/page.js",
-  "/login/page": "app/login/page.js",
   "/page": "app/page.js"
 }

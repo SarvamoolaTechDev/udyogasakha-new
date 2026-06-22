@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -11,7 +11,7 @@ type FormValues = { email: string; password: string };
 const Err = ({ msg }: { msg?: string }) =>
   msg ? <p style={{ color:'var(--err)', fontSize:'11px', marginTop:'4px' }}>{msg}</p> : null;
 
-export default function LoginPage() {
+function LoginForm() {
   const [serverError, setServerError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -89,5 +89,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense>
+      <LoginForm />
+    </Suspense>
   );
 }
