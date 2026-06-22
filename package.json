@@ -1,14 +1,16 @@
 {
   "name": "udyogasakha",
   "private": true,
-  "workspaces": ["apps/*", "packages/*"],
+  "workspaces": ["apps/api", "apps/web", "apps/admin", "packages/*"],
   "scripts": {
     "dev":       "turbo run dev",
     "dev:api":   "turbo run dev --filter=@udyogasakha/api",
     "dev:web":   "turbo run dev --filter=@udyogasakha/web",
     "dev:admin": "turbo run dev --filter=@udyogasakha/admin",
-    "dev:mobile":"turbo run dev --filter=@udyogasakha/mobile",
-    "build":     "turbo run build",
+    "build":          "turbo run build",
+    "build:api":      "turbo run build --filter=@udyogasakha/api",
+    "build:web":      "turbo run build --filter=@udyogasakha/web",
+    "build:admin":    "turbo run build --filter=@udyogasakha/admin",
     "lint":      "turbo run lint",
     "db:migrate":"turbo run db:migrate --filter=@udyogasakha/api",
     "db:seed":   "turbo run db:seed --filter=@udyogasakha/api"

@@ -1,0 +1,119 @@
+export enum RoleType {
+  INTERN          = 'INTERN',
+  FRESHER         = 'FRESHER',
+  JOB_SEEKER      = 'JOB_SEEKER',
+  FREELANCER      = 'FREELANCER',
+  CONSULTANT      = 'CONSULTANT',
+  HIRING_MANAGER  = 'HIRING_MANAGER',
+  RECRUITER       = 'RECRUITER',
+  TRAINER         = 'TRAINER',
+  VENDOR          = 'VENDOR',
+  MODERATOR_ROLE  = 'MODERATOR_ROLE',
+  RFP_PROVIDER    = 'RFP_PROVIDER',
+}
+
+export enum MarketField {
+  IT_FIELD     = 'IT_FIELD',
+  NON_IT_FIELD = 'NON_IT_FIELD',
+  SERVICES     = 'SERVICES',
+}
+
+export enum MarketSegment {
+  IT_DEVELOPERS        = 'IT_DEVELOPERS',
+  IT_DESIGNERS         = 'IT_DESIGNERS',
+  IT_PRODUCT_OWNERS    = 'IT_PRODUCT_OWNERS',
+  IT_DATA_AI           = 'IT_DATA_AI',
+  NON_IT_ARTS_MEDIA    = 'NON_IT_ARTS_MEDIA',
+  NON_IT_COMMERCE      = 'NON_IT_COMMERCE',
+  NON_IT_EDUCATION     = 'NON_IT_EDUCATION',
+  NON_IT_SPIRITUAL     = 'NON_IT_SPIRITUAL',
+  NON_IT_MANAGEMENT    = 'NON_IT_MANAGEMENT',
+  NON_IT_HEALTHCARE    = 'NON_IT_HEALTHCARE',
+  NON_IT_ENGINEERING   = 'NON_IT_ENGINEERING',
+  SERVICES_CONSULTANCY = 'SERVICES_CONSULTANCY',
+  SERVICES_TRAINING    = 'SERVICES_TRAINING',
+  SERVICES_RECRUITMENT = 'SERVICES_RECRUITMENT',
+  SERVICES_VENDOR      = 'SERVICES_VENDOR',
+}
+
+export enum WorkMode {
+  WFH      = 'WFH',
+  ON_SITE  = 'ON_SITE',
+  HYBRID   = 'HYBRID',
+  OFF_SITE = 'OFF_SITE',
+}
+
+export enum ListingType {
+  JOB_OPENING        = 'JOB_OPENING',
+  INTERNSHIP         = 'INTERNSHIP',
+  RFP_TENDER         = 'RFP_TENDER',
+  TRAINING_PROGRAM   = 'TRAINING_PROGRAM',
+  CONSULTANCY_NEED   = 'CONSULTANCY_NEED',
+  VENDOR_REQUIREMENT = 'VENDOR_REQUIREMENT',
+}
+
+export enum PaymentType {
+  PAID       = 'PAID',
+  UNPAID     = 'UNPAID',
+  STIPEND    = 'STIPEND',
+  NEGOTIABLE = 'NEGOTIABLE',
+}
+
+export enum CertificateOption {
+  YES = 'YES',
+  NO  = 'NO',
+}
+
+export enum EmploymentOption {
+  EXISTS     = 'EXISTS',
+  NOT_EXISTS = 'NOT_EXISTS',
+}
+
+export enum ProfileStatus {
+  PENDING  = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
+
+export enum Industry {
+  IT_SOFTWARE     = 'IT_SOFTWARE',
+  HEALTHCARE      = 'HEALTHCARE',
+  FINANCE_BANKING = 'FINANCE_BANKING',
+  GOVERNMENT_PSU  = 'GOVERNMENT_PSU',
+  EDUCATION       = 'EDUCATION',
+  ENGINEERING     = 'ENGINEERING',
+  MARKETING       = 'MARKETING',
+  SERVICES        = 'SERVICES',
+  OTHER           = 'OTHER',
+}
+
+export enum ExperienceLevel {
+  ANY         = 'ANY',
+  FRESHER_0_1 = 'FRESHER_0_1',
+  EXP_1_3     = 'EXP_1_3',
+  EXP_3_5     = 'EXP_3_5',
+  EXP_5_8     = 'EXP_5_8',
+  EXP_8_PLUS  = 'EXP_8_PLUS',
+}
+
+export enum Duration {
+  SHORT_TERM    = 'SHORT_TERM',
+  MEDIUM_TERM   = 'MEDIUM_TERM',
+  LONG_TERM     = 'LONG_TERM',
+  PERMANENT     = 'PERMANENT',
+  PROJECT_BASED = 'PROJECT_BASED',
+}
+
+export enum UserRole {
+  PARTICIPANT = 'PARTICIPANT',
+  MODERATOR   = 'MODERATOR',
+  ADMIN       = 'ADMIN',
+}
+
+export enum DocumentType {
+  RESUME       = 'RESUME',
+  CERTIFICATE  = 'CERTIFICATE',
+  PORTFOLIO    = 'PORTFOLIO',
+  COVER_LETTER = 'COVER_LETTER',
+  PHOTO        = 'PHOTO',
+}
