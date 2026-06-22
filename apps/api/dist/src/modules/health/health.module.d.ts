@@ -4,9 +4,13 @@ export declare class HealthController {
     constructor(prisma: PrismaService);
     liveness(): {
         status: string;
-        ts: any;
+        ts: string;
     };
-    readiness(): unknown;
+    readiness(): Promise<{
+        status: string;
+        db: string;
+        ts: string;
+    }>;
 }
 export declare class HealthModule {
 }

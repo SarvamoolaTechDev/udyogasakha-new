@@ -13,14 +13,38 @@ export declare class AuthService {
         password: string;
         name: string;
         phone?: string;
-    }): unknown;
+    }): Promise<{
+        accessToken: string;
+        refreshToken: string;
+        expiresIn: number;
+    }>;
     login(dto: {
         email: string;
         password: string;
-    }): unknown;
-    refresh(userId: string, token: string): unknown;
-    changePassword(userId: string, currentPassword: string, newPassword: string): unknown;
-    logout(userId: string): any;
-    validateUser(userId: string): unknown;
+    }): Promise<{
+        accessToken: string;
+        refreshToken: string;
+        expiresIn: number;
+    }>;
+    refresh(userId: string, token: string): Promise<{
+        accessToken: string;
+        refreshToken: string;
+        expiresIn: number;
+    }>;
+    changePassword(userId: string, currentPassword: string, newPassword: string): Promise<{
+        message: string;
+    }>;
+    logout(userId: string): Promise<void>;
+    validateUser(userId: string): Promise<{
+        id: string;
+        email: string;
+        phone: string | null;
+        name: string;
+        passwordHash: string;
+        roles: import(".prisma/client").$Enums.UserRole[];
+        city: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
     private issue;
 }

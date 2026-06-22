@@ -13,7 +13,7 @@ export declare class NotificationsProcessor {
         subject: string;
         body: string;
         link: string | null;
-    }>): any;
+    }>): Promise<void>;
     /**
      * Email stub — logs to console.
      * Replace the logger.log() call with your SMTP/SES client when ready.
@@ -22,7 +22,7 @@ export declare class NotificationsProcessor {
         to: string;
         subject: string;
         body: string;
-    }>): any;
+    }>): Promise<void>;
     /**
      * SMS stub — logs to console.
      * Replace the logger.log() call with your MSG91 / Twilio client when ready.
@@ -30,5 +30,5 @@ export declare class NotificationsProcessor {
     handleSms(job: Job<{
         to: string;
         body: string;
-    }>): any;
+    }>): Promise<void>;
 }

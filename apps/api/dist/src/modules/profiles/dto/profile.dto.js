@@ -8,7 +8,6 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RejectProfileDto = exports.ApproveProfileDto = exports.AddExperienceDto = exports.UpsertProfileDto = void 0;
 const class_validator_1 = require("class-validator");
@@ -117,7 +116,7 @@ __decorate([
     (0, swagger_1.ApiPropertyOptional)({ example: { rf0: 'IIT Bombay', rf1: 'B.Tech CS 3rd Year' } }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsObject)(),
-    __metadata("design:type", typeof (_a = typeof Record !== "undefined" && Record) === "function" ? _a : Object)
+    __metadata("design:type", Object)
 ], UpsertProfileDto.prototype, "roleFields", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 'Senior Software Engineer' }),

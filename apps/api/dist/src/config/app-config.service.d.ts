@@ -5,10 +5,10 @@ export declare class AppConfigService {
     get port(): number;
     get nodeEnv(): string;
     get isProduction(): boolean;
-    get jwtSecret(): Exclude<T, undefined>;
+    get jwtSecret(): string;
     get jwtExpiresIn(): string;
-    get jwtRefreshSecret(): Exclude<T, undefined>;
+    get jwtRefreshSecret(): string;
     get jwtRefreshExpires(): string;
-    get allowedOrigins(): any;
+    get allowedOrigins(): string[];
     get redisUrl(): string;
 }

@@ -23,14 +23,47 @@ export declare class AuditService {
      * All audit entries for a specific entity (e.g. all events on listing X).
      * Returns newest-first, paginated.
      */
-    getForEntity(entityType: string, entityId: string, rawPage?: string, rawLimit?: string): unknown;
+    getForEntity(entityType: string, entityId: string, rawPage?: string, rawLimit?: string): Promise<import("../../common/pagination").Paginated<{
+        id: string;
+        entityType: string;
+        entityId: string;
+        action: string;
+        actorId: string | null;
+        actorEmail: string | null;
+        oldState: import("@prisma/client/runtime/library").JsonValue | null;
+        newState: import("@prisma/client/runtime/library").JsonValue | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        ts: Date;
+    }>>;
     /**
      * All audit entries performed by a specific actor (e.g. all actions by moderator X).
      * Returns newest-first, paginated.
      */
-    getForActor(actorId: string, rawPage?: string, rawLimit?: string): unknown;
+    getForActor(actorId: string, rawPage?: string, rawLimit?: string): Promise<import("../../common/pagination").Paginated<{
+        id: string;
+        entityType: string;
+        entityId: string;
+        action: string;
+        actorId: string | null;
+        actorEmail: string | null;
+        oldState: import("@prisma/client/runtime/library").JsonValue | null;
+        newState: import("@prisma/client/runtime/library").JsonValue | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        ts: Date;
+    }>>;
     /**
      * Recent platform-wide audit entries, useful for the admin dashboard.
      */
-    getRecent(rawPage?: string, rawLimit?: string): unknown;
+    getRecent(rawPage?: string, rawLimit?: string): Promise<import("../../common/pagination").Paginated<{
+        id: string;
+        entityType: string;
+        entityId: string;
+        action: string;
+        actorId: string | null;
+        actorEmail: string | null;
+        oldState: import("@prisma/client/runtime/library").JsonValue | null;
+        newState: import("@prisma/client/runtime/library").JsonValue | null;
+        metadata: import("@prisma/client/runtime/library").JsonValue | null;
+        ts: Date;
+    }>>;
 }
