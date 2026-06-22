@@ -12,12 +12,18 @@ const DUR: Record<string,string> = { SHORT_TERM:'1–3 months', MEDIUM_TERM:'3�
 export function JobDetailScreen({ route, navigation }: any) {
   const { jobId, role } = route.params;
   const { data: job, isLoading } = useQuery({ queryKey:['m-job', jobId], queryFn:()=>listingsApi.getById(jobId) });
+  const { data: similar = [] } = useQuery({
+    queryKey: ['m-job-similar', jobId, (job as any)?.targetRoleType],
+    queryFn:  () => listingsApi.getSimilar(jobId, (job as any).targetRoleType),
+    enabled:  !!job,
+  });
 
   if (isLoading) return <View style={s.center}><ActivityIndicator color={C.gold2} size="large" /></View>;
   if (!job)      return <View style={s.center}><Text style={{ color:C.muted }}>Listing not found.</Text></View>;
 
   const j = job as any;
-  const skills = Array.isArray(j.skills) ? j.skills : (j.skills||'').split(',');
+  const skills     = Array.isArray(j.skills)     ? j.skills     : (j.skills||'').split(',');
+  const facilities = Array.isArray(j.facilities) ? j.facilities : (j.facilities||'').split(',');
 
   return (
     <SafeAreaView style={s.safe}>
@@ -82,10 +88,50 @@ export function JobDetailScreen({ route, navigation }: any) {
           </View>
         )}
 
+        {/* Requirements */}
+        {j.requirements?.length > 0 && (
+          <View style={[cardStyle, s.section]}>
+            <Text style={s.sHead}>Requirements & Qualifications</Text>
+            {j.requirements.map((r:string, i:number)=>(
+              <View key={i} style={s.bulletRow}>
+                <Text style={s.bullet}>✦</Text>
+                <Text style={s.bulletTxt}>{r}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Facilities */}
+        {facilities.filter((f:string)=>f.trim()).length > 0 && (
+          <View style={[cardStyle, s.section]}>
+            <Text style={s.sHead}>Facilities & Benefits</Text>
+            <View style={s.tags}>
+              {facilities.filter((f:string)=>f.trim()).map((f:string)=>(
+                <View key={f} style={s.facilityChip}><Text style={s.skillTxt}>🎁 {f.trim()}</Text></View>
+              ))}
+            </View>
+          </View>
+        )}
+
         {/* Apply */}
         <Button label={`Apply as ${j.targetRoleType?.replace(/_/g,' ')} →`}
           onPress={() => navigation.navigate('ProfileTab', { screen:'ProfileHub' })}
           style={s.applyBtn} />
+
+        {/* Similar jobs */}
+        {similar.length > 0 && (
+          <View style={s.section}>
+            <Text style={s.similarHead}>Similar Listings</Text>
+            {(similar as any[]).map(sj => (
+              <TouchableOpacity key={sj.id} style={[cardStyle, s.similarCard]}
+                onPress={() => navigation.push('JobDetail', { jobId: sj.id, role: sj.targetRoleType })}>
+                <Text style={s.similarTitle}>{sj.title}</Text>
+                <Text style={s.similarOrg}>{sj.organisationName} · {sj.workMode?.replace('_',' ')}</Text>
+                <Text style={s.similarSalary}>{sj.salary || 'Competitive'}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
 
       </ScrollView>
     </SafeAreaView>
@@ -109,9 +155,15 @@ const s = StyleSheet.create({
   sHead:     { fontSize:13, fontWeight:'700', color:C.gold3, marginBottom:10 },
   body:      { fontSize:13, color:C.offwhite, lineHeight:21 },
   skillChip: { backgroundColor:'rgba(255,255,255,0.06)', borderRadius:50, paddingHorizontal:12, paddingVertical:5 },
+  facilityChip: { backgroundColor:'rgba(212,160,23,0.08)', borderRadius:50, paddingHorizontal:12, paddingVertical:5 },
   skillTxt:  { fontSize:11, color:C.offwhite },
   bulletRow: { flexDirection:'row', gap:8, marginBottom:8 },
   bullet:    { fontSize:10, color:C.gold2, marginTop:3 },
   bulletTxt: { flex:1, fontSize:13, color:C.offwhite, lineHeight:20 },
   applyBtn:  { marginTop:8 },
+  similarHead:  { fontSize:14, fontWeight:'700', color:C.white, marginBottom:10 },
+  similarCard:  { marginBottom:10 },
+  similarTitle: { fontSize:13, fontWeight:'700', color:C.white, marginBottom:3 },
+  similarOrg:   { fontSize:11, color:C.muted, marginBottom:6 },
+  similarSalary:{ fontSize:12, fontWeight:'700', color:C.gold2 },
 });

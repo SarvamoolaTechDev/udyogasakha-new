@@ -8,11 +8,12 @@ import { Button } from '@/components/UI';
 
 export function NotificationsScreen() {
   const [page, setPage] = useState(1);
+  const [unreadOnly, setUnreadOnly] = useState(false);
   const qc = useQueryClient();
 
   const { data, isLoading, refetch } = useQuery({
-    queryKey: ['m-notifs', page],
-    queryFn:  () => notificationsApi.list({ page, limit: 20 }),
+    queryKey: ['m-notifs', page, unreadOnly],
+    queryFn:  () => notificationsApi.list({ unread: unreadOnly || undefined, page, limit: 20 }),
   });
 
   const markAllMut = useMutation({
@@ -36,6 +37,14 @@ export function NotificationsScreen() {
           <Text style={s.markAll}>Mark all read</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Unread-only toggle */}
+      <TouchableOpacity onPress={() => { setUnreadOnly(v => !v); setPage(1); }} style={s.toggleRow} activeOpacity={0.7}>
+        <View style={[s.switchTrack, unreadOnly && s.switchTrackOn]}>
+          <View style={[s.switchThumb, unreadOnly && s.switchThumbOn]} />
+        </View>
+        <Text style={s.toggleLabel}>Unread only</Text>
+      </TouchableOpacity>
 
       {isLoading ? (
         <View style={s.center}><ActivityIndicator color={C.gold2} size="large" /></View>
@@ -87,6 +96,12 @@ const s = StyleSheet.create({
   header:   { flexDirection:'row', justifyContent:'space-between', alignItems:'center', padding:16, paddingBottom:8 },
   title:    { fontSize:20, fontWeight:'700', color:C.white },
   markAll:  { fontSize:12, color:C.gold3, fontWeight:'600' },
+  toggleRow:{ flexDirection:'row', alignItems:'center', gap:10, paddingHorizontal:16, paddingBottom:12 },
+  switchTrack:  { width:36, height:20, borderRadius:10, backgroundColor:'rgba(255,255,255,0.1)', borderWidth:1, borderColor:C.bf, justifyContent:'center' },
+  switchTrackOn:{ backgroundColor:'rgba(212,160,23,0.5)', borderColor:C.border },
+  switchThumb:  { width:14, height:14, borderRadius:7, backgroundColor:'#fff', marginLeft:3 },
+  switchThumbOn:{ marginLeft:19 },
+  toggleLabel:  { fontSize:12, color:C.muted },
   center:   { flex:1, alignItems:'center', justifyContent:'center', padding:40 },
   card:     { backgroundColor:C.cardBg, borderRadius:14, borderWidth:1, borderColor:C.border, padding:14 },
   cardRead: { opacity:0.65 },

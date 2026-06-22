@@ -52,11 +52,31 @@ export const profilesApi = {
   getMine:      ()                        => api.get('/profiles/me').then(r => r.data),
   getMineByRole:(role: string)            => api.get(`/profiles/me/${role}`).then(r => r.data),
   addExp:       (role: string, dto: any)  => api.post(`/profiles/me/${role}/experience`, dto).then(r => r.data),
+  deleteExp:    (id: string)              => api.delete(`/profiles/experience/${id}`).then(r => r.data),
   // Moderator
   getPending:   (params?: any)            => api.get('/profiles/pending', { params }).then(r => r.data),
   approve:      (id: string)              => api.patch(`/profiles/${id}/approve`).then(r => r.data),
   reject:       (id: string, reason: string) => api.patch(`/profiles/${id}/reject`, { reason }).then(r => r.data),
   reactivate:   (id: string)              => api.patch(`/profiles/${id}/reactivate`).then(r => r.data),
+};
+
+// ── Documents (per-role portfolio: resume, certificate, portfolio, cover letter) ──
+export const docsApi = {
+  /**
+   * file: { uri, name, type } — the shape returned by expo-document-picker.
+   * React Native's fetch/FormData requires this exact object shape (not a browser File).
+   */
+  upload: (profileId: string, documentType: string, file: { uri: string; name: string; type: string }) => {
+    const form = new FormData();
+    // @ts-ignore — React Native FormData accepts this object shape, browser types don't reflect it
+    form.append('file', { uri: file.uri, name: file.name, type: file.type });
+    form.append('documentType', documentType);
+    return api.post(`/documents/${profileId}/upload`, form, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    }).then(r => r.data);
+  },
+  getForProfile: (profileId: string) => api.get(`/documents/${profileId}`).then(r => r.data),
+  delete:        (docId: string)     => api.delete(`/documents/${docId}`).then(r => r.data),
 };
 
 export const notificationsApi = {

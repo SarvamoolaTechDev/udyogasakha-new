@@ -48,7 +48,7 @@ export default function RoleProfilePage() {
   const [completion,  setCompletion]  = useState(35);
 
   const { register, handleSubmit, setValue, formState:{ errors } } = useForm<Record<string, any>>({ defaultValues:{ roleType:role } });
-  const expForm = useForm();
+  const expForm = useForm<Record<string, any>>();
 
   // ── Load existing profile ────────────────────────────────────────────────
   const { data: profile } = useQuery({
@@ -69,7 +69,7 @@ export default function RoleProfilePage() {
 
   // ── Load existing documents ──────────────────────────────────────────────
   const { data: existingDocs = [] } = useQuery({
-    queryKey: ['docs', (profile as any)?.id],
+    queryKey: ['docs', profile?.id],
     queryFn:  () => docsApi.getForProfile((profile as any).id),
     enabled:  !!(profile as any)?.id,
   });

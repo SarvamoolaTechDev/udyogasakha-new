@@ -1,0 +1,12 @@
+import { PrismaService } from '../../prisma/prisma.service';
+export declare class HealthController {
+    private readonly prisma;
+    constructor(prisma: PrismaService);
+    liveness(): {
+        status: string;
+        ts: any;
+    };
+    readiness(): unknown;
+}
+export declare class HealthModule {
+}

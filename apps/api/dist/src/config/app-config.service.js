@@ -1,0 +1,34 @@
+"use strict";
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AppConfigService = void 0;
+const common_1 = require("@nestjs/common");
+const config_1 = require("@nestjs/config");
+let AppConfigService = class AppConfigService {
+    constructor(c) {
+        this.c = c;
+    }
+    get port() { return this.c.get('PORT', 3001); }
+    get nodeEnv() { return this.c.get('NODE_ENV', 'development'); }
+    get isProduction() { return this.nodeEnv === 'production'; }
+    get jwtSecret() { return this.c.getOrThrow('JWT_SECRET'); }
+    get jwtExpiresIn() { return this.c.get('JWT_EXPIRES_IN', '15m'); }
+    get jwtRefreshSecret() { return this.c.getOrThrow('JWT_REFRESH_SECRET'); }
+    get jwtRefreshExpires() { return this.c.get('JWT_REFRESH_EXPIRES_IN', '7d'); }
+    get allowedOrigins() { return (this.c.get('ALLOWED_ORIGINS', 'http://localhost:3000')).split(',').map(s => s.trim()); }
+    get redisUrl() { return this.c.get('REDIS_URL', 'redis://localhost:6379'); }
+};
+exports.AppConfigService = AppConfigService;
+exports.AppConfigService = AppConfigService = __decorate([
+    (0, common_1.Injectable)(),
+    __metadata("design:paramtypes", [config_1.ConfigService])
+], AppConfigService);
+//# sourceMappingURL=app-config.service.js.map

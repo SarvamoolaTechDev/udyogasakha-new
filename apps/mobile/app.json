@@ -10,15 +10,28 @@
       "backgroundColor": "#030917",
       "resizeMode": "contain"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "in.udyogasakha.app"
     },
     "android": {
-      "adaptiveIcon": { "backgroundColor": "#030917" },
+      "adaptiveIcon": {
+        "backgroundColor": "#030917"
+      },
       "package": "in.udyogasakha.app"
     },
-    "plugins": ["expo-secure-store", "expo-font"]
+    "plugins": [
+      "expo-secure-store",
+      "expo-font",
+      "expo-document-picker"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "21bc4e18-4093-46aa-9467-8979c5babacf"
+      }
+    }
   }
 }

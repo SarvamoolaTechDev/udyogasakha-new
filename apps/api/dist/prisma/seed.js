@@ -1,0 +1,69 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const client_1 = require("@prisma/client");
+const bcrypt = require("bcryptjs");
+const prisma = new client_1.PrismaClient();
+async function main() {
+    console.log('Seeding Udyoga Sakha…');
+    const adminHash = await bcrypt.hash('Admin@1234', 12);
+    const userHash = await bcrypt.hash('Test@1234', 12);
+    const admin = await prisma.user.upsert({
+        where: { email: 'admin@udyogasakha.in' }, update: {},
+        create: { email: 'admin@udyogasakha.in', name: 'Platform Admin', passwordHash: adminHash, roles: [client_1.UserRole.ADMIN, client_1.UserRole.MODERATOR], city: 'Bengaluru' },
+    });
+    const mod = await prisma.user.upsert({
+        where: { email: 'moderator@udyogasakha.in' }, update: {},
+        create: { email: 'moderator@udyogasakha.in', name: 'Moderator One', passwordHash: adminHash, roles: [client_1.UserRole.MODERATOR], city: 'Chennai' },
+    });
+    await prisma.user.upsert({
+        where: { email: 'demo@example.com' }, update: {},
+        create: { email: 'demo@example.com', name: 'Demo User', passwordHash: userHash, roles: [client_1.UserRole.PARTICIPANT], city: 'Bengaluru' },
+    });
+    // ── Job Listings ──────────────────────────────────────────────────────────
+    const listings = [
+        { organisationName: 'TCS Digital', title: 'Senior Software Engineer', listingType: client_1.ListingType.JOB_OPENING, targetRoleType: client_1.RoleType.JOB_SEEKER, industry: client_1.Industry.IT_SOFTWARE, location: 'Bengaluru, Karnataka', payment: client_1.PaymentType.PAID, salary: '₹18–28 LPA', workMode: client_1.WorkMode.HYBRID, certificateProvided: client_1.CertOpt.NO, employmentOption: client_1.EmpOption.EXISTS, experienceRequired: client_1.ExperienceLevel.EXP_5_8, duration: client_1.Duration.PERMANENT, marketField: client_1.MarketField.IT_FIELD, skills: ['React', 'Node.js', 'AWS', 'SQL', 'Microservices'], facilities: ['Health Insurance', 'PF', 'Flexible Hours', 'Laptop'], description: 'Join TCS Digital to build cloud solutions for Fortune 500 clients. You will architect scalable distributed systems and mentor junior engineers.', experienceDetail: '5–8 years hands-on experience building production-grade web applications. Must have led at least one end-to-end product delivery.', responsibilities: ['Architect scalable cloud-native applications', 'Lead code reviews', 'Mentor junior developers', 'Collaborate with product managers'], requirements: ['B.Tech in CS or equivalent', '5–8 years software development', 'Proficiency in React, Node.js and AWS'], icon: '💻', status: client_1.ProfileStatus.APPROVED },
+        { organisationName: 'Apollo Hospitals', title: 'Paediatric Cardiologist', listingType: client_1.ListingType.JOB_OPENING, targetRoleType: client_1.RoleType.JOB_SEEKER, industry: client_1.Industry.HEALTHCARE, location: 'Chennai, Tamil Nadu', payment: client_1.PaymentType.PAID, salary: '₹30–50 LPA', workMode: client_1.WorkMode.ON_SITE, certificateProvided: client_1.CertOpt.NO, employmentOption: client_1.EmpOption.NOT_EXISTS, experienceRequired: client_1.ExperienceLevel.EXP_8_PLUS, duration: client_1.Duration.PERMANENT, marketField: client_1.MarketField.NON_IT_FIELD, skills: ['Paediatric Cardiology', 'ECHO', 'Cath Lab', 'PICU'], facilities: ['Accommodation', 'Medical Benefits', 'Research Grant'], description: 'Apollo Hospitals Chennai seeks an experienced Paediatric Cardiologist to lead the cardiac care unit.', experienceDetail: '8–12 years post-MD/DM experience with expertise in complex congenital heart disease.', responsibilities: ['Lead the Paediatric Cardiac team', 'Perform Cath Lab procedures', 'Train junior residents'], requirements: ['MBBS + MD/DM Paediatric Cardiology', '8–12 years post-DM'], icon: '🏥', status: client_1.ProfileStatus.APPROVED },
+        { organisationName: 'Govt of Karnataka', title: 'Junior Engineer (Civil)', listingType: client_1.ListingType.JOB_OPENING, targetRoleType: client_1.RoleType.FRESHER, industry: client_1.Industry.GOVERNMENT_PSU, location: 'Karnataka — Multiple Districts', payment: client_1.PaymentType.PAID, salary: '₹5–8 LPA', workMode: client_1.WorkMode.ON_SITE, certificateProvided: client_1.CertOpt.NO, employmentOption: client_1.EmpOption.EXISTS, experienceRequired: client_1.ExperienceLevel.FRESHER_0_1, duration: client_1.Duration.PERMANENT, marketField: client_1.MarketField.NON_IT_FIELD, skills: ['Civil Engineering', 'AutoCAD', 'Surveying', 'MS Project'], facilities: ['Pension', 'PF', 'Gratuity', 'Job Security'], description: 'PWD Karnataka invites applications for Junior Engineer (Civil) posts across multiple districts.', experienceDetail: 'No prior experience required. Final-year internship in infrastructure preferred.', responsibilities: ['Assist Senior Engineers in site supervision', 'Prepare quantity estimates', 'Conduct site inspections'], requirements: ['B.Tech Civil Engineering', 'CGPA 6.0 or above', 'Karnataka domicile'], icon: '🏛️', status: client_1.ProfileStatus.APPROVED },
+        { organisationName: 'Infosys BPM', title: 'Python Developer (Remote)', listingType: client_1.ListingType.JOB_OPENING, targetRoleType: client_1.RoleType.FREELANCER, industry: client_1.Industry.IT_SOFTWARE, location: 'India — Any State (WFH)', payment: client_1.PaymentType.PAID, salary: '₹8–14 LPA', workMode: client_1.WorkMode.WFH, certificateProvided: client_1.CertOpt.NO, employmentOption: client_1.EmpOption.NOT_EXISTS, experienceRequired: client_1.ExperienceLevel.EXP_1_3, duration: client_1.Duration.PROJECT_BASED, marketField: client_1.MarketField.IT_FIELD, skills: ['Python', 'Django', 'FastAPI', 'REST API', 'PostgreSQL', 'Docker'], facilities: ['Laptop Provided', 'Internet Allowance', 'Flexible Hours'], description: 'Infosys BPM is hiring remote Python developers for a 12-month data pipeline automation project.', experienceDetail: '1–3 years Python development with at least one production deployment.', responsibilities: ['Build Python-based data pipelines', 'REST APIs using FastAPI', 'Write unit tests'], requirements: ['1–3 years Python experience', 'Django or FastAPI knowledge'], icon: '💻', status: client_1.ProfileStatus.APPROVED },
+        { organisationName: 'EdTech India', title: 'Data Science Intern', listingType: client_1.ListingType.INTERNSHIP, targetRoleType: client_1.RoleType.INTERN, industry: client_1.Industry.IT_SOFTWARE, location: 'Bengaluru, Karnataka', payment: client_1.PaymentType.STIPEND, salary: '₹15,000 Stipend/Month', workMode: client_1.WorkMode.HYBRID, certificateProvided: client_1.CertOpt.YES, employmentOption: client_1.EmpOption.EXISTS, experienceRequired: client_1.ExperienceLevel.FRESHER_0_1, duration: client_1.Duration.MEDIUM_TERM, marketField: client_1.MarketField.IT_FIELD, skills: ['Python', 'Pandas', 'Scikit-Learn', 'SQL', 'Tableau'], facilities: ['Mentorship', 'Certificate', 'Pre-Placement Offer'], description: '6-month Data Science Internship for final-year B.Tech / MCA students. Certificate provided. PPO for excellent performers.', experienceDetail: 'No prior work experience required. At least one data science project expected.', responsibilities: ['Work on live data science projects', 'Build ML models', 'Create dashboards'], requirements: ['Final year B.Tech CS/IT/ECE or MCA', 'Python and Pandas proficiency'], icon: '🎓', status: client_1.ProfileStatus.APPROVED },
+        { organisationName: 'National Institute of Training', title: 'Corporate Soft Skills Trainer', listingType: client_1.ListingType.TRAINING_PROGRAM, targetRoleType: client_1.RoleType.TRAINER, industry: client_1.Industry.EDUCATION, location: 'Pan India (Off-Site)', payment: client_1.PaymentType.PAID, salary: '₹600–1200/Session', workMode: client_1.WorkMode.OFF_SITE, certificateProvided: client_1.CertOpt.YES, employmentOption: client_1.EmpOption.NOT_EXISTS, experienceRequired: client_1.ExperienceLevel.EXP_3_5, duration: client_1.Duration.PROJECT_BASED, marketField: client_1.MarketField.SERVICES, skills: ['Communication', 'Leadership', 'Presentation', 'NLP', 'Team Building'], facilities: ['Travel Reimbursement', 'Certificate of Engagement'], description: 'NIT is empanelling experienced Soft Skills Trainers for corporate client sessions across India.', experienceDetail: '3–5 years corporate training with 500+ participant track record.', responsibilities: ['Conduct soft skills sessions', 'Design training content', 'Administer assessments'], requirements: ['3–5 years training experience', 'TTT / NLP / CELTA certification preferred'], icon: '📚', status: client_1.ProfileStatus.APPROVED },
+        { organisationName: 'Deloitte India', title: 'Senior Chartered Accountant', listingType: client_1.ListingType.JOB_OPENING, targetRoleType: client_1.RoleType.CONSULTANT, industry: client_1.Industry.FINANCE_BANKING, location: 'Mumbai, Maharashtra', payment: client_1.PaymentType.PAID, salary: '₹25–40 LPA', workMode: client_1.WorkMode.HYBRID, certificateProvided: client_1.CertOpt.NO, employmentOption: client_1.EmpOption.NOT_EXISTS, experienceRequired: client_1.ExperienceLevel.EXP_5_8, duration: client_1.Duration.PERMANENT, marketField: client_1.MarketField.SERVICES, skills: ['IFRS', 'IndAS', 'Tax', 'Statutory Audit', 'SAP FICO'], facilities: ['Health Insurance', 'ESOPs', 'Annual Bonus'], description: 'Deloitte India seeks Senior CA to lead audit and advisory engagements for Fortune 500 clients.', experienceDetail: '5–8 years post-qualification with at least 3 years in Big 4 or equivalent.', responsibilities: ['Lead statutory audit engagements', 'Review financial statements', 'Manage client relationships'], requirements: ['CA (ICAI) qualified — mandatory', '5–8 years post-qualification'], icon: '💰', status: client_1.ProfileStatus.APPROVED },
+    ];
+    for (const l of listings) {
+        await prisma.jobListing.create({ data: { ...l, postedById: admin.id, reviewedById: admin.id, reviewedAt: new Date() } });
+    }
+    console.log(`Seeded ${listings.length} listings.`);
+    // ── Sample profiles ───────────────────────────────────────────────────────
+    const profiles = [
+        { name: 'Arjun Nair', email: 'arjun@example.com', city: 'Bengaluru', role: client_1.RoleType.JOB_SEEKER, skills: ['React', 'Node.js', 'AWS'], appliedFor: 'Senior Software Engineer', appliedAt: 'TCS Digital', payment: client_1.PaymentType.PAID, cert: client_1.CertOpt.NO, mode: client_1.WorkMode.HYBRID, seg: client_1.MarketSegment.IT_DEVELOPERS, status: client_1.ProfileStatus.PENDING },
+        { name: 'Priya Iyer', email: 'priya@example.com', city: 'Chennai', role: client_1.RoleType.INTERN, skills: ['Python', 'ML', 'Pandas'], appliedFor: 'Data Science Intern', appliedAt: 'Infosys', payment: client_1.PaymentType.STIPEND, cert: client_1.CertOpt.YES, mode: client_1.WorkMode.WFH, seg: client_1.MarketSegment.IT_DATA_AI, status: client_1.ProfileStatus.PENDING },
+        { name: 'Kiran Reddy', email: 'kiran@example.com', city: 'Hyderabad', role: client_1.RoleType.CONSULTANT, skills: ['Healthcare IT', 'EHR'], appliedFor: 'Healthcare IT Consultant', appliedAt: 'Apollo Hospitals', payment: client_1.PaymentType.PAID, cert: client_1.CertOpt.NO, mode: client_1.WorkMode.ON_SITE, seg: client_1.MarketSegment.SERVICES_CONSULTANCY, status: client_1.ProfileStatus.APPROVED },
+        { name: 'Ananya Krishnan', email: 'ananya@example.com', city: 'Bengaluru', role: client_1.RoleType.TRAINER, skills: ['Communication', 'L&D'], appliedFor: 'Soft Skills Trainer', appliedAt: 'Various Clients', payment: client_1.PaymentType.PAID, cert: client_1.CertOpt.YES, mode: client_1.WorkMode.OFF_SITE, seg: client_1.MarketSegment.SERVICES_TRAINING, status: client_1.ProfileStatus.APPROVED },
+        { name: 'Deepika Menon', email: 'deepika@example.com', city: 'Kochi', role: client_1.RoleType.FREELANCER, skills: ['Figma', 'Adobe XD'], appliedFor: 'UI/UX Designer', appliedAt: 'Multiple Clients', payment: client_1.PaymentType.PAID, cert: client_1.CertOpt.NO, mode: client_1.WorkMode.WFH, seg: client_1.MarketSegment.IT_DESIGNERS, status: client_1.ProfileStatus.REJECTED },
+    ];
+    for (const p of profiles) {
+        const u = await prisma.user.upsert({
+            where: { email: p.email }, update: {},
+            create: { email: p.email, name: p.name, passwordHash: userHash, roles: [client_1.UserRole.PARTICIPANT], city: p.city },
+        });
+        const mf = p.seg.startsWith('IT') ? client_1.MarketField.IT_FIELD : p.seg.startsWith('SERVICES') ? client_1.MarketField.SERVICES : client_1.MarketField.NON_IT_FIELD;
+        await prisma.candidateProfile.upsert({
+            where: { userId_roleType: { userId: u.id, roleType: p.role } }, update: { status: p.status },
+            create: {
+                userId: u.id, roleType: p.role, fullName: p.name, email: p.email, city: p.city,
+                skills: p.skills, summary: `Experienced ${p.role.replace(/_/g, ' ')}`,
+                appliedFor: p.appliedFor, appliedAt: p.appliedAt,
+                payment: p.payment, certificate: p.cert, workMode: p.mode,
+                employmentOption: client_1.EmpOption.EXISTS, marketSegment: p.seg, status: p.status,
+                ...(p.status !== client_1.ProfileStatus.PENDING ? { marketField: mf, reviewedById: mod.id, reviewedAt: new Date() } : {}),
+            },
+        });
+    }
+    console.log('Sample profiles seeded.');
+    console.log('\n✦ Seed complete!');
+    console.log('  Admin:     admin@udyogasakha.in     / Admin@1234');
+    console.log('  Moderator: moderator@udyogasakha.in / Admin@1234');
+    console.log('  Demo:      demo@example.com         / Test@1234');
+}
+main().catch(console.error).finally(() => prisma.$disconnect());
+//# sourceMappingURL=seed.js.map
