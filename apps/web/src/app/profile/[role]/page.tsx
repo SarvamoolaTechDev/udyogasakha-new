@@ -69,7 +69,7 @@ export default function RoleProfilePage() {
 
   // ── Load existing documents ──────────────────────────────────────────────
   const { data: existingDocs = [] } = useQuery({
-    queryKey: ['docs', profile?.id],
+    queryKey: ['docs', (profile as any)?.id],
     queryFn:  () => docsApi.getForProfile((profile as any).id),
     enabled:  !!(profile as any)?.id,
   });
