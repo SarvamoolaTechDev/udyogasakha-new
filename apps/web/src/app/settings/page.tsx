@@ -4,6 +4,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { usersApi, authApi } from '@/lib/api';
 import { useToast } from '@/components/ui/Toast';
+import { PasswordInput } from '@/components/ui/PasswordInput';
 import { Skeleton } from '@/components/ui/Skeleton';
 
 const Err = ({ msg }: { msg?: string }) =>
@@ -106,17 +107,17 @@ export default function SettingsPage() {
         <form onSubmit={handlePwd(({ currentPassword, newPassword }) => changePwdMut.mutate({ currentPassword, newPassword }))}>
           <div style={mb}>
             <IL>Current Password</IL>
-            <input {...regPwd('currentPassword', { required:'Current password is required' })} type="password" className="fi" placeholder="••••••••" style={{ borderColor: we.currentPassword ? 'var(--err)' : undefined }} />
+            <PasswordInput {...regPwd('currentPassword', { required:'Current password is required' })} className="fi" placeholder="••••••••" style={{ borderColor: we.currentPassword ? 'var(--err)' : undefined }} />
             <Err msg={we.currentPassword?.message} />
           </div>
           <div style={mb}>
             <IL>New Password</IL>
-            <input {...regPwd('newPassword', { required:'New password is required', minLength:{ value:8, message:'Minimum 8 characters' } })} type="password" className="fi" placeholder="Minimum 8 characters" style={{ borderColor: we.newPassword ? 'var(--err)' : undefined }} />
+            <PasswordInput {...regPwd('newPassword', { required:'New password is required', minLength:{ value:8, message:'Minimum 8 characters' } })} className="fi" placeholder="Minimum 8 characters" style={{ borderColor: we.newPassword ? 'var(--err)' : undefined }} />
             <Err msg={we.newPassword?.message} />
           </div>
           <div style={mb}>
             <IL>Confirm New Password</IL>
-            <input {...regPwd('confirm', { required:'Please confirm your new password', validate: v => v === newPwd || 'Passwords do not match' })} type="password" className="fi" placeholder="Re-enter new password" style={{ borderColor: we.confirm ? 'var(--err)' : undefined }} />
+            <PasswordInput {...regPwd('confirm', { required:'Please confirm your new password', validate: v => v === newPwd || 'Passwords do not match' })} className="fi" placeholder="Re-enter new password" style={{ borderColor: we.confirm ? 'var(--err)' : undefined }} />
             <Err msg={we.confirm?.message} />
           </div>
           <div style={{ borderRadius:'10px', padding:'10px 12px', marginBottom:'14px', fontSize:'11px', color:'var(--muted)', lineHeight:1.7, background:'rgba(245,158,11,0.05)', border:'1px solid rgba(245,158,11,0.15)' }}>

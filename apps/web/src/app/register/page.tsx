@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
+import { PasswordInput } from '@/components/ui/PasswordInput';
 
 type FormValues = { name: string; email: string; phone?: string; password: string; confirm: string };
 
@@ -59,12 +60,12 @@ export default function RegisterPage() {
             </div>
             <div>
               <label className="il">Password *</label>
-              <input {...register('password', { required:'Password is required', minLength:{ value:8, message:'Minimum 8 characters' } })} type="password" className="fi" placeholder="Minimum 8 characters" style={{ borderColor: errors.password ? 'var(--err)' : undefined }} />
+              <PasswordInput {...register('password', { required:'Password is required', minLength:{ value:8, message:'Minimum 8 characters' } })} className="fi" placeholder="Minimum 8 characters" style={{ borderColor: errors.password ? 'var(--err)' : undefined }} />
               <Err msg={errors.password?.message} />
             </div>
             <div>
               <label className="il">Confirm Password *</label>
-              <input {...register('confirm', { required:'Please confirm your password', validate: v => v === password || 'Passwords do not match' })} type="password" className="fi" placeholder="Re-enter password" style={{ borderColor: errors.confirm ? 'var(--err)' : undefined }} />
+              <PasswordInput {...register('confirm', { required:'Please confirm your password', validate: v => v === password || 'Passwords do not match' })} className="fi" placeholder="Re-enter password" style={{ borderColor: errors.confirm ? 'var(--err)' : undefined }} />
               <Err msg={errors.confirm?.message} />
             </div>
 

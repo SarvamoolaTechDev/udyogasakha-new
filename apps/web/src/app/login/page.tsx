@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
+import { PasswordInput } from '@/components/ui/PasswordInput';
 
 type FormValues = { email: string; password: string };
 
@@ -58,9 +59,8 @@ function LoginForm() {
             </div>
             <div>
               <label className="il">Password</label>
-              <input
+              <PasswordInput
                 {...register('password', { required: 'Password is required' })}
-                type="password"
                 className="fi"
                 placeholder="••••••••"
                 style={{ borderColor: errors.password ? 'var(--err)' : undefined }}

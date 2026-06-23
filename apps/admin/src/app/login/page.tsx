@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { authApi } from '@/lib/api';
 import { useAdminAuthStore } from '@/store/auth.store';
+import { PasswordInput } from '@/components/ui/PasswordInput';
 
 const Err = ({ msg }: { msg?: string }) =>
   msg ? <p style={{ color:'var(--err)', fontSize:'11px', marginTop:'4px' }}>{msg}</p> : null;
@@ -60,9 +61,9 @@ export default function AdminLoginPage() {
             </div>
             <div>
               <label className="il">Password</label>
-              <input
+              <PasswordInput
                 {...register('password', { required:'Password is required' })}
-                type="password" className="fi" placeholder="••••••••"
+                className="fi" placeholder="••••••••"
                 style={{ borderColor: errors.password ? 'var(--err)' : undefined }}
               />
               <Err msg={errors.password?.message} />
