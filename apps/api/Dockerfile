@@ -1,4 +1,9 @@
-FROM node:20-alpine
+FROM node:20-slim
+
+# Prisma's query engine binary requires OpenSSL to be present on the system.
+# Alpine's musl libc + OpenSSL 3.x is incompatible with Prisma's prebuilt engine
+# (which expects libssl.so.1.1) — using Debian-slim with glibc avoids this entirely.
+RUN apt-get update -y && apt-get install -y openssl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
