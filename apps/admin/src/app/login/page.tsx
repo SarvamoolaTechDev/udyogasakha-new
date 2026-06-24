@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { authApi } from '@/lib/api';
@@ -79,6 +80,10 @@ export default function AdminLoginPage() {
               {loading ? 'Signing In…' : 'Sign In to Admin Portal →'}
             </button>
           </form>
+
+          <div style={{ textAlign:'center', marginTop:'14px' }}>
+            <Link href="/forgot-password" style={{ color:'var(--faint)', textDecoration:'none', fontSize:'11px' }}>Forgot password?</Link>
+          </div>
 
           <p style={{ textAlign:'center', marginTop:'18px', fontSize:'11px', color:'var(--faint)', lineHeight:1.6 }}>
             Access restricted to Moderators and Admins only.<br />

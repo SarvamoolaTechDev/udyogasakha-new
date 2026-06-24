@@ -25,6 +25,9 @@ let AppConfigService = class AppConfigService {
     get jwtRefreshExpires() { return this.c.get('JWT_REFRESH_EXPIRES_IN', '7d'); }
     get allowedOrigins() { return (this.c.get('ALLOWED_ORIGINS', 'http://localhost:3000')).split(',').map(s => s.trim()); }
     get redisUrl() { return this.c.get('REDIS_URL', 'redis://localhost:6379'); }
+    // ⚠️ Defaults to enabled. Set ENABLE_SWAGGER=false in Railway env vars before real public launch.
+    get enableSwagger() { return this.c.get('ENABLE_SWAGGER', 'true') === 'true'; }
+    get webUrl() { return this.c.get('WEB_URL', 'http://localhost:3000'); }
 };
 exports.AppConfigService = AppConfigService;
 exports.AppConfigService = AppConfigService = __decorate([

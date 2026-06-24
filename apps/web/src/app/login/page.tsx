@@ -84,7 +84,7 @@ function LoginForm() {
             <Link href="/register" style={{ color:'var(--gold3)', fontWeight:600, textDecoration:'none', fontSize:'12px' }}>Register</Link>
           </div>
           <div style={{ textAlign:'center', marginTop:'10px' }}>
-            <Link href="/settings" style={{ color:'var(--faint)', textDecoration:'none', fontSize:'11px' }}>Forgot password? Change it in Settings after login.</Link>
+            <Link href="/forgot-password" style={{ color:'var(--faint)', textDecoration:'none', fontSize:'11px' }}>Forgot password?</Link>
           </div>
         </div>
       </div>

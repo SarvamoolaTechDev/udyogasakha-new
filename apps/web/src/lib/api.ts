@@ -35,6 +35,8 @@ export const authApi = {
   login:          (dto: any)  => api.post('/auth/login', dto).then(r => r.data),
   logout:         ()          => api.post('/auth/logout').then(r => r.data),
   changePassword: (dto: any)  => api.post('/auth/change-password', dto).then(r => r.data),
+  forgotPassword: (email: string) => api.post('/auth/forgot-password', { email }).then(r => r.data),
+  resetPassword:  (token: string, newPassword: string) => api.post('/auth/reset-password', { token, newPassword }).then(r => r.data),
 };
 
 // ── Users ──────────────────────────────────────────────────────────────────────

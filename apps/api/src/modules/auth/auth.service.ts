@@ -1,9 +1,11 @@
-import { Injectable, ConflictException, UnauthorizedException } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException, BadRequestException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
+import * as crypto from 'crypto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AppConfigService } from '../../config/app-config.service';
 import { AuditService } from '../audit/audit.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { UserRole } from '@prisma/client';
 
 @Injectable()
@@ -13,6 +15,7 @@ export class AuthService {
     private readonly jwt:     JwtService,
     private readonly config:  AppConfigService,
     private readonly audit:   AuditService,
+    private readonly notify:  NotificationsService,
   ) {}
 
   async register(dto: { email: string; password: string; name: string; phone?: string }) {
@@ -87,6 +90,79 @@ export class AuthService {
     await this.prisma.refreshToken.update({ where: { id: stored.id }, data: { used: true } });
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
     return this.issue(user);
+  }
+
+  /**
+   * Generates a one-time reset token, emails the link, and always returns
+   * the same generic message — regardless of whether the email exists.
+   * This prevents attackers from using this endpoint to enumerate valid
+   * registered email addresses.
+   */
+  async forgotPassword(email: string) {
+    const genericResponse = { message: 'If an account exists with that email, a reset link has been sent.' };
+
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) return genericResponse;
+
+    // Invalidate any previously-issued, still-unused tokens for this user first
+    await this.prisma.passwordResetToken.updateMany({
+      where: { userId: user.id, used: false },
+      data:  { used: true },
+    });
+
+    const rawToken  = crypto.randomBytes(32).toString('hex');
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+    await this.prisma.passwordResetToken.create({
+      data: {
+        userId:    user.id,
+        tokenHash,
+        expiresAt: new Date(Date.now() + 60 * 60 * 1000), // 1 hour
+      },
+    });
+
+    await this.notify.send({
+      userId:  user.id,
+      subject: 'Reset your Udyoga Sakha password',
+      body:    'Click the link to set a new password. This link expires in 1 hour. If you did not request this, you can safely ignore this email.',
+      link:    `/reset-password?token=${rawToken}`,
+      email:   user.email,
+    });
+
+    await this.audit.log({
+      entityType: 'auth', entityId: user.id, action: 'PASSWORD_RESET_REQUESTED', actorId: user.id,
+    });
+
+    return genericResponse;
+  }
+
+  /**
+   * Validates the raw token against its stored hash, checks expiry/used state,
+   * sets the new password, and revokes all existing sessions (refresh tokens)
+   * so the reset takes effect everywhere immediately.
+   */
+  async resetPassword(rawToken: string, newPassword: string) {
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+    const resetToken = await this.prisma.passwordResetToken.findUnique({ where: { tokenHash } });
+
+    if (!resetToken || resetToken.used || resetToken.expiresAt < new Date()) {
+      throw new BadRequestException('This reset link is invalid or has expired. Please request a new one.');
+    }
+
+    const hash = await bcrypt.hash(newPassword, 12);
+
+    await this.prisma.$transaction([
+      this.prisma.user.update({ where: { id: resetToken.userId }, data: { passwordHash: hash } }),
+      this.prisma.passwordResetToken.update({ where: { id: resetToken.id }, data: { used: true } }),
+      this.prisma.refreshToken.updateMany({ where: { userId: resetToken.userId }, data: { used: true } }),
+    ]);
+
+    await this.audit.log({
+      entityType: 'auth', entityId: resetToken.userId, action: 'PASSWORD_RESET_COMPLETED', actorId: resetToken.userId,
+    });
+
+    return { message: 'Password reset successfully. Please log in with your new password.' };
   }
 
   async changePassword(userId: string, currentPassword: string, newPassword: string) {

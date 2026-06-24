@@ -11,4 +11,6 @@ export declare class AppConfigService {
     get jwtRefreshExpires(): string;
     get allowedOrigins(): string[];
     get redisUrl(): string;
+    get enableSwagger(): boolean;
+    get webUrl(): string;
 }

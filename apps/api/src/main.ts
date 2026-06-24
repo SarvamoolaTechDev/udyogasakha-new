@@ -24,6 +24,14 @@ async function bootstrap() {
 
   if (!config.isProduction) {
     app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads' });
+  }
+
+  // ⚠️⚠️⚠️  TEMPORARY — REVIEW BEFORE REAL PUBLIC LAUNCH  ⚠️⚠️⚠️
+  // Swagger is currently enabled in production (Railway staging) purely for
+  // testing convenience. Before going live with real user data, set
+  // ENABLE_SWAGGER=false in Railway's environment variables — no code change
+  // or redeploy needed, just flip the env var and restart the service.
+  if (config.enableSwagger) {
     const sw = new DocumentBuilder()
       .setTitle('Udyoga Sakha API')
       .setDescription('Sarva Moola Udyoga Sakha — unified employment ecosystem for 11 role types.')

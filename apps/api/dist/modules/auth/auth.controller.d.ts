@@ -1,5 +1,5 @@
 import { AuthService } from './auth.service';
-import { RegisterDto, LoginDto, RefreshTokenDto } from './dto/auth.dto';
+import { RegisterDto, LoginDto, RefreshTokenDto, ForgotPasswordDto, ResetPasswordDto } from './dto/auth.dto';
 import { ChangePasswordDto } from './dto/change-password.dto';
 export declare class AuthController {
     private readonly auth;
@@ -18,6 +18,12 @@ export declare class AuthController {
         accessToken: string;
         refreshToken: string;
         expiresIn: number;
+    }>;
+    forgotPassword(dto: ForgotPasswordDto): Promise<{
+        message: string;
+    }>;
+    resetPassword(dto: ResetPasswordDto): Promise<{
+        message: string;
     }>;
     changePassword(userId: string, dto: ChangePasswordDto): Promise<{
         message: string;

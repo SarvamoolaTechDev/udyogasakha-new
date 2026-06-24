@@ -33,6 +33,12 @@ let AuthController = class AuthController {
     refresh(userId, dto) {
         return this.auth.refresh(userId, dto.refreshToken);
     }
+    forgotPassword(dto) {
+        return this.auth.forgotPassword(dto.email);
+    }
+    resetPassword(dto) {
+        return this.auth.resetPassword(dto.token, dto.newPassword);
+    }
     changePassword(userId, dto) {
         return this.auth.changePassword(userId, dto.currentPassword, dto.newPassword);
     }
@@ -74,6 +80,26 @@ __decorate([
     __metadata("design:paramtypes", [String, auth_dto_1.RefreshTokenDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "refresh", null);
+__decorate([
+    (0, common_1.Post)('forgot-password'),
+    (0, common_1.HttpCode)(200),
+    (0, throttler_1.Throttle)({ default: { limit: 5, ttl: 60_000 } }),
+    (0, swagger_1.ApiOperation)({ summary: 'Request a password reset link via email' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [auth_dto_1.ForgotPasswordDto]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "forgotPassword", null);
+__decorate([
+    (0, common_1.Post)('reset-password'),
+    (0, common_1.HttpCode)(200),
+    (0, throttler_1.Throttle)({ default: { limit: 5, ttl: 60_000 } }),
+    (0, swagger_1.ApiOperation)({ summary: 'Reset password using a valid token from the emailed link' }),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [auth_dto_1.ResetPasswordDto]),
+    __metadata("design:returntype", void 0)
+], AuthController.prototype, "resetPassword", null);
 __decorate([
     (0, common_1.Post)('change-password'),
     (0, common_1.HttpCode)(200),

@@ -3,7 +3,8 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  if (pathname === '/login') return NextResponse.next();
+  const PUBLIC = ['/login', '/forgot-password', '/reset-password'];
+  if (PUBLIC.some(p => pathname === p || pathname.startsWith(p + '/'))) return NextResponse.next();
 
   const token = req.cookies.get('udyoga_admin_token')?.value;
   if (!token) {
