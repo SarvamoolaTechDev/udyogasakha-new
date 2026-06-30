@@ -42,7 +42,7 @@ export function RegisterScreen({ navigation }: any) {
     <SafeAreaView style={s.safe}>
       <ScrollView contentContainerStyle={s.container} keyboardShouldPersistTaps="handled">
         <View style={s.logoArea}>
-          <Text style={s.logoTop}>Sarva Moola</Text>
+          <Text style={s.logoTop}>Sarvamoola</Text>
           <Text style={s.logoBottom}>Udyoga Sakha</Text>
           <Text style={s.tagline}>Join 4.8 Lakh+ professionals — it's free</Text>
         </View>

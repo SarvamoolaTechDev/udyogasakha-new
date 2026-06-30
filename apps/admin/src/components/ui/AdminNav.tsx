@@ -27,7 +27,7 @@ export function AdminNav() {
       {/* Logo */}
       <div style={{ padding: '22px 20px 16px', borderBottom: '1px solid var(--bf)' }}>
         <div style={{ fontFamily: 'Cinzel,serif', fontSize: '11px', fontWeight: 700, color: '#fff', lineHeight: 1.5 }}>
-          Sarva Moola<br />
+          Sarvamoola<br />
           <span style={{ background: 'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             Udyoga Sakha
           </span>

@@ -50,7 +50,7 @@ export default function AdminLoginPage() {
       <div style={{ width:'100%', maxWidth:'400px' }}>
         {/* Header */}
         <div style={{ textAlign:'center', marginBottom:'32px' }}>
-          <div style={{ fontFamily:'Cinzel,serif', fontSize:'20px', fontWeight:700, color:'#fff' }}>Sarva Moola</div>
+          <div style={{ fontFamily:'Cinzel,serif', fontSize:'20px', fontWeight:700, color:'#fff' }}>Sarvamoola</div>
           <div style={{ fontFamily:'Cinzel,serif', fontSize:'20px', fontWeight:700, background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text', marginBottom:'10px' }}>
             Udyoga Sakha
           </div>

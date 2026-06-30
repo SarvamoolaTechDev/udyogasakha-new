@@ -25,7 +25,7 @@ export default function ForgotPasswordPage() {
     <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:'40px 16px', background:'var(--deep)' }}>
       <div style={{ width:'100%', maxWidth:'400px' }}>
         <div style={{ textAlign:'center', marginBottom:'32px' }}>
-          <div style={{ fontFamily:'Cinzel,serif', fontSize:'20px', fontWeight:700, color:'#fff' }}>Sarva Moola</div>
+          <div style={{ fontFamily:'Cinzel,serif', fontSize:'20px', fontWeight:700, color:'#fff' }}>Sarvamoola</div>
           <div style={{ fontFamily:'Cinzel,serif', fontSize:'20px', fontWeight:700, background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text', marginBottom:'10px' }}>Udyoga Sakha</div>
           <div style={{ display:'inline-flex', alignItems:'center', gap:'6px', padding:'4px 14px', borderRadius:'50px', background:'rgba(255,107,107,0.1)', border:'1px solid rgba(255,107,107,0.3)', fontSize:'10px', fontWeight:700, color:'var(--err)', letterSpacing:'1.5px', textTransform:'uppercase' }}>
             🔐 Admin Portal

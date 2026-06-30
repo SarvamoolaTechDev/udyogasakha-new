@@ -39,7 +39,7 @@ export function LoginScreen({ navigation }: any) {
       <ScrollView contentContainerStyle={s.container} keyboardShouldPersistTaps="handled">
         {/* Logo */}
         <View style={s.logoArea}>
-          <Text style={s.logoTop}>Sarva Moola</Text>
+          <Text style={s.logoTop}>Sarvamoola</Text>
           <Text style={s.logoBottom}>Udyoga Sakha</Text>
           <Text style={s.tagline}>Sign in to your career profile</Text>
         </View>

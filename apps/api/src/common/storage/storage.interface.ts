@@ -2,7 +2,7 @@
  * Provider-agnostic storage contract.
  *
  * Current implementation: LocalStorageAdapter (files on disk).
- * Phase 2 swap: S3StorageAdapter / R2StorageAdapter — drop-in replacement,
+ * Phase 2 swap: AzureBlobStorageAdapter — drop-in replacement,
  * DocumentsService and all consumers stay unchanged.
  */
 export interface IStorageService {
@@ -22,7 +22,7 @@ export interface IStorageService {
   /**
    * Return a URL that can be used to serve / download the file.
    * Local adapter returns a relative path served by NestJS static assets.
-   * S3/R2 adapter returns a presigned URL with a short TTL.
+   * Azure Blob adapter returns a SAS (Shared Access Signature) URL with a short TTL.
    */
   getUrl(storageKey: string): string;
 }

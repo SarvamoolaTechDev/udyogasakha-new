@@ -63,7 +63,7 @@ export function Navbar() {
         {/* Logo */}
         <Link href="/" onClick={close} style={{ textDecoration:'none', flexShrink:0 }}>
           <div style={{ fontFamily:'Cinzel,serif', fontWeight:700, fontSize:'12px', lineHeight:1.45, color:'#fff' }}>
-            Sarva Moola<br />
+            Sarvamoola<br />
             <span style={{ background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>Udyoga Sakha</span>
           </div>
         </Link>

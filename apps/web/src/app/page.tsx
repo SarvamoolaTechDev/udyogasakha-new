@@ -153,7 +153,7 @@ export default function HomePage() {
             <h2 style={{ fontFamily:'Cinzel,serif', fontSize:'clamp(22px,3vw,36px)', fontWeight:700, color:'#fff', marginBottom:'14px' }}>
               About <span style={{ background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>Udyoga Sakha</span>
             </h2>
-            {['Sarva Moola Udyoga Sakha is a unified employment ecosystem designed to serve every class of professional — from students seeking internships to seasoned consultants, from individual freelancers to large organisations publishing RFPs.',
+            {['Sarvamoola Udyoga Sakha is a unified employment ecosystem designed to serve every class of professional — from students seeking internships to seasoned consultants, from individual freelancers to large organisations publishing RFPs.',
               'Our platform is built on the principles of fairness, transparency and efficiency. Every profile goes live only after Moderator review, ensuring quality and trust for all stakeholders.',
               'Mission: Fair, fast and efficient job matching for all classes of people.'
             ].map((p, i) => (
@@ -246,7 +246,7 @@ export default function HomePage() {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))', gap:'32px', marginBottom:'36px', maxWidth:'1100px', margin:'0 auto 36px' }}>
           <div>
             <div style={{ fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, color:'#fff', lineHeight:1.5, marginBottom:'10px' }}>
-              Sarva Moola<br /><span style={{ background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>Udyoga Sakha</span>
+              Sarvamoola<br /><span style={{ background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>Udyoga Sakha</span>
             </div>
             <p style={{ fontSize:'11px', color:'var(--muted)', lineHeight:1.8, fontWeight:300, maxWidth:'240px' }}>India's unified employment ecosystem connecting talent across 11 roles with verified opportunities.</p>
           </div>
@@ -262,7 +262,7 @@ export default function HomePage() {
           ))}
         </div>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', flexWrap:'wrap', gap:'10px', paddingTop:'20px', borderTop:'1px solid var(--bf)', maxWidth:'1100px', margin:'0 auto' }}>
-          <div style={{ fontSize:'11px', color:'var(--muted)', fontWeight:300 }}>© 2025 Sarva Moola Udyoga Sakha — All rights reserved.</div>
+          <div style={{ fontSize:'11px', color:'var(--muted)', fontWeight:300 }}>© 2025 Sarvamoola Udyoga Sakha — All rights reserved.</div>
         </div>
       </footer>
     </>

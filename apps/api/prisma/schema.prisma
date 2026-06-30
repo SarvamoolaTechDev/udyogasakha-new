@@ -386,7 +386,7 @@ model UserProfile {
   participantType String? @map("participant_type") // e.g. INDIVIDUAL, ORGANISATION
   orgName         String? @map("org_name")         // if participantType = ORGANISATION
   showContact     Boolean @default(true) @map("show_contact")
-  avatarKey       String? @map("avatar_key")       // S3/R2 object key — never a public URL
+  avatarKey       String? @map("avatar_key")       // Azure Blob storage key — never a public URL
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

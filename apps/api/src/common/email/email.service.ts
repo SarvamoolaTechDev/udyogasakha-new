@@ -51,7 +51,7 @@ export class EmailService {
 
     const html = `
       <div style="font-family: -apple-system, Segoe UI, Roboto, sans-serif; max-width: 480px; margin: 0 auto; padding: 24px;">
-        <h2 style="color:#0D1E5A; margin-bottom: 16px;">Sarva Moola Udyoga Sakha</h2>
+        <h2 style="color:#0D1E5A; margin-bottom: 16px;">Sarvamoola Udyoga Sakha</h2>
         <p style="color:#333; line-height:1.7; white-space: pre-line;">${this.escapeHtml(body)}</p>
       </div>
     `;

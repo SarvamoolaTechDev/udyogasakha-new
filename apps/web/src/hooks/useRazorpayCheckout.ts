@@ -70,7 +70,7 @@ export function useRazorpayCheckout() {
         amount:      order.amount,
         currency:    order.currency,
         order_id:    order.orderId,
-        name:        'Sarva Moola Udyoga Sakha',
+        name:        'Sarvamoola Udyoga Sakha',
         description: params.description,
         // No `method` block here — all enabled methods are shown automatically.
         prefill: {

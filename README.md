@@ -1,6 +1,6 @@
-# Udyoga Sakha
+# Sarvamoola Udyoga Sakha
 
-UdyogaSakha is a Foundation-governed Udyoga facilitation ecosystem that connects seekers and providers of opportunities — jobs, service engagement roles, projects, and enterprise initiatives — under a transparent trust framework. It is a unified employment ecosystem for 11 role types across IT, Non-IT and Services sectors.
+India's unified employment ecosystem for 11 role types across IT, Non-IT and Services sectors.
 
 ---
 
@@ -161,18 +161,20 @@ All endpoints prefixed `/api/v1`. Swagger UI at `/api/docs` in dev/staging.
 | `user-documents`    | upload, list, delete — per-user KYC / identity documents |
 | `verification`      | request L1 verification, moderator approve/reject |
 | `reports`           | submit abuse report, moderator resolve/dismiss |
+| `payments`          | Razorpay: create-order, verify, webhook, payment history |
 | `notifications`     | list, unread-count, mark-read, mark-all-read |
 | `audit`             | recent, by-entity, by-actor |
 | `health`            | liveness (`GET /health`), readiness (`GET /health/ready`) |
 
 ---
 
-## Database — 13 Models
+## Database — 15 Models
 
 | Model                | Purpose |
 |----------------------|---------|
 | `User`               | Core identity — email, passwordHash, roles[] |
 | `RefreshToken`       | JWT refresh tokens with replay detection |
+| `PasswordResetToken` | One-time, hash-only, 1-hour expiry — used by the forgot/reset password flow |
 | `UserProfile`        | Account-level display info — one per user |
 | `UserDocument`       | KYC identity documents per user (shared across all roles) |
 | `TrustRecord`        | Trust level stub — L0 on register, L1 on first approval |
@@ -182,8 +184,9 @@ All endpoints prefixed `/api/v1`. Swagger UI at `/api/docs` in dev/staging.
 | `CandidateDocument`  | Per-role portfolio documents (resume, certificate, portfolio) |
 | `VerificationRequest`| Formal L1 document verification workflow |
 | `Report`             | Abuse / misconduct reports submitted by members |
+| `Payment`            | Razorpay payment lifecycle — order, capture, method, refund |
 | `AuditLog`           | Immutable append-only record of all state changes |
-| `Notification`       | In-app notifications (email/SMS via BullMQ stubs) |
+| `Notification`       | In-app notifications (email via Azure Communication Service, SMS stub) |
 
 ---
 
@@ -217,7 +220,7 @@ Each role has its own dedicated profile form with role-specific fields, independ
 | ORM            | Prisma 5   | Type-safe queries, migrations |
 | Database       | PostgreSQL 16 | Primary data store |
 | Cache / Queue  | Redis 7 + BullMQ | Job queue for async notifications |
-| File storage   | Local filesystem (Phase 1) | StorageService abstraction — swap to S3/R2 with one line change |
+| File storage   | Local filesystem (Phase 1) | StorageService abstraction — swap to Azure Blob Storage with one line change |
 | Rate limiting  | @nestjs/throttler | Global 60/min, auth 10/min |
 | Audit logging  | Append-only DB table | 12 event types, actor + timestamp |
 | Error tracking | Sentry (stub) | Set SENTRY_DSN in .env to activate |
@@ -234,10 +237,9 @@ The following items are deferred until client sign-off. None block Phase 1 opera
 | Trust levels L2–L4 | Full trust engine with community endorsement and domain expert certification |
 | Engagement lifecycle | Application → Engagement → Feedback tracking (vs current listing-only model) |
 | Governance module | EGC, DEP, CoI declarations (depends on trust levels L3–L4) |
-| S3/R2 storage | Replace local filesystem with cloud object storage |
-| Email provider | Wire AWS SES / Resend into NotificationsService.sendEmail() stub |
+| Azure Blob Storage | Replace local filesystem with cloud object storage |
 | SMS / OTP | Wire MSG91 / Twilio into NotificationsService.sendSms() stub |
 | Social login | Google OAuth2 / LinkedIn OAuth2 via Passport.js |
 | Separate admin deploy | Move admin portal to internal network / VPN |
 | Meilisearch | Full-text search to replace PostgreSQL ILIKE queries |
-| Payment gateway | Razorpay for registration and certification fees (Phase 2) |
+| Payment pricing | Razorpay integration is built (see Payments below) — actual prices/triggers for listing features, certification fees etc. are a pending product decision |

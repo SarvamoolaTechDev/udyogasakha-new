@@ -35,3 +35,4 @@ export class AppConfigService {
   get razorpayKeySecret()    { return this.c.get<string>('RAZORPAY_KEY_SECRET', ''); }
   get razorpayWebhookSecret(){ return this.c.get<string>('RAZORPAY_WEBHOOK_SECRET', ''); }
   get razorpayConfigured()   { return !!(this.razorpayKeyId && this.razorpayKeySecret); }
+}

@@ -38,7 +38,7 @@ async function bootstrap() {
   if (config.enableSwagger) {
     const sw = new DocumentBuilder()
       .setTitle('Udyoga Sakha API')
-      .setDescription('Sarva Moola Udyoga Sakha — unified employment ecosystem for 11 role types.')
+      .setDescription('Sarvamoola Udyoga Sakha — unified employment ecosystem for 11 role types.')
       .setVersion('1.0').addBearerAuth()
       .addTag('Auth').addTag('Users').addTag('Listings')
       .addTag('Profiles').addTag('Market').addTag('Documents').addTag('Payments').addTag('Health')

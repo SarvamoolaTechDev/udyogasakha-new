@@ -4,7 +4,7 @@ import { STORAGE_SERVICE } from './storage.interface';
 
 // @Global() so DocumentsService can inject STORAGE_SERVICE without
 // each module needing to import StorageModule.
-// To swap to S3: replace LocalStorageAdapter with S3StorageAdapter here only.
+// To swap to Azure Blob Storage: replace LocalStorageAdapter with AzureBlobStorageAdapter here only.
 @Global()
 @Module({
   providers: [
