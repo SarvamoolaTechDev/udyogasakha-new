@@ -16,4 +16,13 @@ export class AppConfigService {
   // ⚠️ Defaults to enabled. Set ENABLE_SWAGGER=false in Railway env vars before real public launch.
   get enableSwagger()     { return this.c.get<string>('ENABLE_SWAGGER', 'true') === 'true'; }
   get webUrl()            { return this.c.get<string>('WEB_URL', 'http://localhost:3000'); }
+
+  // ── Azure Communication Service (email) ─────────────────────────────────────
+  // If unset, EmailService logs to console instead of sending — see EmailService.
+  get azureCommunicationConnectionString() {
+    return this.c.get<string>('AZURE_COMMUNICATION_CONNECTION_STRING', '');
+  }
+  get azureEmailSenderAddress() {
+    return this.c.get<string>('AZURE_EMAIL_SENDER_ADDRESS', 'DoNotReply@udyogasakha.in');
+  }
 }

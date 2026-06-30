@@ -6,41 +6,41 @@ export declare class UsersController {
     getMe(id: string): Promise<{
         name: string;
         id: string;
+        createdAt: Date;
         email: string;
         phone: string;
         roles: import(".prisma/client").$Enums.UserRole[];
         city: string;
-        createdAt: Date;
         updatedAt: Date;
     }>;
     updateMe(id: string, dto: UpdateUserDto): Promise<{
         name: string;
         id: string;
+        createdAt: Date;
         email: string;
         phone: string;
         roles: import(".prisma/client").$Enums.UserRole[];
         city: string;
-        createdAt: Date;
         updatedAt: Date;
     }>;
     findAll(search?: string, page?: string, limit?: string): Promise<import("../../common/pagination").Paginated<{
         name: string;
         id: string;
+        createdAt: Date;
         email: string;
         phone: string;
         roles: import(".prisma/client").$Enums.UserRole[];
         city: string;
-        createdAt: Date;
         updatedAt: Date;
     }>>;
     findById(id: string): Promise<{
         name: string;
         id: string;
+        createdAt: Date;
         email: string;
         phone: string;
         roles: import(".prisma/client").$Enums.UserRole[];
         city: string;
-        createdAt: Date;
         updatedAt: Date;
         profiles: {
             roleType: import(".prisma/client").$Enums.RoleType;

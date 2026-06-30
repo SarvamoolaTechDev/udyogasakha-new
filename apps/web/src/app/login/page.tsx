@@ -27,8 +27,18 @@ function LoginForm() {
       const tokens = await authApi.login(data);
       setTokens(tokens);
       router.push(params.get('from') ?? '/profile');
-    } catch {
-      setServerError('Invalid credentials. Please check your email and password.');
+    } catch (err: any) {
+      const status = err?.response?.status;
+      const serverMsg = err?.response?.data?.message;
+      if (status === 401) {
+        setServerError('Invalid credentials. Please check your email and password.');
+      } else if (serverMsg) {
+        setServerError(`Server error: ${Array.isArray(serverMsg) ? serverMsg.join(', ') : serverMsg}`);
+      } else if (err?.message === 'Network Error' || !err?.response) {
+        setServerError('Could not reach the server. Check your connection or try again shortly.');
+      } else {
+        setServerError(`Unexpected error (status ${status ?? 'unknown'}). Please try again.`);
+      }
     } finally { setLoading(false); }
   };
 

@@ -3,12 +3,16 @@ import { Logger } from '@nestjs/common';
 import { Job } from 'bull';
 import { PrismaService } from '../../prisma/prisma.service';
 import { QUEUES, NOTIFICATION_JOBS } from '../../common/queues';
+import { EmailService } from '../../common/email/email.service';
 
 @Processor(QUEUES.NOTIFICATIONS)
 export class NotificationsProcessor {
   private readonly logger = new Logger(NotificationsProcessor.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly email:  EmailService,
+  ) {}
 
   /**
    * Write the in-app notification row to the database.
@@ -31,14 +35,14 @@ export class NotificationsProcessor {
   }
 
   /**
-   * Email stub — logs to console.
-   * Replace the logger.log() call with your SMTP/SES client when ready.
+   * Sends the email via Azure Communication Service.
+   * If ACS isn't configured, EmailService logs it instead — see EmailService
+   * for that fallback behaviour.
    */
   @Process(NOTIFICATION_JOBS.SEND_EMAIL)
   async handleEmail(job: Job<{ to: string; subject: string; body: string }>) {
     const { to, subject, body } = job.data;
-    // TODO: replace with nodemailer / AWS SES / SendGrid call
-    this.logger.log(`[EMAIL STUB] To: ${to} | Subject: ${subject}`);
+    await this.email.send({ to, subject, body });
   }
 
   /**

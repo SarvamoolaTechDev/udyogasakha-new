@@ -3,7 +3,9 @@ import { useAuthStore } from '@/store/auth.store';
 
 // Change to your LAN IP when testing on a physical device
 // e.g. 'http://192.168.1.100:3001/api/v1'
-const BASE = 'http://localhost:3001/api/v1';
+// Pointing at the live Railway deployment for BrowserStack/device testing.
+// Switch back to 'http://localhost:3001/api/v1' (or your LAN IP) for local Expo Go testing.
+const BASE = 'https://udyogasakhaapi-production.up.railway.app/api/v1';
 
 export const api = axios.create({ baseURL: BASE, timeout: 15_000 });
 

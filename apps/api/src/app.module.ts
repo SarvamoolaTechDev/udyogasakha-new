@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AppConfigModule } from './config/app-config.module';
 import { AppConfigService } from './config/app-config.service';
 import { StorageModule } from './common/storage/storage.module';
+import { EmailModule } from './common/email/email.module';
 import { HttpLoggerMiddleware } from './common/middleware/http-logger.middleware';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
@@ -48,6 +49,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
 
     // @Global() modules — services injectable everywhere without re-importing
     StorageModule,
+    EmailModule,
     AuditModule,
     NotificationsModule,
 

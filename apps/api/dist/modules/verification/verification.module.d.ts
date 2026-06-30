@@ -14,8 +14,8 @@ export declare class VerificationService {
     constructor(prisma: PrismaService, audit: AuditService, notify: NotificationsService);
     requestVerification(userId: string, dto: RequestVerificationDto): Promise<{
         id: string;
-        createdAt: Date;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
         documentIds: string[];
@@ -24,8 +24,8 @@ export declare class VerificationService {
     }>;
     getMyRequests(userId: string): Promise<{
         id: string;
-        createdAt: Date;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
         documentIds: string[];
@@ -39,8 +39,8 @@ export declare class VerificationService {
         };
     } & {
         id: string;
-        createdAt: Date;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
         documentIds: string[];
@@ -49,8 +49,8 @@ export declare class VerificationService {
     }>>;
     approve(id: string, modId: string, dto: ReviewVerificationDto): Promise<{
         id: string;
-        createdAt: Date;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
         documentIds: string[];
@@ -59,8 +59,8 @@ export declare class VerificationService {
     }>;
     reject(id: string, modId: string, dto: ReviewVerificationDto): Promise<{
         id: string;
-        createdAt: Date;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
         documentIds: string[];
@@ -73,8 +73,8 @@ export declare class VerificationController {
     constructor(svc: VerificationService);
     request(userId: string, dto: RequestVerificationDto): Promise<{
         id: string;
-        createdAt: Date;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
         documentIds: string[];
@@ -83,8 +83,8 @@ export declare class VerificationController {
     }>;
     getMy(userId: string): Promise<{
         id: string;
-        createdAt: Date;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
         documentIds: string[];
@@ -98,8 +98,8 @@ export declare class VerificationController {
         };
     } & {
         id: string;
-        createdAt: Date;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
         documentIds: string[];
@@ -108,8 +108,8 @@ export declare class VerificationController {
     }>>;
     approve(id: string, modId: string, dto: ReviewVerificationDto): Promise<{
         id: string;
-        createdAt: Date;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
         documentIds: string[];
@@ -118,8 +118,8 @@ export declare class VerificationController {
     }>;
     reject(id: string, modId: string, dto: ReviewVerificationDto): Promise<{
         id: string;
-        createdAt: Date;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
         documentIds: string[];

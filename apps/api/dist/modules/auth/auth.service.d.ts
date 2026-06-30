@@ -55,14 +55,14 @@ export declare class AuthService {
     }>;
     logout(userId: string): Promise<void>;
     validateUser(userId: string): Promise<{
+        name: string;
         id: string;
+        createdAt: Date;
         email: string;
         phone: string | null;
-        name: string;
         passwordHash: string;
         roles: import(".prisma/client").$Enums.UserRole[];
         city: string | null;
-        createdAt: Date;
         updatedAt: Date;
     }>;
     private issue;

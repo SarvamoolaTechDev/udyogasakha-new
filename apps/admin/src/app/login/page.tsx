@@ -30,8 +30,18 @@ export default function AdminLoginPage() {
       } else {
         router.push('/moderation');
       }
-    } catch {
-      setServerError('Invalid credentials. Please try again.');
+    } catch (err: any) {
+      const status = err?.response?.status;
+      const serverMsg = err?.response?.data?.message;
+      if (status === 401) {
+        setServerError('Invalid credentials. Please try again.');
+      } else if (serverMsg) {
+        setServerError(`Server error: ${Array.isArray(serverMsg) ? serverMsg.join(', ') : serverMsg}`);
+      } else if (err?.message === 'Network Error' || !err?.response) {
+        setServerError('Could not reach the server. Check your connection or try again shortly.');
+      } else {
+        setServerError(`Unexpected error (status ${status ?? 'unknown'}). Please try again.`);
+      }
     } finally { setLoading(false); }
   };
 

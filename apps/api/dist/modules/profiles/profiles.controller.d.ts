@@ -16,10 +16,10 @@ export declare class ProfilesController {
         }[];
     } & {
         id: string;
+        userId: string;
         email: string | null;
         phone: string | null;
         city: string | null;
-        userId: string;
         fullName: string;
         summary: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
@@ -60,10 +60,10 @@ export declare class ProfilesController {
         }[];
     } & {
         id: string;
+        userId: string;
         email: string | null;
         phone: string | null;
         city: string | null;
-        userId: string;
         fullName: string;
         summary: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
@@ -115,10 +115,10 @@ export declare class ProfilesController {
         }[];
     } & {
         id: string;
+        userId: string;
         email: string | null;
         phone: string | null;
         city: string | null;
-        userId: string;
         fullName: string;
         summary: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
@@ -184,10 +184,10 @@ export declare class ProfilesController {
         }[];
     } & {
         id: string;
+        userId: string;
         email: string | null;
         phone: string | null;
         city: string | null;
-        userId: string;
         fullName: string;
         summary: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
@@ -222,10 +222,10 @@ export declare class ProfilesController {
         };
     } & {
         id: string;
+        userId: string;
         email: string | null;
         phone: string | null;
         city: string | null;
-        userId: string;
         fullName: string;
         summary: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
@@ -260,10 +260,10 @@ export declare class ProfilesController {
         };
     } & {
         id: string;
+        userId: string;
         email: string | null;
         phone: string | null;
         city: string | null;
-        userId: string;
         fullName: string;
         summary: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
@@ -293,10 +293,10 @@ export declare class ProfilesController {
     }>>;
     approve(id: string, modId: string): Promise<{
         id: string;
+        userId: string;
         email: string | null;
         phone: string | null;
         city: string | null;
-        userId: string;
         fullName: string;
         summary: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
@@ -326,10 +326,10 @@ export declare class ProfilesController {
     }>;
     reject(id: string, modId: string, dto: RejectProfileDto): Promise<{
         id: string;
+        userId: string;
         email: string | null;
         phone: string | null;
         city: string | null;
-        userId: string;
         fullName: string;
         summary: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
@@ -359,10 +359,10 @@ export declare class ProfilesController {
     }>;
     reactivate(id: string): Promise<{
         id: string;
+        userId: string;
         email: string | null;
         phone: string | null;
         city: string | null;
-        userId: string;
         fullName: string;
         summary: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;

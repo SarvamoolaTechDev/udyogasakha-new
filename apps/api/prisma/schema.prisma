@@ -503,3 +503,4 @@ model Report {
   @@index([subjectType, subjectId])
   @@map("reports")
 }
+
