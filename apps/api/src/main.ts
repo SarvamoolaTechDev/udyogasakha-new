@@ -12,7 +12,11 @@ import { TransformInterceptor } from './common/interceptors/transform.intercepto
 import { AppConfigService } from './config/app-config.service';
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  // rawBody: true exposes req.rawBody on every request (Nest captures the exact
+  // bytes before JSON parsing). Required for Razorpay webhook signature
+  // verification, which is computed over the raw request body, not the
+  // parsed JSON object — see PaymentsController.handleWebhook().
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { rawBody: true });
   const config = app.get(AppConfigService);
 
   app.use(helmet());
@@ -37,7 +41,7 @@ async function bootstrap() {
       .setDescription('Sarva Moola Udyoga Sakha — unified employment ecosystem for 11 role types.')
       .setVersion('1.0').addBearerAuth()
       .addTag('Auth').addTag('Users').addTag('Listings')
-      .addTag('Profiles').addTag('Market').addTag('Documents').addTag('Health')
+      .addTag('Profiles').addTag('Market').addTag('Documents').addTag('Payments').addTag('Health')
       .build();
     SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, sw));
   }

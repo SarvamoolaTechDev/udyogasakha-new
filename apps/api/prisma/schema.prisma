@@ -160,6 +160,7 @@ model User {
   reports          Report[]            @relation("ReportReporter")
   resolvedReports  Report[]            @relation("ReportResolver")
   passwordResetTokens PasswordResetToken[]
+  payments         Payment[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt      @map("updated_at")
@@ -231,6 +232,9 @@ model JobListing {
   reviewedAt          DateTime?       @map("reviewed_at")
   rejectionReason     String?         @map("rejection_reason")
   postedAt            DateTime        @default(now()) @map("posted_at")
+  // Paid promotion — set by PaymentsService when a LISTING_FEATURE payment is captured
+  featured            Boolean         @default(false)
+  featuredUntil       DateTime?       @map("featured_until")
 
   postedBy   User? @relation("ListingOwner",   fields: [postedById],   references: [id])
   reviewedBy User? @relation("ListingReviewer", fields: [reviewedById], references: [id])
@@ -504,3 +508,68 @@ model Report {
   @@map("reports")
 }
 
+// ── Payments (Razorpay) ──────────────────────────────────────────────────────
+// Generic payment record — not tied to one specific product. `purpose` +
+// `referenceId` together describe what was paid for (e.g. a listing being
+// featured, a future certification fee). Pricing/triggers are a product
+// decision; this table only tracks the payment lifecycle itself.
+//
+// Method selection (UPI / Cards / Netbanking / Wallets / EMI / Pay Later /
+// international cards) is handled entirely by Razorpay's Checkout — the
+// `method` field here just records what the payer actually used, populated
+// from the webhook payload after the fact. We never hardcode "only allow
+// UPI" or similar in the backend; Razorpay's own dashboard configuration
+// controls which methods are offered to the payer.
+
+enum PaymentPurpose {
+  LISTING_FEATURE
+  CERTIFICATION_FEE
+  REGISTRATION_FEE
+  OTHER
+}
+
+enum PaymentStatus {
+  CREATED     // order created on Razorpay, payer hasn't completed checkout yet
+  AUTHORIZED  // payer completed checkout; Razorpay is processing (rare to see, usually instant)
+  CAPTURED    // payment successfully captured — funds are settled
+  FAILED      // payment attempt failed (declined, insufficient funds, cancelled, etc.)
+  REFUNDED    // payment was captured and later refunded
+}
+
+// Populated post-facto from the Razorpay webhook payload — never set by us upfront.
+enum PaymentMethod {
+  CARD          // Debit or credit card — Visa, Mastercard, RuPay, Amex, Diners
+  UPI           // Any UPI app — GPay, PhonePe, Paytm, BHIM, etc. (collect or intent flow)
+  NETBANKING    // Indian net banking — 50+ banks supported by Razorpay
+  WALLET        // Paytm, Mobikwik, Freecharge, Amazon Pay, JioMoney, etc.
+  EMI           // Credit/debit card EMI or cardless EMI (Bajaj Finserv, etc.)
+  PAYLATER      // LazyPay, Simpl, ICICI PayLater, etc.
+  INTERNATIONAL_CARD // Non-Indian-issued card — requires international payments enabled on the Razorpay account
+  OTHER
+}
+
+model Payment {
+  id                  String         @id @default(uuid())
+  userId              String         @map("user_id")
+  purpose             PaymentPurpose
+  referenceId         String?        @map("reference_id") // e.g. JobListing.id when purpose = LISTING_FEATURE
+  amountPaise         Int            @map("amount_paise")  // smallest currency unit — paise for INR, cents for USD, etc.
+  currency            String         @default("INR")        // ISO 4217 — INR for domestic, USD/EUR/GBP etc. for international
+  razorpayOrderId     String         @unique @map("razorpay_order_id")
+  razorpayPaymentId   String?        @map("razorpay_payment_id")
+  status              PaymentStatus  @default(CREATED)
+  method              PaymentMethod? // populated from webhook once payment completes
+  internationalPayment Boolean       @default(false) @map("international_payment")
+  failureReason       String?        @map("failure_reason")
+  refundedPaise        Int?          @map("refunded_paise")
+  metadata            Json?          // raw Razorpay payload snapshot for audit/debugging
+  createdAt           DateTime       @default(now()) @map("created_at")
+  updatedAt           DateTime       @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([purpose, referenceId])
+  @@map("payments")
+}

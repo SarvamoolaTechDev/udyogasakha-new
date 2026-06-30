@@ -113,3 +113,14 @@ export const auditApi = {
   forEntity:    (type: string, id: string, p?: any)     => api.get(`/audit/entity/${type}/${id}`, { params: p }).then(r => r.data),
   forActor:     (actorId: string, p?: any)              => api.get(`/audit/actor/${actorId}`, { params: p }).then(r => r.data),
 };
+
+// ── Payments (Razorpay) ──────────────────────────────────────────────────────
+export const paymentsApi = {
+  createOrder: (dto: { purpose: string; referenceId?: string; amount: number; currency?: string }) =>
+    api.post('/payments/create-order', dto).then(r => r.data),
+  verify: (dto: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) =>
+    api.post('/payments/verify', dto).then(r => r.data),
+  getMine: (params?: any) => api.get('/payments/me', { params }).then(r => r.data),
+  // Admin only
+  getAll:  (params?: any) => api.get('/payments', { params }).then(r => r.data),
+};

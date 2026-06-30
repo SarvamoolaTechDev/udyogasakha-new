@@ -6,6 +6,7 @@ import { useAdminAuthStore } from '@/store/auth.store';
 const LINKS = [
   { href: '/moderation', icon: '🛡️', label: 'Moderation' },
   { href: '/users',      icon: '👥', label: 'Users'       },
+  { href: '/payments',   icon: '💳', label: 'Payments'    },
   { href: '/audit',      icon: '📋', label: 'Audit Log'   },
 ];
 

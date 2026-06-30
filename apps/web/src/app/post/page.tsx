@@ -5,6 +5,8 @@ import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { listingsApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
+import { useRazorpayCheckout } from '@/hooks/useRazorpayCheckout';
+import { useToast } from '@/components/ui/Toast';
 
 function refId() { return 'UDYG-' + Math.floor(Math.random() * 90000 + 10000); }
 
@@ -12,9 +14,14 @@ const Err = ({ msg }: { msg?: string }) =>
   msg ? <p style={{ color:'var(--err)', fontSize:'11px', marginTop:'4px' }}>{msg}</p> : null;
 
 export default function PostJobPage() {
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, userName } = useAuthStore();
   const [done, setDone] = useState(false);
   const [ref,  setRef]  = useState('');
+  const [listingId, setListingId] = useState<string | null>(null);
+  const [featured,  setFeatured]  = useState(false);
+  const [featuring, setFeaturing] = useState(false);
+  const { toast } = useToast();
+  const { startPayment } = useRazorpayCheckout();
 
   const { register, handleSubmit, formState: { errors } } = useForm<Record<string, any>>();
 
@@ -23,8 +30,37 @@ export default function PostJobPage() {
       ...d,
       marketField: d.industry === 'IT_SOFTWARE' ? 'IT_FIELD' : d.industry === 'SERVICES' ? 'SERVICES' : 'NON_IT_FIELD',
     }),
-    onSuccess: () => { setRef(refId()); setDone(true); },
+    onSuccess: (created: any) => {
+      setRef(refId());
+      setListingId(created?.id ?? null);
+      setDone(true);
+    },
   });
+
+  const handleFeatureListing = () => {
+    if (!listingId) return;
+    setFeaturing(true);
+    startPayment({
+      purpose:      'LISTING_FEATURE',
+      referenceId:  listingId,
+      // ⚠️ Placeholder test price — pricing for paid promotion is a product
+      // decision pending client sign-off, not finalized.
+      amount:       499,
+      currency:     'INR',
+      description:  'Feature this listing for 30 days',
+      prefillName:  userName,
+      onSuccess: () => {
+        setFeatured(true);
+        setFeaturing(false);
+        toast('Listing featured! It will get priority placement for 30 days.', 'ok');
+      },
+      onFailure: () => {
+        setFeaturing(false);
+        toast('Payment failed — please try again.', 'err');
+      },
+      onDismiss: () => setFeaturing(false),
+    });
+  };
 
   const L = ({ children }: { children: React.ReactNode }) => <label className="il">{children}</label>;
   const F = ({ children }: { children: React.ReactNode }) => <div className="form-grid">{children}</div>;
@@ -74,6 +110,26 @@ export default function PostJobPage() {
               <div style={{ fontSize:'9px', color:'var(--muted)', letterSpacing:'1.5px', textTransform:'uppercase', marginBottom:'3px' }}>Reference ID</div>
               <div style={{ fontFamily:'Cinzel,serif', fontSize:'20px', fontWeight:700, background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>{ref}</div>
             </div>
+
+            {/* Optional paid promotion — supports UPI, cards, netbanking, wallets, EMI, pay later, international cards (all surfaced by Razorpay Checkout automatically) */}
+            {listingId && !featured && (
+              <div style={{ maxWidth:'420px', margin:'0 auto 24px', padding:'18px', borderRadius:'14px', background:'rgba(255,255,255,0.03)', border:'1px dashed var(--border)' }}>
+                <div style={{ fontSize:'13px', fontWeight:700, color:'var(--offwhite)', marginBottom:'6px' }}>🌟 Feature This Listing</div>
+                <p style={{ fontSize:'12px', color:'var(--muted)', lineHeight:1.7, marginBottom:'14px' }}>
+                  Get priority placement at the top of search results for 30 days. Pay via UPI, card, netbanking, wallet or any method available at checkout.
+                </p>
+                <button onClick={handleFeatureListing} disabled={featuring} className="btn-gold" style={{ padding:'10px 24px', borderRadius:'50px', border:'none', cursor:'pointer', fontSize:'12px', opacity:featuring?0.6:1 }}>
+                  {featuring ? 'Opening checkout…' : 'Feature for ₹499 →'}
+                </button>
+              </div>
+            )}
+            {featured && (
+              <div style={{ maxWidth:'420px', margin:'0 auto 24px', padding:'14px', borderRadius:'14px', background:'rgba(74,222,128,0.08)', border:'1px solid rgba(74,222,128,0.3)' }}>
+                <div style={{ fontSize:'13px', fontWeight:700, color:'var(--ok)' }}>✅ Listing Featured</div>
+                <p style={{ fontSize:'11px', color:'var(--muted)', marginTop:'4px' }}>Your listing will get priority placement for the next 30 days.</p>
+              </div>
+            )}
+
             <br />
             <div style={{ display:'flex', gap:'12px', justifyContent:'center', flexWrap:'wrap' }}>
               <button onClick={() => window.location.href='/jobs'} className="btn-gold" style={{ padding:'12px 26px', borderRadius:'50px', border:'none', cursor:'pointer', fontSize:'12px' }}>View All Jobs →</button>

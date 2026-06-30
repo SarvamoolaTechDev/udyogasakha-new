@@ -64,3 +64,7 @@ export const auditApi = {
   forEntity: (type: string, id: string, p?: any)  => api.get(`/audit/entity/${type}/${id}`, { params: p }).then(r => r.data),
   forActor:  (actorId: string, p?: any)           => api.get(`/audit/actor/${actorId}`, { params: p }).then(r => r.data),
 };
+
+export const paymentsApi = {
+  getAll: (params?: any) => api.get('/payments', { params }).then(r => r.data),
+};

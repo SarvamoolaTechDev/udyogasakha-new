@@ -25,4 +25,13 @@ export class AppConfigService {
   get azureEmailSenderAddress() {
     return this.c.get<string>('AZURE_EMAIL_SENDER_ADDRESS', 'DoNotReply@udyogasakha.in');
   }
-}
+
+  // ── Razorpay ─────────────────────────────────────────────────────────────────
+  // Standard Checkout surfaces UPI, Cards, Netbanking, Wallets, EMI and Pay
+  // Later automatically based on what's enabled in the Razorpay Dashboard —
+  // nothing here restricts payment method. International cards require a
+  // separate activation step with Razorpay (KYC + business documents).
+  get razorpayKeyId()        { return this.c.get<string>('RAZORPAY_KEY_ID', ''); }
+  get razorpayKeySecret()    { return this.c.get<string>('RAZORPAY_KEY_SECRET', ''); }
+  get razorpayWebhookSecret(){ return this.c.get<string>('RAZORPAY_WEBHOOK_SECRET', ''); }
+  get razorpayConfigured()   { return !!(this.razorpayKeyId && this.razorpayKeySecret); }
