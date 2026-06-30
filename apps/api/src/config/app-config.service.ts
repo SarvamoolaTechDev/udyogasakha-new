@@ -35,4 +35,18 @@ export class AppConfigService {
   get razorpayKeySecret()    { return this.c.get<string>('RAZORPAY_KEY_SECRET', ''); }
   get razorpayWebhookSecret(){ return this.c.get<string>('RAZORPAY_WEBHOOK_SECRET', ''); }
   get razorpayConfigured()   { return !!(this.razorpayKeyId && this.razorpayKeySecret); }
+
+  // ── File Storage ─────────────────────────────────────────────────────────────
+  // 'local' (default) → LocalStorageAdapter, files on disk — fine for dev,
+  // but ephemeral on most PaaS hosts (Railway included — wiped on redeploy).
+  // 'azure' → AzureBlobStorageAdapter — persistent, needs AZURE_STORAGE_* below.
+  get storageProvider() {
+    return this.c.get<string>('STORAGE_PROVIDER', 'local');
+  }
+  get azureStorageConnectionString() {
+    return this.c.get<string>('AZURE_STORAGE_CONNECTION_STRING', '');
+  }
+  get azureStorageContainerName() {
+    return this.c.get<string>('AZURE_STORAGE_CONTAINER_NAME', 'udyogasakha-documents');
+  }
 }

@@ -220,7 +220,7 @@ Each role has its own dedicated profile form with role-specific fields, independ
 | ORM            | Prisma 5   | Type-safe queries, migrations |
 | Database       | PostgreSQL 16 | Primary data store |
 | Cache / Queue  | Redis 7 + BullMQ | Job queue for async notifications |
-| File storage   | Local filesystem (Phase 1) | StorageService abstraction — swap to Azure Blob Storage with one line change |
+| File storage   | Local filesystem (default) or Azure Blob Storage | StorageService abstraction — set STORAGE_PROVIDER=azure, no code change needed |
 | Rate limiting  | @nestjs/throttler | Global 60/min, auth 10/min |
 | Audit logging  | Append-only DB table | 12 event types, actor + timestamp |
 | Error tracking | Sentry (stub) | Set SENTRY_DSN in .env to activate |
@@ -237,7 +237,6 @@ The following items are deferred until client sign-off. None block Phase 1 opera
 | Trust levels L2–L4 | Full trust engine with community endorsement and domain expert certification |
 | Engagement lifecycle | Application → Engagement → Feedback tracking (vs current listing-only model) |
 | Governance module | EGC, DEP, CoI declarations (depends on trust levels L3–L4) |
-| Azure Blob Storage | Replace local filesystem with cloud object storage |
 | SMS / OTP | Wire MSG91 / Twilio into NotificationsService.sendSms() stub |
 | Social login | Google OAuth2 / LinkedIn OAuth2 via Passport.js |
 | Separate admin deploy | Move admin portal to internal network / VPN |
