@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useMutation } from '@tanstack/react-query';
-import { listingsApi } from '@/lib/api';
+import RazorpayCheckout from 'react-native-razorpay';
+import { listingsApi, paymentsApi } from '@/lib/api';
 import { Input, Button, SectionTitle, Card, useToast, ToastBanner } from '@/components/UI';
 import { PickerField } from '@/components/PickerField';
 import { C } from '@/theme/colors';
@@ -23,8 +24,11 @@ const opts = (arr: string[][]) => arr.map(([value, label]) => ({ value, label })
 export function PostJobScreen({ navigation }: any) {
   const { isAuthenticated } = useAuthStore();
   const { toast, toastMsg } = useToast();
-  const [done, setDone] = useState(false);
-  const [ref,  setRef]  = useState('');
+  const [done,      setDone]      = useState(false);
+  const [ref,       setRef]       = useState('');
+  const [listingId, setListingId] = useState<string | null>(null);
+  const [featured,  setFeatured]  = useState(false);
+  const [featuring, setFeaturing] = useState(false);
   const [form, setForm] = useState({
     organisationName:'', contactPerson:'', contactEmail:'', contactPhone:'',
     title:'', location:'', salary:'', skills:'', facilities:'', description:'', experienceDetail:'',
@@ -41,9 +45,57 @@ export function PostJobScreen({ navigation }: any) {
       ...form,
       marketField: form.industry === 'IT_SOFTWARE' ? 'IT_FIELD' : form.industry === 'SERVICES' ? 'SERVICES' : 'NON_IT_FIELD',
     }),
-    onSuccess: () => { setRef('UDYG-' + Math.floor(Math.random()*90000+10000)); setDone(true); },
+    onSuccess: (created: any) => {
+      setRef('UDYG-' + Math.floor(Math.random()*90000+10000));
+      setListingId(created?.id ?? null);
+      setDone(true);
+    },
     onError: () => toast('Submission failed — please check all required fields.'),
   });
+
+  const handleFeatureListing = async () => {
+    if (!listingId) return;
+    setFeaturing(true);
+    try {
+      // Step 1 — create the Razorpay order on our backend
+      const order = await paymentsApi.createOrder({
+        purpose:     'LISTING_FEATURE',
+        referenceId: listingId,
+        amount:      499, // ⚠️ placeholder — final pricing is a pending product decision
+        currency:    'INR',
+      });
+
+      // Step 2 — open Razorpay native checkout.
+      // No `method` restriction — all enabled payment methods (UPI, cards,
+      // netbanking, wallets, EMI, pay later) are shown automatically.
+      const response = await RazorpayCheckout.open({
+        description:  'Feature this listing for 30 days',
+        currency:     order.currency,
+        key:          order.razorpayKeyId,
+        amount:       order.amount,
+        order_id:     order.orderId,
+        name:         'Sarvamoola Udyoga Sakha',
+        prefill:      { name: '', email: '', contact: '' },
+        theme:        { color: '#D4A017' },
+      });
+
+      // Step 3 — verify the signature on our backend
+      await paymentsApi.verify({
+        razorpay_order_id:   response.razorpay_order_id,
+        razorpay_payment_id: response.razorpay_payment_id,
+        razorpay_signature:  response.razorpay_signature,
+      });
+
+      setFeatured(true);
+      toast('Listing featured for 30 days! 🌟');
+    } catch (err: any) {
+      if (err?.code !== 'PAYMENT_CANCELLED') {
+        toast('Payment failed — please try again.');
+      }
+    } finally {
+      setFeaturing(false);
+    }
+  };
 
   if (!isAuthenticated) return (
     <SafeAreaView style={s.safe}>
@@ -63,6 +115,29 @@ export function PostJobScreen({ navigation }: any) {
         <Text style={{ fontSize:48, marginBottom:16 }}>✅</Text>
         <Text style={s.gateTitle}>Posting Submitted!</Text>
         <Text style={s.gateBody}>Reference: <Text style={{ color:C.gold2, fontWeight:'700' }}>{ref}</Text>{'\n'}Will be reviewed and published within 2–4 hours.</Text>
+
+        {/* Optional paid promotion — UPI, cards, netbanking, wallets, EMI and pay
+            later all shown automatically by Razorpay Checkout on both iOS and Android */}
+        {listingId && !featured && (
+          <View style={s.featureCard}>
+            <Text style={s.featureTitle}>🌟 Feature This Listing</Text>
+            <Text style={s.featureBody}>
+              Get priority placement for 30 days. Pay via UPI, card, netbanking, wallet or any method at checkout.
+            </Text>
+            <Button
+              label={featuring ? 'Opening checkout…' : 'Feature for ₹499 →'}
+              onPress={handleFeatureListing}
+              loading={featuring}
+              style={{ marginTop: 12 }}
+            />
+          </View>
+        )}
+        {featured && (
+          <View style={s.featuredBanner}>
+            <Text style={s.featuredText}>✅ Listing featured for 30 days</Text>
+          </View>
+        )}
+
         <Button label="Browse Jobs →" onPress={() => { setDone(false); navigation.navigate('Jobs'); }} style={{ marginTop:20 }} />
         <Button label="Post Another" variant="outline" onPress={() => setDone(false)} style={{ marginTop:10 }} />
       </View>
@@ -122,8 +197,13 @@ export function PostJobScreen({ navigation }: any) {
 const s = StyleSheet.create({
   safe:      { flex:1, backgroundColor:C.deep },
   scroll:    { padding:16, gap:12, paddingBottom:40 },
-  section:   { },
-  authGate:  { flex:1, alignItems:'center', justifyContent:'center', padding:32 },
-  gateTitle: { fontSize:22, fontWeight:'700', color:C.white, marginBottom:10, textAlign:'center' },
-  gateBody:  { fontSize:14, color:C.muted, textAlign:'center', lineHeight:22 },
+  section:      { },
+  authGate:     { flex:1, alignItems:'center', justifyContent:'center', padding:32 },
+  gateTitle:    { fontSize:22, fontWeight:'700', color:C.white, marginBottom:10, textAlign:'center' },
+  gateBody:     { fontSize:14, color:C.muted, textAlign:'center', lineHeight:22 },
+  featureCard:  { marginTop:20, padding:16, borderRadius:14, backgroundColor:'rgba(255,255,255,0.03)', borderWidth:1, borderColor:C.border, width:'100%' },
+  featureTitle: { fontSize:14, fontWeight:'700', color:C.white, marginBottom:6 },
+  featureBody:  { fontSize:12, color:C.muted, lineHeight:18 },
+  featuredBanner:{ marginTop:20, padding:12, borderRadius:12, backgroundColor:'rgba(74,222,128,0.08)', borderWidth:1, borderColor:'rgba(74,222,128,0.3)' },
+  featuredText: { fontSize:13, fontWeight:'700', color:C.ok, textAlign:'center' },
 });

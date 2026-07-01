@@ -54,14 +54,29 @@ interface InputProps extends TextInputProps {
 }
 
 export function Input({ label, error, style, ...props }: InputProps) {
+  const [hidden, setHidden] = useState(props.secureTextEntry ?? false);
+
   return (
     <View style={[{ marginBottom: 16 }, style]}>
       {label && <Text style={s.label}>{label}</Text>}
-      <TextInput
-        placeholderTextColor={C.faint}
-        {...props}
-        style={[s.input, error ? { borderColor: C.err } : {}, props.style]}
-      />
+      <View style={{ position: 'relative' }}>
+        <TextInput
+          placeholderTextColor={C.faint}
+          {...props}
+          secureTextEntry={hidden}
+          style={[s.input, error ? { borderColor: C.err } : {}, props.style,
+            props.secureTextEntry ? { paddingRight: 80 } : {}]}
+        />
+        {props.secureTextEntry && (
+          <TouchableOpacity
+            onPress={() => setHidden(h => !h)}
+            style={s.eyeBtn}
+            activeOpacity={0.7}
+          >
+            <Text style={s.eyeTxt}>{hidden ? 'Show' : 'Hide'}</Text>
+          </TouchableOpacity>
+        )}
+      </View>
       {error && <Text style={s.errText}>{error}</Text>}
     </View>
   );
@@ -114,6 +129,8 @@ const s = StyleSheet.create({
   label:        { color: C.muted, fontSize: 11, fontWeight: '600', marginBottom: 6, letterSpacing: 0.3 },
   input:        { backgroundColor: 'rgba(255,255,255,0.05)', borderWidth: 1, borderColor: C.bf, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, color: C.offwhite, fontSize: 13 },
   errText:      { color: C.err, fontSize: 11, marginTop: 4 },
+  eyeBtn:       { position: 'absolute', right: 12, top: '50%', transform: [{ translateY: -10 }] },
+  eyeTxt:       { fontSize: 11, fontWeight: '600', color: C.gold3 },
   sectionTitle: { color: C.gold3, fontSize: 11, fontWeight: '700', letterSpacing: 1.5, textTransform: 'uppercase', marginBottom: 12 },
   toast:        { position: 'absolute', bottom: 40, left: 24, right: 24, backgroundColor: C.cardBg, borderRadius: 50, paddingVertical: 12, paddingHorizontal: 20, borderWidth: 1, borderColor: C.border, alignItems: 'center', zIndex: 999 },
   toastText:    { color: C.gold3, fontSize: 13, fontWeight: '600' },

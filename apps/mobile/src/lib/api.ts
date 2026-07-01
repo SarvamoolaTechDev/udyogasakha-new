@@ -32,10 +32,12 @@ api.interceptors.response.use(
 );
 
 export const authApi = {
-  login:    (dto: { email: string; password: string }) => api.post('/auth/login', dto).then(r => r.data),
-  register: (dto: { email: string; password: string; name: string; phone?: string }) => api.post('/auth/register', dto).then(r => r.data),
-  logout:   () => api.post('/auth/logout').then(r => r.data),
+  login:          (dto: { email: string; password: string }) => api.post('/auth/login', dto).then(r => r.data),
+  register:       (dto: { email: string; password: string; name: string; phone?: string }) => api.post('/auth/register', dto).then(r => r.data),
+  logout:         () => api.post('/auth/logout').then(r => r.data),
   changePassword: (dto: any) => api.post('/auth/change-password', dto).then(r => r.data),
+  forgotPassword: (email: string) => api.post('/auth/forgot-password', { email }).then(r => r.data),
+  resetPassword:  (token: string, newPassword: string) => api.post('/auth/reset-password', { token, newPassword }).then(r => r.data),
 };
 
 export const listingsApi = {
@@ -91,4 +93,13 @@ export const notificationsApi = {
 export const usersApi = {
   getMe:    () => api.get('/users/me').then(r => r.data),
   updateMe: (dto: any) => api.patch('/users/me', dto).then(r => r.data),
+};
+
+// ── Payments (Razorpay) ──────────────────────────────────────────────────────
+export const paymentsApi = {
+  createOrder: (dto: { purpose: string; referenceId?: string; amount: number; currency?: string }) =>
+    api.post('/payments/create-order', dto).then(r => r.data),
+  verify: (dto: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) =>
+    api.post('/payments/verify', dto).then(r => r.data),
+  getMine: (params?: any) => api.get('/payments/me', { params }).then(r => r.data),
 };

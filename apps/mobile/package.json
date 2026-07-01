@@ -29,7 +29,8 @@
     "axios":                         "^1.6.8",
     "zustand":                       "^4.5.2",
     "jwt-decode":                    "^4.0.0",
-    "@expo/vector-icons":            "^14.0.0"
+    "@expo/vector-icons":            "^14.0.0",
+    "react-native-razorpay":         "^2.2.5"
   },
   "devDependencies": {
     "@babel/core":         "^7.24.0",

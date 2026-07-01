@@ -54,6 +54,10 @@ export function LoginScreen({ navigation }: any) {
 
           <Button label={loading ? 'Signing In…' : 'Sign In →'} onPress={handleLogin} loading={loading} />
 
+          <TouchableOpacity onPress={() => navigation.navigate('ForgotPassword')} style={[s.switchLink, { marginTop: 14 }]}>
+            <Text style={s.forgotTxt}>Forgot password?</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity onPress={() => navigation.navigate('Register')} style={s.switchLink}>
             <Text style={s.switchText}>No account? <Text style={s.switchAccent}>Register</Text></Text>
           </TouchableOpacity>
@@ -75,4 +79,5 @@ const s = StyleSheet.create({
   switchLink:  { marginTop: 20, alignItems: 'center' },
   switchText:  { fontSize: 13, color: C.muted },
   switchAccent:{ color: C.gold3, fontWeight: '600' },
+  forgotTxt:   { fontSize: 12, color: C.faint },
 });

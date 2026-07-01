@@ -241,4 +241,4 @@ The following items are deferred until client sign-off. None block Phase 1 opera
 | Social login | Google OAuth2 / LinkedIn OAuth2 via Passport.js |
 | Separate admin deploy | Move admin portal to internal network / VPN |
 | Meilisearch | Full-text search to replace PostgreSQL ILIKE queries |
-| Payment pricing | Razorpay integration is built (see Payments below) — actual prices/triggers for listing features, certification fees etc. are a pending product decision |
+| Payment pricing | Razorpay integration is built — actual prices/triggers for listing features, certification fees etc. are a pending product decision |
