@@ -1,6 +1,6 @@
-# Sarvamoola Udyoga Sakha
+# Udyoga Sakha
 
-India's unified employment ecosystem for 11 role types across IT, Non-IT and Services sectors.
+UdyogaSakha is Sarvamoola Foundation governed Udyoga facilitation ecosystem that connects seekers and providers of opportunities — jobs, service engagement roles, projects, and enterprise initiatives — under a transparent trust framework. It is a unified employment ecosystem for 11 role types across IT, Non-IT and Services sectors.
 
 ---
 
