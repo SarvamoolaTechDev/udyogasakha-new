@@ -9,12 +9,12 @@ export declare class ListingsService {
     private readonly notify;
     constructor(prisma: PrismaService, audit: AuditService, notify: NotificationsService);
     create(dto: CreateListingDto, userId: string): Promise<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -39,6 +39,8 @@ export declare class ListingsService {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }>;
     findAll(filters: {
@@ -51,12 +53,12 @@ export declare class ListingsService {
         page?: number;
         limit?: number;
     }): Promise<import("../../common/pagination").Paginated<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -81,15 +83,17 @@ export declare class ListingsService {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }>>;
     findById(id: string): Promise<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -114,15 +118,17 @@ export declare class ListingsService {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }>;
     findSimilar(id: string, role: string, limit?: number): Promise<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -147,15 +153,17 @@ export declare class ListingsService {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }[]>;
     findPending(rawPage?: string, rawLimit?: string): Promise<import("../../common/pagination").Paginated<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -180,15 +188,17 @@ export declare class ListingsService {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }>>;
     approve(id: string, moderatorId: string): Promise<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -213,15 +223,17 @@ export declare class ListingsService {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }>;
     update(id: string, userId: string, dto: UpdateListingDto): Promise<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -246,15 +258,17 @@ export declare class ListingsService {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }>;
     reject(id: string, moderatorId: string, reason: string): Promise<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -279,6 +293,8 @@ export declare class ListingsService {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }>;
 }

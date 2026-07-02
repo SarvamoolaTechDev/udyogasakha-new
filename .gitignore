@@ -50,11 +50,6 @@ web-build/
 *.orig.*
 credentials.json
 
-# Native build folders — only relevant if you ever eject from Expo's managed
-# workflow (eas build doesn't need these committed; they're generated locally)
-apps/mobile/ios/
-apps/mobile/android/
-
 # ── Prisma ───────────────────────────────────────────────────────────────────
 # IMPORTANT: prisma/migrations/ is intentionally NOT listed here.
 # Migration history must be committed — `prisma migrate deploy` on Railway

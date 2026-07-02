@@ -28,6 +28,36 @@ let AppConfigService = class AppConfigService {
     // ⚠️ Defaults to enabled. Set ENABLE_SWAGGER=false in Railway env vars before real public launch.
     get enableSwagger() { return this.c.get('ENABLE_SWAGGER', 'true') === 'true'; }
     get webUrl() { return this.c.get('WEB_URL', 'http://localhost:3000'); }
+    // ── Azure Communication Service (email) ─────────────────────────────────────
+    // If unset, EmailService logs to console instead of sending — see EmailService.
+    get azureCommunicationConnectionString() {
+        return this.c.get('AZURE_COMMUNICATION_CONNECTION_STRING', '');
+    }
+    get azureEmailSenderAddress() {
+        return this.c.get('AZURE_EMAIL_SENDER_ADDRESS', 'DoNotReply@udyogasakha.in');
+    }
+    // ── Razorpay ─────────────────────────────────────────────────────────────────
+    // Standard Checkout surfaces UPI, Cards, Netbanking, Wallets, EMI and Pay
+    // Later automatically based on what's enabled in the Razorpay Dashboard —
+    // nothing here restricts payment method. International cards require a
+    // separate activation step with Razorpay (KYC + business documents).
+    get razorpayKeyId() { return this.c.get('RAZORPAY_KEY_ID', ''); }
+    get razorpayKeySecret() { return this.c.get('RAZORPAY_KEY_SECRET', ''); }
+    get razorpayWebhookSecret() { return this.c.get('RAZORPAY_WEBHOOK_SECRET', ''); }
+    get razorpayConfigured() { return !!(this.razorpayKeyId && this.razorpayKeySecret); }
+    // ── File Storage ─────────────────────────────────────────────────────────────
+    // 'local' (default) → LocalStorageAdapter, files on disk — fine for dev,
+    // but ephemeral on most PaaS hosts (Railway included — wiped on redeploy).
+    // 'azure' → AzureBlobStorageAdapter — persistent, needs AZURE_STORAGE_* below.
+    get storageProvider() {
+        return this.c.get('STORAGE_PROVIDER', 'local');
+    }
+    get azureStorageConnectionString() {
+        return this.c.get('AZURE_STORAGE_CONNECTION_STRING', '');
+    }
+    get azureStorageContainerName() {
+        return this.c.get('AZURE_STORAGE_CONTAINER_NAME', 'udyogasakha-documents');
+    }
 };
 exports.AppConfigService = AppConfigService;
 exports.AppConfigService = AppConfigService = __decorate([

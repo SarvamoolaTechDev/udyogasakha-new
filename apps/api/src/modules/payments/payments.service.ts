@@ -173,7 +173,10 @@ export class PaymentsService {
    * both may fire for the same payment.
    */
   private async markCaptured(paymentId: string, razorpayPaymentId: string, method?: PaymentMethod, rawPayload?: any) {
-    const payment = await this.prisma.payment.findUnique({ where: { id: paymentId } });
+    const payment = await this.prisma.payment.findUnique({
+      where:   { id: paymentId },
+      include: { user: { select: { email: true } } },
+    });
     if (!payment) throw new NotFoundException('Payment not found');
 
     if (payment.status === PaymentStatus.CAPTURED) return payment; // idempotent — already processed
@@ -198,8 +201,9 @@ export class PaymentsService {
     await this.notify.send({
       userId:  payment.userId,
       subject: 'Payment received ✅',
-      body:    `Your payment of ${(payment.amountPaise / 100).toFixed(2)} ${payment.currency} was successful. Thank you!`,
+      body:    `Your payment of ${(payment.amountPaise / 100).toFixed(2)} ${payment.currency} was successful. Thank you for using Sarvamoola Udyoga Sakha!`,
       link:    '/settings',
+      email:   (payment as any).user?.email,
     });
 
     return updated;
@@ -222,7 +226,10 @@ export class PaymentsService {
   }
 
   private async markFailed(razorpayOrderId: string, reason: string, rawPayload?: any) {
-    const payment = await this.prisma.payment.findUnique({ where: { razorpayOrderId } });
+    const payment = await this.prisma.payment.findUnique({
+      where:   { razorpayOrderId },
+      include: { user: { select: { email: true } } },
+    });
     if (!payment) return;
     if (payment.status === PaymentStatus.CAPTURED) return; // never downgrade a captured payment
 
@@ -239,7 +246,9 @@ export class PaymentsService {
     await this.notify.send({
       userId:  payment.userId,
       subject: 'Payment unsuccessful',
-      body:    `Your payment of ${(payment.amountPaise / 100).toFixed(2)} ${payment.currency} could not be completed. Reason: ${reason}. Please try again.`,
+      body:    `Your payment of ${(payment.amountPaise / 100).toFixed(2)} ${payment.currency} could not be completed.\n\nReason: ${reason}\n\nPlease try again or contact support if the issue persists.`,
+      link:    '/settings',
+      email:   (payment as any).user?.email,
     });
   }
 

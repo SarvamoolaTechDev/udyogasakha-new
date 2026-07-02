@@ -12,7 +12,11 @@ const all_exceptions_filter_1 = require("./common/filters/all-exceptions.filter"
 const transform_interceptor_1 = require("./common/interceptors/transform.interceptor");
 const app_config_service_1 = require("./config/app-config.service");
 async function bootstrap() {
-    const app = await core_1.NestFactory.create(app_module_1.AppModule);
+    // rawBody: true exposes req.rawBody on every request (Nest captures the exact
+    // bytes before JSON parsing). Required for Razorpay webhook signature
+    // verification, which is computed over the raw request body, not the
+    // parsed JSON object — see PaymentsController.handleWebhook().
+    const app = await core_1.NestFactory.create(app_module_1.AppModule, { rawBody: true });
     const config = app.get(app_config_service_1.AppConfigService);
     app.use((0, helmet_1.default)());
     app.enableCors({ origin: config.allowedOrigins, credentials: true });
@@ -31,10 +35,10 @@ async function bootstrap() {
     if (config.enableSwagger) {
         const sw = new swagger_1.DocumentBuilder()
             .setTitle('Udyoga Sakha API')
-            .setDescription('Sarva Moola Udyoga Sakha — unified employment ecosystem for 11 role types.')
+            .setDescription('Sarvamoola Udyoga Sakha — unified employment ecosystem for 11 role types.')
             .setVersion('1.0').addBearerAuth()
             .addTag('Auth').addTag('Users').addTag('Listings')
-            .addTag('Profiles').addTag('Market').addTag('Documents').addTag('Health')
+            .addTag('Profiles').addTag('Market').addTag('Documents').addTag('Payments').addTag('Health')
             .build();
         swagger_1.SwaggerModule.setup('api/docs', app, swagger_1.SwaggerModule.createDocument(app, sw));
     }

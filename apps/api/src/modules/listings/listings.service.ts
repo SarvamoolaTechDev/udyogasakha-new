@@ -82,8 +82,13 @@ export class ListingsService {
   }
 
   async approve(id: string, moderatorId: string) {
-    const before = await this.findById(id);
-    const after  = await this.prisma.jobListing.update({
+    const before = await this.prisma.jobListing.findUnique({
+      where:   { id },
+      include: { postedBy: { select: { email: true } } },
+    });
+    if (!before) throw new NotFoundException('Listing not found');
+
+    const after = await this.prisma.jobListing.update({
       where: { id },
       data:  { status: ProfileStatus.APPROVED, reviewedById: moderatorId, reviewedAt: new Date() },
     });
@@ -94,13 +99,13 @@ export class ListingsService {
       newState: { status: after.status, reviewedAt: after.reviewedAt },
     });
 
-    // Notify the poster if we know who posted it
     if (before.postedById) {
       await this.notify.send({
         userId:  before.postedById,
         subject: 'Your listing is live! ✅',
         body:    `Your listing "${before.title}" has been approved and is now visible to candidates on the portal.`,
         link:    `/jobs/${before.id}`,
+        email:   (before as any).postedBy?.email,
       });
     }
 
@@ -144,8 +149,14 @@ export class ListingsService {
     return updated;
   }
 
-  async reject(id: string, moderatorId: string, reason: string) {    const before = await this.findById(id);
-    const after  = await this.prisma.jobListing.update({
+  async reject(id: string, moderatorId: string, reason: string) {
+    const before = await this.prisma.jobListing.findUnique({
+      where:   { id },
+      include: { postedBy: { select: { email: true } } },
+    });
+    if (!before) throw new NotFoundException('Listing not found');
+
+    const after = await this.prisma.jobListing.update({
       where: { id },
       data:  { status: ProfileStatus.REJECTED, rejectionReason: reason, reviewedById: moderatorId, reviewedAt: new Date() },
     });
@@ -161,8 +172,9 @@ export class ListingsService {
       await this.notify.send({
         userId:  before.postedById,
         subject: 'Listing could not be approved',
-        body:    `Your listing "${before.title}" was not approved. Reason: ${reason}. Please update and resubmit.`,
-        link:    `/post`,
+        body:    `Your listing "${before.title}" was not approved. Reason: ${reason}. Please update your listing and resubmit.`,
+        link:    '/post',
+        email:   (before as any).postedBy?.email,
       });
     }
 

@@ -66,7 +66,10 @@ export class VerificationService {
   }
 
   async approve(id: string, modId: string, dto: ReviewVerificationDto) {
-    const req = await this.prisma.verificationRequest.findUnique({ where: { id } });
+    const req = await this.prisma.verificationRequest.findUnique({
+      where:   { id },
+      include: { user: { select: { email: true } } },
+    });
     if (!req) throw new NotFoundException('Verification request not found');
 
     const [updated] = await this.prisma.$transaction([
@@ -87,12 +90,21 @@ export class VerificationService {
     ]);
 
     await this.audit.log({ entityType: 'verification', entityId: id, action: 'APPROVED', actorId: modId, metadata: { note: dto.reviewNote } });
-    await this.notify.send({ userId: req.userId, subject: 'Identity verification approved ✅', body: 'Your identity documents have been verified. Your trust level has been updated to L1.', link: '/settings' });
+    await this.notify.send({
+      userId:  req.userId,
+      subject: 'Identity verification approved ✅',
+      body:    'Your identity documents have been verified and your trust level has been updated to L1.\n\nYou can now access additional features on the Sarvamoola Udyoga Sakha platform.',
+      link:    '/settings',
+      email:   (req as any).user?.email,
+    });
     return updated;
   }
 
   async reject(id: string, modId: string, dto: ReviewVerificationDto) {
-    const req = await this.prisma.verificationRequest.findUnique({ where: { id } });
+    const req = await this.prisma.verificationRequest.findUnique({
+      where:   { id },
+      include: { user: { select: { email: true } } },
+    });
     if (!req) throw new NotFoundException('Verification request not found');
 
     const updated = await this.prisma.verificationRequest.update({
@@ -101,7 +113,13 @@ export class VerificationService {
     });
 
     await this.audit.log({ entityType: 'verification', entityId: id, action: 'REJECTED', actorId: modId, metadata: { note: dto.reviewNote } });
-    await this.notify.send({ userId: req.userId, subject: 'Verification request update', body: `Your verification request could not be approved. Reason: ${dto.reviewNote}. Please re-upload your documents and try again.`, link: '/settings' });
+    await this.notify.send({
+      userId:  req.userId,
+      subject: 'Verification request could not be approved',
+      body:    `Your identity verification request could not be approved.\n\nReason: ${dto.reviewNote}\n\nPlease re-upload clearer copies of your documents and submit a new request.`,
+      link:    '/settings',
+      email:   (req as any).user?.email,
+    });
     return updated;
   }
 }

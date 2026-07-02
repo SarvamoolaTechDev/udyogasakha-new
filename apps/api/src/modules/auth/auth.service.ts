@@ -181,6 +181,21 @@ export class AuthService {
       entityType: 'auth', entityId: userId, action: 'PASSWORD_CHANGED', actorId: userId,
     });
 
+    // Security alert — if the user didn't initiate this, they need to act immediately
+    await this.notify.send({
+      userId,
+      subject: 'Your password was changed',
+      body:    [
+        'Your Sarvamoola Udyoga Sakha account password was just changed.',
+        'All existing sessions have been signed out.',
+        '',
+        'If you made this change, no action is needed.',
+        'If you did NOT change your password, please reset it immediately using the "Forgot password?" link on the sign-in page.',
+      ].join('\n'),
+      link:  '/forgot-password',
+      email: user.email,
+    });
+
     return { message: 'Password changed. Please log in again.' };
   }
 

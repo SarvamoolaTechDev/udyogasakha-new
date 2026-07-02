@@ -15,9 +15,11 @@ const bull_1 = require("@nestjs/bull");
 const common_1 = require("@nestjs/common");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const queues_1 = require("../../common/queues");
+const email_service_1 = require("../../common/email/email.service");
 let NotificationsProcessor = NotificationsProcessor_1 = class NotificationsProcessor {
-    constructor(prisma) {
+    constructor(prisma, email) {
         this.prisma = prisma;
+        this.email = email;
         this.logger = new common_1.Logger(NotificationsProcessor_1.name);
     }
     /**
@@ -39,13 +41,13 @@ let NotificationsProcessor = NotificationsProcessor_1 = class NotificationsProce
         }
     }
     /**
-     * Email stub — logs to console.
-     * Replace the logger.log() call with your SMTP/SES client when ready.
+     * Sends the email via Azure Communication Service.
+     * If ACS isn't configured, EmailService logs it instead — see EmailService
+     * for that fallback behaviour.
      */
     async handleEmail(job) {
         const { to, subject, body } = job.data;
-        // TODO: replace with nodemailer / AWS SES / SendGrid call
-        this.logger.log(`[EMAIL STUB] To: ${to} | Subject: ${subject}`);
+        await this.email.send({ to, subject, body });
     }
     /**
      * SMS stub — logs to console.
@@ -78,6 +80,7 @@ __decorate([
 ], NotificationsProcessor.prototype, "handleSms", null);
 exports.NotificationsProcessor = NotificationsProcessor = NotificationsProcessor_1 = __decorate([
     (0, bull_1.Processor)(queues_1.QUEUES.NOTIFICATIONS),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService,
+        email_service_1.EmailService])
 ], NotificationsProcessor);
 //# sourceMappingURL=notifications.processor.js.map

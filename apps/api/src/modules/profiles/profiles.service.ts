@@ -211,17 +211,28 @@ export class ProfilesService {
   }
 
   async reactivate(id: string) {
-    const before = await this.prisma.candidateProfile.findUnique({ where: { id } });
+    const before = await this.prisma.candidateProfile.findUnique({
+      where:   { id },
+      include: { user: { select: { email: true } } },
+    });
     if (!before) throw new NotFoundException('Profile not found');
 
     const after = await this.prisma.candidateProfile.update({
       where: { id },
-      data: { status: ProfileStatus.PENDING, reviewedAt: null, reviewedById: null },
+      data:  { status: ProfileStatus.PENDING, reviewedAt: null, reviewedById: null },
     });
 
     await this.audit.log({
       entityType: 'profile', entityId: id, action: 'REACTIVATED',
       oldState: { status: before.status }, newState: { status: after.status },
+    });
+
+    await this.notify.send({
+      userId:  before.userId,
+      subject: 'Your profile has been reactivated 🔄',
+      body:    `Your ${before.roleType.replace(/_/g, ' ')} profile has been reactivated and is back under review. You will be notified once a moderator has reviewed it.`,
+      link:    `/profile/${before.roleType}`,
+      email:   (before as any).user?.email,
     });
 
     return after;

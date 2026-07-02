@@ -15,6 +15,7 @@ export declare class ProfilesController {
             profileId: string;
         }[];
     } & {
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
         email: string | null;
@@ -34,7 +35,6 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
-        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
@@ -59,6 +59,7 @@ export declare class ProfilesController {
             profileId: string;
         }[];
     } & {
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
         email: string | null;
@@ -78,7 +79,6 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
-        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
@@ -114,6 +114,7 @@ export declare class ProfilesController {
             profileId: string;
         }[];
     } & {
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
         email: string | null;
@@ -133,7 +134,6 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
-        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
@@ -183,6 +183,7 @@ export declare class ProfilesController {
             uploadedAt: Date;
         }[];
     } & {
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
         email: string | null;
@@ -202,7 +203,6 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
-        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
@@ -221,6 +221,7 @@ export declare class ProfilesController {
             email: string;
         };
     } & {
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
         email: string | null;
@@ -240,7 +241,6 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
-        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
@@ -259,6 +259,7 @@ export declare class ProfilesController {
             email: string;
         };
     } & {
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
         email: string | null;
@@ -278,7 +279,6 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
-        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
@@ -292,6 +292,7 @@ export declare class ProfilesController {
         reviewedById: string | null;
     }>>;
     approve(id: string, modId: string): Promise<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
         email: string | null;
@@ -311,7 +312,6 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
-        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
@@ -325,6 +325,7 @@ export declare class ProfilesController {
         reviewedById: string | null;
     }>;
     reject(id: string, modId: string, dto: RejectProfileDto): Promise<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
         email: string | null;
@@ -344,7 +345,6 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
-        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
@@ -358,6 +358,7 @@ export declare class ProfilesController {
         reviewedById: string | null;
     }>;
     reactivate(id: string): Promise<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
         email: string | null;
@@ -377,7 +378,6 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
-        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;

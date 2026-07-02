@@ -61,16 +61,16 @@ exports.LocalStorageAdapter = LocalStorageAdapter = LocalStorageAdapter_1 = __de
     __metadata("design:paramtypes", [])
 ], LocalStorageAdapter);
 /*
- * ── Phase 2: S3 / Cloudflare R2 adapter ──────────────────────────────────────
- * When ready, create S3StorageAdapter implements IStorageService,
- * inject @aws-sdk/client-s3, replace LocalStorageAdapter in StorageModule.
+ * ── Phase 2: Azure Blob Storage adapter ──────────────────────────────────────
+ * When ready, create AzureBlobStorageAdapter implements IStorageService,
+ * inject @azure/storage-blob, replace LocalStorageAdapter in StorageModule.
  * DocumentsService needs zero changes.
  *
- * export class S3StorageAdapter implements IStorageService {
- *   constructor(private readonly s3: S3Client, private readonly bucket: string) {}
- *   async upload(filename, buffer, mimeType) { ... }
- *   async delete(storageKey) { ... }
- *   getUrl(storageKey) { return getSignedUrl(...); }
+ * export class AzureBlobStorageAdapter implements IStorageService {
+ *   constructor(private readonly containerClient: ContainerClient) {}
+ *   async upload(filename, buffer, mimeType) { ... } // containerClient.getBlockBlobClient(key).upload(...)
+ *   async delete(storageKey) { ... }                  // containerClient.getBlockBlobClient(key).deleteIfExists()
+ *   getUrl(storageKey) { return generateBlobSASQueryParameters(...); } // short-TTL SAS URL
  * }
  */
 //# sourceMappingURL=local-storage.adapter.js.map

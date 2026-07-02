@@ -16,6 +16,7 @@ const prisma_module_1 = require("./prisma/prisma.module");
 const app_config_module_1 = require("./config/app-config.module");
 const app_config_service_1 = require("./config/app-config.service");
 const storage_module_1 = require("./common/storage/storage.module");
+const email_module_1 = require("./common/email/email.module");
 const http_logger_middleware_1 = require("./common/middleware/http-logger.middleware");
 const auth_module_1 = require("./modules/auth/auth.module");
 const users_module_1 = require("./modules/users/users.module");
@@ -26,6 +27,7 @@ const documents_module_1 = require("./modules/documents/documents.module");
 const user_documents_module_1 = require("./modules/user-documents/user-documents.module");
 const verification_module_1 = require("./modules/verification/verification.module");
 const reports_module_1 = require("./modules/reports/reports.module");
+const payments_module_1 = require("./modules/payments/payments.module");
 const health_module_1 = require("./modules/health/health.module");
 const audit_module_1 = require("./modules/audit/audit.module");
 const notifications_module_1 = require("./modules/notifications/notifications.module");
@@ -59,6 +61,7 @@ exports.AppModule = AppModule = __decorate([
             app_config_module_1.AppConfigModule,
             // @Global() modules — services injectable everywhere without re-importing
             storage_module_1.StorageModule,
+            email_module_1.EmailModule,
             audit_module_1.AuditModule,
             notifications_module_1.NotificationsModule,
             // Feature modules
@@ -72,6 +75,7 @@ exports.AppModule = AppModule = __decorate([
             user_documents_module_1.UserDocumentsModule,
             verification_module_1.VerificationModule,
             reports_module_1.ReportsModule,
+            payments_module_1.PaymentsModule,
         ],
         providers: [
             { provide: core_1.APP_GUARD, useClass: throttler_1.ThrottlerGuard },

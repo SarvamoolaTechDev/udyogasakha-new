@@ -1,9 +1,11 @@
 import { Job } from 'bull';
 import { PrismaService } from '../../prisma/prisma.service';
+import { EmailService } from '../../common/email/email.service';
 export declare class NotificationsProcessor {
     private readonly prisma;
+    private readonly email;
     private readonly logger;
-    constructor(prisma: PrismaService);
+    constructor(prisma: PrismaService, email: EmailService);
     /**
      * Write the in-app notification row to the database.
      * Runs asynchronously — the HTTP response has already been sent.
@@ -15,8 +17,9 @@ export declare class NotificationsProcessor {
         link: string | null;
     }>): Promise<void>;
     /**
-     * Email stub — logs to console.
-     * Replace the logger.log() call with your SMTP/SES client when ready.
+     * Sends the email via Azure Communication Service.
+     * If ACS isn't configured, EmailService logs it instead — see EmailService
+     * for that fallback behaviour.
      */
     handleEmail(job: Job<{
         to: string;

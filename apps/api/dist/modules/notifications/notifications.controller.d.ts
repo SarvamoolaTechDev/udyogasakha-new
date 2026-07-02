@@ -4,10 +4,10 @@ export declare class NotificationsController {
     constructor(svc: NotificationsService);
     getAll(userId: string, unread?: string, page?: string, limit?: string): Promise<import("../../common/pagination").Paginated<{
         link: string | null;
-        id: string;
-        userId: string;
         subject: string;
         body: string;
+        id: string;
+        userId: string;
         read: boolean;
         createdAt: Date;
     }>>;

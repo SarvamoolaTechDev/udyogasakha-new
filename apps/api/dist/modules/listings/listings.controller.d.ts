@@ -5,12 +5,12 @@ export declare class ListingsController {
     private readonly svc;
     constructor(svc: ListingsService);
     create(dto: CreateListingDto, userId: string): Promise<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -35,15 +35,17 @@ export declare class ListingsController {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }>;
     findAll(search?: string, role?: string, market?: string, mode?: string, paid?: string, cert?: string, page?: string, limit?: string): Promise<import("../../common/pagination").Paginated<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -68,15 +70,17 @@ export declare class ListingsController {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }>>;
     getPending(page?: string, limit?: string): Promise<import("../../common/pagination").Paginated<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -101,15 +105,17 @@ export declare class ListingsController {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }>>;
     findOne(id: string): Promise<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -134,15 +140,17 @@ export declare class ListingsController {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }>;
     getSimilar(id: string, role: string): Promise<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -167,15 +175,17 @@ export declare class ListingsController {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }[]>;
     update(id: string, userId: string, dto: UpdateListingDto): Promise<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -200,15 +210,17 @@ export declare class ListingsController {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }>;
     approve(id: string, modId: string): Promise<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -233,15 +245,17 @@ export declare class ListingsController {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }>;
     reject(id: string, modId: string, dto: RejectListingDto): Promise<{
+        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         location: string;
         description: string;
         title: string;
         skills: string[];
-        payment: import(".prisma/client").$Enums.PaymentType;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
         status: import(".prisma/client").$Enums.ProfileStatus;
@@ -266,6 +280,8 @@ export declare class ListingsController {
         requirements: string[];
         icon: string | null;
         postedAt: Date;
+        featured: boolean;
+        featuredUntil: Date | null;
         postedById: string | null;
     }>;
 }
