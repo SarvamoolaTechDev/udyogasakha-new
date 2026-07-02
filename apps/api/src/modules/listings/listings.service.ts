@@ -4,6 +4,7 @@ import { ProfileStatus } from '@prisma/client';
 import { parsePage, paginate } from '../../common/pagination';
 import { AuditService } from '../audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { SearchService } from '../search/search.service';
 import { CreateListingDto } from './dto/listing.dto';
 import { UpdateListingDto } from './dto/update-listing.dto';
 
@@ -13,6 +14,7 @@ export class ListingsService {
     private readonly prisma:  PrismaService,
     private readonly audit:   AuditService,
     private readonly notify:  NotificationsService,
+    private readonly search:  SearchService,
   ) {}
 
   async create(dto: CreateListingDto, userId: string) {
@@ -40,20 +42,62 @@ export class ListingsService {
     search?: string; role?: string; market?: string; mode?: string;
     paid?: string; cert?: string; page?: number; limit?: number;
   }) {
+    const p = parsePage(filters.page, filters.limit);
+
+    // ── Meilisearch path ──────────────────────────────────────────────────
+    // When Meilisearch is available, use it for all searches including
+    // empty-string queries (which return everything, sorted by featured
+    // status then recency — same result as Postgres, but much faster at scale).
+    if (this.search.isAvailable) {
+      try {
+        const { ids, totalHits } = await this.search.searchListings({
+          query:               filters.search,
+          targetRoleType:      filters.role,
+          marketField:         filters.market,
+          workMode:            filters.mode,
+          payment:             filters.paid,
+          certificateProvided: filters.cert,
+          page:                p.page,
+          limit:               p.limit,
+        });
+
+        if (ids.length === 0) return paginate([], totalHits, p);
+
+        // Fetch full records from Postgres in one query, then re-sort to
+        // preserve Meilisearch's relevance order (Prisma's findMany doesn't
+        // guarantee the order of results when using `id: { in: [...] }`).
+        const records = await this.prisma.jobListing.findMany({
+          where: { id: { in: ids } },
+        });
+        const ordered = ids.map(id => records.find(r => r.id === id)).filter(Boolean);
+
+        return paginate(ordered, totalHits, p);
+      } catch (err) {
+        // Fall through to Postgres on any Meilisearch error
+      }
+    }
+
+    // ── Postgres fallback (ILIKE) ─────────────────────────────────────────
+    // Used when Meilisearch is unavailable or throws an unexpected error.
+    // Also the path used until the backfill script has run at least once.
     const where: any = { status: ProfileStatus.APPROVED };
     if (filters.search) where.OR = [
       { title:            { contains: filters.search, mode: 'insensitive' } },
       { organisationName: { contains: filters.search, mode: 'insensitive' } },
+      { skills:           { hasSome:  [filters.search] } },
     ];
-    if (filters.role)   where.targetRoleType        = filters.role;
-    if (filters.market) where.marketField            = filters.market;
-    if (filters.mode)   where.workMode               = filters.mode;
-    if (filters.paid)   where.payment                = filters.paid;
-    if (filters.cert)   where.certificateProvided    = filters.cert;
+    if (filters.role)   where.targetRoleType     = filters.role;
+    if (filters.market) where.marketField         = filters.market;
+    if (filters.mode)   where.workMode            = filters.mode;
+    if (filters.paid)   where.payment             = filters.paid;
+    if (filters.cert)   where.certificateProvided = filters.cert;
 
-    const p = parsePage(filters.page, filters.limit);
     const [data, total] = await this.prisma.$transaction([
-      this.prisma.jobListing.findMany({ where, orderBy: { postedAt: 'desc' }, skip: p.skip, take: p.limit }),
+      this.prisma.jobListing.findMany({
+        where,
+        orderBy: [{ featured: 'desc' }, { postedAt: 'desc' }],
+        skip: p.skip, take: p.limit,
+      }),
       this.prisma.jobListing.count({ where }),
     ]);
     return paginate(data, total, p);
@@ -109,10 +153,26 @@ export class ListingsService {
       });
     }
 
-    return after;
-  }
+    // Index in Meilisearch so it appears in search results immediately
+    await this.search.indexListing({
+      id:                  after.id,
+      title:               after.title,
+      organisationName:    after.organisationName,
+      description:         after.description,
+      location:            after.location,
+      skills:              after.skills,
+      targetRoleType:      after.targetRoleType,
+      marketField:         after.marketField,
+      workMode:            after.workMode,
+      payment:             after.payment,
+      certificateProvided: after.certificateProvided,
+      industry:            after.industry,
+      featured:            after.featured,
+      postedAt:            after.postedAt,
+    });
 
-  async update(id: string, userId: string, dto: UpdateListingDto) {
+    return after;
+  }(id: string, userId: string, dto: UpdateListingDto) {
     const listing = await this.findById(id);
 
     // Only the original poster can edit, and only while PENDING or REJECTED
@@ -177,6 +237,9 @@ export class ListingsService {
         email:   (before as any).postedBy?.email,
       });
     }
+
+    // Remove from Meilisearch — rejected listings must not appear in search results
+    await this.search.removeListing(id);
 
     return after;
   }

@@ -49,4 +49,12 @@ export class AppConfigService {
   get azureStorageContainerName() {
     return this.c.get<string>('AZURE_STORAGE_CONTAINER_NAME', 'udyogasakha-documents');
   }
+
+  // ── Meilisearch ──────────────────────────────────────────────────────────────
+  // Point MEILISEARCH_URL at your Meilisearch instance regardless of where
+  // it's hosted (local Docker, Azure Container Instance, Azure Container Apps).
+  // The code is identical in all cases — only this URL changes.
+  get meilisearchUrl()       { return this.c.get<string>('MEILISEARCH_URL',        'http://localhost:7700'); }
+  get meilisearchMasterKey() { return this.c.get<string>('MEILISEARCH_MASTER_KEY', ''); }
+  get meilisearchEnabled()   { return !!this.meilisearchUrl; }
 }

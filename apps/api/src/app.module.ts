@@ -19,6 +19,7 @@ import { UserDocumentsModule } from './modules/user-documents/user-documents.mod
 import { VerificationModule } from './modules/verification/verification.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { PaymentsModule } from './modules/payments/payments.module';
+import { SearchModule }   from './modules/search/search.module';
 import { HealthModule } from './modules/health/health.module';
 import { AuditModule } from './modules/audit/audit.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
@@ -66,6 +67,7 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     VerificationModule,
     ReportsModule,
     PaymentsModule,
+    SearchModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

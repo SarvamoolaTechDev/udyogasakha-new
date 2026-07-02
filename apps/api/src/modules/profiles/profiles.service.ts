@@ -4,6 +4,7 @@ import { ProfileStatus, MarketField, MarketSegment } from '@prisma/client';
 import { parsePage, paginate } from '../../common/pagination';
 import { AuditService } from '../audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { SearchService }        from '../search/search.service';
 import { UpsertProfileDto, AddExperienceDto } from './dto/profile.dto';
 
 /**
@@ -27,6 +28,7 @@ export class ProfilesService {
     private readonly prisma:  PrismaService,
     private readonly audit:   AuditService,
     private readonly notify:  NotificationsService,
+    private readonly search:  SearchService,
   ) {}
 
   async upsert(userId: string, dto: UpsertProfileDto) {
@@ -176,6 +178,20 @@ export class ProfilesService {
       email:   (before as any).user?.email,
     });
 
+    // Index in Meilisearch so this profile is discoverable in talent search
+    await this.search.indexProfile({
+      id:            after.id,
+      fullName:      after.fullName,
+      skills:        after.skills,
+      city:          after.city          ?? '',
+      summary:       after.summary       ?? '',
+      roleType:      after.roleType,
+      marketField:   after.marketField   ?? '',
+      marketSegment: after.marketSegment,
+      workMode:      after.workMode,
+      institution:   after.institution   ?? '',
+    });
+
     return after;
   }
 
@@ -198,7 +214,6 @@ export class ProfilesService {
       metadata: { reason },
     });
 
-    // Notify the profile owner with the reason
     await this.notify.send({
       userId:  before.userId,
       subject: 'Profile review update',
@@ -206,6 +221,9 @@ export class ProfilesService {
       link:    `/profile/${before.roleType}`,
       email:   (before as any).user?.email,
     });
+
+    // Remove from Meilisearch — rejected profiles must not appear in talent search
+    await this.search.removeProfile(id);
 
     return after;
   }
@@ -234,6 +252,9 @@ export class ProfilesService {
       link:    `/profile/${before.roleType}`,
       email:   (before as any).user?.email,
     });
+
+    // Profile is back to PENDING — remove from search until re-approved
+    await this.search.removeProfile(id);
 
     return after;
   }

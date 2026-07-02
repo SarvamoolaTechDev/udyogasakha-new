@@ -10,10 +10,11 @@
     "build":       "nest build",
     "start":       "node dist/main",
     "dev":         "nest start --watch",
-    "db:migrate":  "prisma migrate deploy",
-    "db:migrate:dev": "prisma migrate dev",
-    "db:seed":     "ts-node prisma/seed.ts",
-    "db:studio":   "prisma studio"
+    "db:migrate":       "prisma migrate deploy",
+    "db:migrate:dev":   "prisma migrate dev",
+    "db:seed":          "ts-node prisma/seed.ts",
+    "db:studio":        "prisma studio",
+    "search:backfill":  "ts-node prisma/backfill-search.ts"
   },
   "dependencies": {
     "@nestjs/common":           "^10.3.0",
@@ -28,6 +29,7 @@
     "@azure/communication-email": "^1.0.0",
     "razorpay":                  "^2.9.4",
     "@azure/storage-blob":       "^12.17.0",
+    "meilisearch":               "^0.40.0",
     "bull":                     "^4.16.3",
     "ioredis":                  "^5.3.2",
     "@prisma/client":           "^5.12.0",
