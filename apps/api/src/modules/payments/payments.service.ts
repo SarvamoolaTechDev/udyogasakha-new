@@ -1,4 +1,5 @@
-import { Injectable, Logger, BadRequestException, NotFoundException, ServiceUnavailableException } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, NotFoundException, ServiceUnavailableException, OnModuleInit } from '@nestjs/common';
+import { ModuleRef } from '@nestjs/core';
 import * as crypto from 'crypto';
 import Razorpay from 'razorpay';
 import { PrismaService } from '../../prisma/prisma.service';
@@ -35,15 +36,17 @@ function mapRazorpayMethod(rpMethod: string | undefined, international: boolean)
 }
 
 @Injectable()
-export class PaymentsService {
+export class PaymentsService implements OnModuleInit {
   private readonly logger = new Logger(PaymentsService.name);
   private readonly razorpay: Razorpay | null;
+  private walletServiceRef: any; // resolved lazily via ModuleRef to avoid circular dependency
 
   constructor(
-    private readonly prisma:  PrismaService,
-    private readonly config:  AppConfigService,
-    private readonly audit:   AuditService,
-    private readonly notify:  NotificationsService,
+    private readonly prisma:     PrismaService,
+    private readonly config:     AppConfigService,
+    private readonly audit:      AuditService,
+    private readonly notify:     NotificationsService,
+    private readonly moduleRef:  ModuleRef,
   ) {
     if (config.razorpayConfigured) {
       this.razorpay = new Razorpay({
@@ -56,6 +59,18 @@ export class PaymentsService {
         'RAZORPAY_KEY_ID / RAZORPAY_KEY_SECRET are not set — payment endpoints will reject ' +
         'requests with 503 until configured.',
       );
+    }
+  }
+
+  async onModuleInit() {
+    // Resolve WalletService lazily after all modules are loaded — avoids the
+    // PaymentsModule ↔ WalletModule circular dependency that would arise if
+    // WalletService were injected directly in the constructor.
+    try {
+      const { WalletService } = await import('../wallet/wallet.service');
+      this.walletServiceRef = await this.moduleRef.resolve(WalletService);
+    } catch {
+      // WalletModule may not be loaded in test environments — safe to ignore
     }
   }
 
@@ -210,19 +225,27 @@ export class PaymentsService {
   }
 
   /** Applies whatever the payment was actually for, once captured. */
-  private async applyPurposeSideEffect(payment: { purpose: PaymentPurpose; referenceId: string | null }) {
+  private async applyPurposeSideEffect(payment: { id: string; purpose: PaymentPurpose; referenceId: string | null; userId: string; amountPaise: number }) {
     if (payment.purpose === PaymentPurpose.LISTING_FEATURE && payment.referenceId) {
       await this.prisma.jobListing.update({
         where: { id: payment.referenceId },
         data: {
           featured:      true,
-          featuredUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+          featuredUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
         },
       });
     }
-    // CERTIFICATION_FEE / REGISTRATION_FEE: no automated side effect yet —
-    // these are placeholders until the corresponding product flows (trust
-    // levels, registration gating) are designed. See Phase 2 notes.
+
+    if (payment.purpose === PaymentPurpose.WALLET_TOPUP) {
+      // Lazy-load WalletService to avoid circular dependency
+      // (WalletModule imports PaymentsModule; PaymentsModule must not import WalletModule)
+      const { WalletService } = await import('../wallet/wallet.service');
+      const walletSvc = this.walletServiceRef;
+      if (walletSvc) {
+        const points = Math.floor(payment.amountPaise / 100); // 1 rupee = 1 point
+        await walletSvc.topUp(payment.userId, points, payment.id);
+      }
+    }
   }
 
   private async markFailed(razorpayOrderId: string, reason: string, rawPayload?: any) {

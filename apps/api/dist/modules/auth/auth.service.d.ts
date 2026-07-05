@@ -3,13 +3,15 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AppConfigService } from '../../config/app-config.service';
 import { AuditService } from '../audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { WalletService } from '../wallet/wallet.service';
 export declare class AuthService {
     private readonly prisma;
     private readonly jwt;
     private readonly config;
     private readonly audit;
     private readonly notify;
-    constructor(prisma: PrismaService, jwt: JwtService, config: AppConfigService, audit: AuditService, notify: NotificationsService);
+    private readonly wallet;
+    constructor(prisma: PrismaService, jwt: JwtService, config: AppConfigService, audit: AuditService, notify: NotificationsService, wallet: WalletService);
     register(dto: {
         email: string;
         password: string;
@@ -58,12 +60,12 @@ export declare class AuthService {
         name: string;
         id: string;
         createdAt: Date;
-        email: string;
+        updatedAt: Date;
         phone: string | null;
+        email: string;
+        city: string | null;
         passwordHash: string;
         roles: import(".prisma/client").$Enums.UserRole[];
-        city: string | null;
-        updatedAt: Date;
     }>;
     private issue;
 }

@@ -16,11 +16,13 @@ const client_1 = require("@prisma/client");
 const pagination_1 = require("../../common/pagination");
 const audit_service_1 = require("../audit/audit.service");
 const notifications_service_1 = require("../notifications/notifications.service");
+const search_service_1 = require("../search/search.service");
 let ListingsService = class ListingsService {
-    constructor(prisma, audit, notify) {
+    constructor(prisma, audit, notify, search) {
         this.prisma = prisma;
         this.audit = audit;
         this.notify = notify;
+        this.search = search;
     }
     async create(dto, userId) {
         const listing = await this.prisma.jobListing.create({
@@ -41,11 +43,47 @@ let ListingsService = class ListingsService {
         return listing;
     }
     async findAll(filters) {
+        const p = (0, pagination_1.parsePage)(filters.page, filters.limit);
+        // ── Meilisearch path ──────────────────────────────────────────────────
+        // When Meilisearch is available, use it for all searches including
+        // empty-string queries (which return everything, sorted by featured
+        // status then recency — same result as Postgres, but much faster at scale).
+        if (this.search.isAvailable) {
+            try {
+                const { ids, totalHits } = await this.search.searchListings({
+                    query: filters.search,
+                    targetRoleType: filters.role,
+                    marketField: filters.market,
+                    workMode: filters.mode,
+                    payment: filters.paid,
+                    certificateProvided: filters.cert,
+                    page: p.page,
+                    limit: p.limit,
+                });
+                if (ids.length === 0)
+                    return (0, pagination_1.paginate)([], totalHits, p);
+                // Fetch full records from Postgres in one query, then re-sort to
+                // preserve Meilisearch's relevance order (Prisma's findMany doesn't
+                // guarantee the order of results when using `id: { in: [...] }`).
+                const records = await this.prisma.jobListing.findMany({
+                    where: { id: { in: ids } },
+                });
+                const ordered = ids.map(id => records.find(r => r.id === id)).filter(Boolean);
+                return (0, pagination_1.paginate)(ordered, totalHits, p);
+            }
+            catch (err) {
+                // Fall through to Postgres on any Meilisearch error
+            }
+        }
+        // ── Postgres fallback (ILIKE) ─────────────────────────────────────────
+        // Used when Meilisearch is unavailable or throws an unexpected error.
+        // Also the path used until the backfill script has run at least once.
         const where = { status: client_1.ProfileStatus.APPROVED };
         if (filters.search)
             where.OR = [
                 { title: { contains: filters.search, mode: 'insensitive' } },
                 { organisationName: { contains: filters.search, mode: 'insensitive' } },
+                { skills: { hasSome: [filters.search] } },
             ];
         if (filters.role)
             where.targetRoleType = filters.role;
@@ -57,9 +95,12 @@ let ListingsService = class ListingsService {
             where.payment = filters.paid;
         if (filters.cert)
             where.certificateProvided = filters.cert;
-        const p = (0, pagination_1.parsePage)(filters.page, filters.limit);
         const [data, total] = await this.prisma.$transaction([
-            this.prisma.jobListing.findMany({ where, orderBy: { postedAt: 'desc' }, skip: p.skip, take: p.limit }),
+            this.prisma.jobListing.findMany({
+                where,
+                orderBy: [{ featured: 'desc' }, { postedAt: 'desc' }],
+                skip: p.skip, take: p.limit,
+            }),
             this.prisma.jobListing.count({ where }),
         ]);
         return (0, pagination_1.paginate)(data, total, p);
@@ -69,6 +110,27 @@ let ListingsService = class ListingsService {
         if (!l)
             throw new common_1.NotFoundException('Listing not found');
         return l;
+    }
+    /**
+     * Returns the sensitive contact fields (phone, email, contactPerson) for a listing.
+     * Requires the calling user to have an active ListingUnlock record.
+     * The unlock itself (point deduction + record creation) is handled by WalletService.
+     */
+    async getDetails(id, userId) {
+        const unlock = await this.prisma.listingUnlock.findUnique({
+            where: { userId_listingId: { userId, listingId: id } },
+        });
+        if (!unlock) {
+            throw new common_1.BadRequestException('This listing has not been unlocked. Use POST /wallet/unlock-listing/:id first.');
+        }
+        const l = await this.prisma.jobListing.findUnique({ where: { id } });
+        if (!l)
+            throw new common_1.NotFoundException('Listing not found');
+        return {
+            contactPerson: l.contactPerson,
+            contactEmail: l.contactEmail,
+            contactPhone: l.contactPhone,
+        };
     }
     async findSimilar(id, role, limit = 3) {
         return this.prisma.jobListing.findMany({
@@ -85,7 +147,12 @@ let ListingsService = class ListingsService {
         return (0, pagination_1.paginate)(data, total, p);
     }
     async approve(id, moderatorId) {
-        const before = await this.findById(id);
+        const before = await this.prisma.jobListing.findUnique({
+            where: { id },
+            include: { postedBy: { select: { email: true } } },
+        });
+        if (!before)
+            throw new common_1.NotFoundException('Listing not found');
         const after = await this.prisma.jobListing.update({
             where: { id },
             data: { status: client_1.ProfileStatus.APPROVED, reviewedById: moderatorId, reviewedAt: new Date() },
@@ -95,15 +162,32 @@ let ListingsService = class ListingsService {
             oldState: { status: before.status },
             newState: { status: after.status, reviewedAt: after.reviewedAt },
         });
-        // Notify the poster if we know who posted it
         if (before.postedById) {
             await this.notify.send({
                 userId: before.postedById,
                 subject: 'Your listing is live! ✅',
                 body: `Your listing "${before.title}" has been approved and is now visible to candidates on the portal.`,
                 link: `/jobs/${before.id}`,
+                email: before.postedBy?.email,
             });
         }
+        // Index in Meilisearch so it appears in search results immediately
+        await this.search.indexListing({
+            id: after.id,
+            title: after.title,
+            organisationName: after.organisationName,
+            description: after.description,
+            location: after.location,
+            skills: after.skills,
+            targetRoleType: after.targetRoleType,
+            marketField: after.marketField,
+            workMode: after.workMode,
+            payment: after.payment,
+            certificateProvided: after.certificateProvided,
+            industry: after.industry,
+            featured: after.featured,
+            postedAt: after.postedAt,
+        });
         return after;
     }
     async update(id, userId, dto) {
@@ -139,7 +223,12 @@ let ListingsService = class ListingsService {
         return updated;
     }
     async reject(id, moderatorId, reason) {
-        const before = await this.findById(id);
+        const before = await this.prisma.jobListing.findUnique({
+            where: { id },
+            include: { postedBy: { select: { email: true } } },
+        });
+        if (!before)
+            throw new common_1.NotFoundException('Listing not found');
         const after = await this.prisma.jobListing.update({
             where: { id },
             data: { status: client_1.ProfileStatus.REJECTED, rejectionReason: reason, reviewedById: moderatorId, reviewedAt: new Date() },
@@ -154,10 +243,13 @@ let ListingsService = class ListingsService {
             await this.notify.send({
                 userId: before.postedById,
                 subject: 'Listing could not be approved',
-                body: `Your listing "${before.title}" was not approved. Reason: ${reason}. Please update and resubmit.`,
-                link: `/post`,
+                body: `Your listing "${before.title}" was not approved. Reason: ${reason}. Please update your listing and resubmit.`,
+                link: '/post',
+                email: before.postedBy?.email,
             });
         }
+        // Remove from Meilisearch — rejected listings must not appear in search results
+        await this.search.removeListing(id);
         return after;
     }
 };
@@ -166,6 +258,7 @@ exports.ListingsService = ListingsService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         audit_service_1.AuditService,
-        notifications_service_1.NotificationsService])
+        notifications_service_1.NotificationsService,
+        search_service_1.SearchService])
 ], ListingsService);
 //# sourceMappingURL=listings.service.js.map

@@ -27,7 +27,7 @@ function loadRazorpayScript(): Promise<void> {
 }
 
 export interface StartPaymentParams {
-  purpose:      'LISTING_FEATURE' | 'CERTIFICATION_FEE' | 'REGISTRATION_FEE' | 'OTHER';
+  purpose:      'LISTING_FEATURE' | 'CERTIFICATION_FEE' | 'REGISTRATION_FEE' | 'WALLET_TOPUP' | 'OTHER';
   referenceId?: string;
   amount:       number;   // in rupees (or major unit of `currency`)
   currency?:    string;   // defaults to INR server-side

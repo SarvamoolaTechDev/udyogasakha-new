@@ -16,6 +16,7 @@ const client_1 = require("@prisma/client");
 const pagination_1 = require("../../common/pagination");
 const audit_service_1 = require("../audit/audit.service");
 const notifications_service_1 = require("../notifications/notifications.service");
+const search_service_1 = require("../search/search.service");
 /**
  * Derives the three-bucket market field from the candidate's own segment selection.
  * This is deterministic — no moderator input required.
@@ -33,10 +34,11 @@ function deriveMarketField(segment) {
     return client_1.MarketField.NON_IT_FIELD;
 }
 let ProfilesService = class ProfilesService {
-    constructor(prisma, audit, notify) {
+    constructor(prisma, audit, notify, search) {
         this.prisma = prisma;
         this.audit = audit;
         this.notify = notify;
+        this.search = search;
     }
     async upsert(userId, dto) {
         const existing = await this.prisma.candidateProfile.findUnique({
@@ -169,6 +171,19 @@ let ProfilesService = class ProfilesService {
             link: `/profile/${before.roleType}`,
             email: before.user?.email,
         });
+        // Index in Meilisearch so this profile is discoverable in talent search
+        await this.search.indexProfile({
+            id: after.id,
+            fullName: after.fullName,
+            skills: after.skills,
+            city: after.city ?? '',
+            summary: after.summary ?? '',
+            roleType: after.roleType,
+            marketField: after.marketField ?? '',
+            marketSegment: after.marketSegment,
+            workMode: after.workMode,
+            institution: after.institution ?? '',
+        });
         return after;
     }
     async reject(id, modId, reason) {
@@ -188,7 +203,6 @@ let ProfilesService = class ProfilesService {
             newState: { status: after.status },
             metadata: { reason },
         });
-        // Notify the profile owner with the reason
         await this.notify.send({
             userId: before.userId,
             subject: 'Profile review update',
@@ -196,10 +210,15 @@ let ProfilesService = class ProfilesService {
             link: `/profile/${before.roleType}`,
             email: before.user?.email,
         });
+        // Remove from Meilisearch — rejected profiles must not appear in talent search
+        await this.search.removeProfile(id);
         return after;
     }
     async reactivate(id) {
-        const before = await this.prisma.candidateProfile.findUnique({ where: { id } });
+        const before = await this.prisma.candidateProfile.findUnique({
+            where: { id },
+            include: { user: { select: { email: true } } },
+        });
         if (!before)
             throw new common_1.NotFoundException('Profile not found');
         const after = await this.prisma.candidateProfile.update({
@@ -210,6 +229,15 @@ let ProfilesService = class ProfilesService {
             entityType: 'profile', entityId: id, action: 'REACTIVATED',
             oldState: { status: before.status }, newState: { status: after.status },
         });
+        await this.notify.send({
+            userId: before.userId,
+            subject: 'Your profile has been reactivated 🔄',
+            body: `Your ${before.roleType.replace(/_/g, ' ')} profile has been reactivated and is back under review. You will be notified once a moderator has reviewed it.`,
+            link: `/profile/${before.roleType}`,
+            email: before.user?.email,
+        });
+        // Profile is back to PENDING — remove from search until re-approved
+        await this.search.removeProfile(id);
         return after;
     }
 };
@@ -218,6 +246,7 @@ exports.ProfilesService = ProfilesService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         audit_service_1.AuditService,
-        notifications_service_1.NotificationsService])
+        notifications_service_1.NotificationsService,
+        search_service_1.SearchService])
 ], ProfilesService);
 //# sourceMappingURL=profiles.service.js.map

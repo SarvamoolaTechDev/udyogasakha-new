@@ -6,6 +6,7 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { AppConfigService } from '../../config/app-config.service';
 import { AuditService } from '../audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { WalletService } from '../wallet/wallet.service';
 import { UserRole } from '@prisma/client';
 
 @Injectable()
@@ -16,6 +17,7 @@ export class AuthService {
     private readonly config:  AppConfigService,
     private readonly audit:   AuditService,
     private readonly notify:  NotificationsService,
+    private readonly wallet:  WalletService,
   ) {}
 
   async register(dto: { email: string; password: string; name: string; phone?: string }) {
@@ -36,6 +38,11 @@ export class AuthService {
         data: { userId: user.id, currentLevel: 'L0' },
       }),
     ]);
+
+    // Create wallet with temporary signup bonus
+    // ⚠️ TEMPORARY: bonus should trigger on 2nd approved profile, not registration.
+    // Replace this once client has reviewed design doc — see WalletService.createForUser().
+    await this.wallet.createForUser(user.id);
 
     await this.audit.log({
       entityType: 'user',

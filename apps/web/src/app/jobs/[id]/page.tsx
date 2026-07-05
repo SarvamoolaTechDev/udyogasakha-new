@@ -1,9 +1,12 @@
 'use client';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import { useState } from 'react';
 import { Skeleton, SkeletonCard } from '@/components/ui/Skeleton';
-import { useQuery } from '@tanstack/react-query';
-import { listingsApi } from '@/lib/api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { listingsApi, walletApi } from '@/lib/api';
+import { useAuthStore } from '@/store/auth.store';
+import { useWallet, UNLOCK_COST, LOW_BALANCE, TopUpModal, LowBalanceModal } from '@/components/wallet/WalletComponents';
 
 const EXP: Record<string,string> = { ANY:'Any', FRESHER_0_1:'0–1 yr', EXP_1_3:'1–3 yrs', EXP_3_5:'3–5 yrs', EXP_5_8:'5–8 yrs', EXP_8_PLUS:'8+ yrs' };
 const DUR: Record<string,string> = { SHORT_TERM:'1–3 months', MEDIUM_TERM:'3–6 months', LONG_TERM:'6+ months', PERMANENT:'Permanent', PROJECT_BASED:'Project Based' };
@@ -11,9 +14,54 @@ const ROLE: Record<string,string> = { INTERN:'Intern', FRESHER:'Fresher', JOB_SE
 
 export default function JobDetailPage() {
   const { id } = useParams<{ id:string }>();
+  const { isAuthenticated } = useAuthStore();
+  const { balance, invalidate: invalidateBalance } = useWallet();
+  const qc = useQueryClient();
+
+  const [showTopUp,    setShowTopUp]    = useState(false);
+  const [showLowBal,   setShowLowBal]   = useState(false);
+  const [pendingUnlock, setPendingUnlock] = useState(false);
+  const [details,      setDetails]      = useState<any>(null);
 
   const { data:job, isLoading } = useQuery({ queryKey:['listing',id], queryFn:()=>listingsApi.getById(id), enabled:!!id });
-  const { data:similar=[] }    = useQuery({ queryKey:['similar',id,job?.targetRoleType], queryFn:()=>listingsApi.getSimilar(id,job.targetRoleType), enabled:!!job });
+  const { data:similar=[] }    = useQuery({ queryKey:['similar',id,(job as any)?.targetRoleType], queryFn:()=>listingsApi.getSimilar(id,(job as any).targetRoleType), enabled:!!job });
+  const { data:unlockStatus }  = useQuery({
+    queryKey: ['listing-unlock', id],
+    queryFn:  () => walletApi.listingStatus([id]).then((r:any) => r[id]),
+    enabled:  !!id && isAuthenticated,
+  });
+
+  const isUnlocked = !!unlockStatus || !!details;
+
+  const unlockMutation = useMutation({
+    mutationFn: async () => {
+      const result = await walletApi.unlockListing(id);
+      const contactInfo = await walletApi.getListingDetails(id);
+      return { result, contactInfo };
+    },
+    onSuccess: ({ result, contactInfo }) => {
+      setDetails(contactInfo);
+      invalidateBalance();
+      qc.invalidateQueries({ queryKey: ['listing-unlock', id] });
+    },
+  });
+
+  const handleUnlockClick = () => {
+    if (!isAuthenticated) { window.location.href = `/login?from=/jobs/${id}`; return; }
+    if (balance < UNLOCK_COST) { setShowLowBal(true); return; }
+    if (balance <= LOW_BALANCE) {
+      // Warning: low balance but can still afford this one
+      setShowLowBal(true);
+      return;
+    }
+    doUnlock();
+  };
+
+  const doUnlock = async () => {
+    setShowLowBal(false);
+    setShowTopUp(false);
+    await unlockMutation.mutateAsync();
+  };
 
   if (isLoading) return (
     <div style={{ maxWidth:'1100px', margin:'0 auto', padding:'36px 4%' }}>
@@ -32,6 +80,7 @@ export default function JobDetailPage() {
   );
 
   return (
+    <>
     <div className="layout-with-sidebar" style={{ maxWidth:'1100px', margin:'0 auto', padding:'36px 4% 60px' }}>
       {/* Left — main content */}
       <div>
@@ -126,35 +175,76 @@ export default function JobDetailPage() {
 
       {/* Right sidebar */}
       <div className="layout-sidebar-col">
-        {/* Apply card */}
+        {/* Unlock / Contact card */}
         <div className="gc" style={{ padding:'24px', marginBottom:'18px', position:'sticky', top:'86px' }}>
-          <h3 style={{ fontFamily:'Cinzel,serif', fontSize:'16px', fontWeight:700, color:'#fff', marginBottom:'6px' }}>Apply for this Role</h3>
-          <p style={{ fontSize:'12px', color:'var(--muted)', marginBottom:'18px' }}>{job.salary||'Competitive'} · {job.workMode?.replace('_',' ')} · {DUR[job.duration]}</p>
-          <Link href={`/profile/${job.targetRoleType}`} style={{
-            display:'block', textAlign:'center', padding:'14px', borderRadius:'12px', textDecoration:'none',
-            fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, letterSpacing:'1px', marginBottom:'10px',
-            background:'linear-gradient(135deg,var(--gold),var(--gold2))', color:'var(--navy)', boxShadow:'0 6px 22px var(--goldglow)',
-          }}>
-            Apply as {ROLE[job.targetRoleType]} →
-          </Link>
-
-          <div style={{ display:'flex', flexDirection:'column', gap:'10px', marginTop:'16px', paddingTop:'16px', borderTop:'1px solid var(--bf)' }}>
-            {[['🏢',job.organisationName],['📍',job.location],['💰',job.salary||'Competitive'],['⏱️',EXP[job.experienceRequired]],['🏠',job.workMode?.replace('_',' ')],['📅',`Posted: ${new Date(job.postedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}`]].map(([icon,val])=>(
-              <div key={String(icon)} style={{ display:'flex', alignItems:'center', gap:'10px', fontSize:'12px', color:'var(--muted)' }}>
-                <span style={{ fontSize:'16px', width:'20px', textAlign:'center' }}>{icon}</span><span>{val}</span>
+          {isUnlocked ? (
+            // ── Contact details revealed after unlock ──────────────────────
+            <>
+              <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'14px' }}>
+                <span style={{ fontSize:'18px' }}>✅</span>
+                <span style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'var(--offwhite)' }}>Contact Details</span>
               </div>
-            ))}
-          </div>
+              {[
+                details?.contactPerson  && ['👤', 'Contact',  details.contactPerson],
+                details?.contactEmail   && ['✉️',  'Email',    details.contactEmail],
+                details?.contactPhone   && ['📞', 'Phone',    details.contactPhone],
+              ].filter(Boolean).map(([icon, label, val]: any) => (
+                <div key={label} style={{ display:'flex', gap:'10px', alignItems:'flex-start', marginBottom:'10px' }}>
+                  <span style={{ fontSize:'14px', marginTop:'1px' }}>{icon}</span>
+                  <div>
+                    <div style={{ fontSize:'10px', color:'var(--muted)', marginBottom:'2px', textTransform:'uppercase', letterSpacing:'0.8px' }}>{label}</div>
+                    <div style={{ fontSize:'13px', fontWeight:600, color:'var(--offwhite)' }}>{val}</div>
+                  </div>
+                </div>
+              ))}
+              <Link href={`/profile/${(job as any).targetRoleType}`} style={{ display:'block', textAlign:'center', padding:'12px', borderRadius:'12px', textDecoration:'none', fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, background:'linear-gradient(135deg,var(--gold2),var(--gold3))', color:'#fff', marginTop:'16px' }}>
+                Apply as {ROLE[(job as any).targetRoleType]} →
+              </Link>
+            </>
+          ) : (
+            // ── Locked state ──────────────────────────────────────────────
+            <>
+              <div style={{ textAlign:'center', marginBottom:'16px' }}>
+                <div style={{ fontSize:'32px', marginBottom:'8px' }}>🔒</div>
+                <h3 style={{ fontFamily:'Cinzel,serif', fontSize:'15px', fontWeight:700, color:'var(--offwhite)', marginBottom:'6px' }}>View Full Details</h3>
+                <p style={{ fontSize:'12px', color:'var(--muted)', lineHeight:1.6 }}>
+                  Unlock recruiter contact info — phone, email and apply link. One-time {UNLOCK_COST}-point unlock, permanently yours.
+                </p>
+              </div>
+
+              {!isAuthenticated ? (
+                <Link href={`/login?from=/jobs/${id}`} style={{ display:'block', textAlign:'center', padding:'13px', borderRadius:'50px', textDecoration:'none', fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, background:'linear-gradient(135deg,var(--gold2),var(--gold3))', color:'#fff' }}>
+                  Sign In to Unlock →
+                </Link>
+              ) : (
+                <button
+                  onClick={handleUnlockClick}
+                  disabled={unlockMutation.isPending}
+                  style={{ width:'100%', padding:'13px', borderRadius:'50px', border:'none', cursor:'pointer', fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, background:'linear-gradient(135deg,var(--gold2),var(--gold3))', color:'#fff', opacity: unlockMutation.isPending ? 0.6 : 1 }}
+                >
+                  {unlockMutation.isPending ? 'Unlocking…' : `Unlock for ${UNLOCK_COST} points →`}
+                </button>
+              )}
+
+              <div style={{ display:'flex', flexDirection:'column', gap:'10px', marginTop:'16px', paddingTop:'16px', borderTop:'1px solid var(--bf)' }}>
+                {[['🏢',(job as any).organisationName],['📍',(job as any).location],['💰',(job as any).salary||'Competitive'],['⏱️',EXP[(job as any).experienceRequired]],['🏠',(job as any).workMode?.replace('_',' ')]].map(([icon,val])=>(
+                  <div key={String(icon)} style={{ display:'flex', alignItems:'center', gap:'10px', fontSize:'12px', color:'var(--muted)' }}>
+                    <span style={{ fontSize:'16px', width:'20px', textAlign:'center' }}>{icon}</span><span>{val}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         {/* Similar */}
-        {similar.length > 0 && (
+        {(similar as any[]).length > 0 && (
           <div>
-            <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'#fff', marginBottom:'14px', padding:'0 2px' }}>Similar Listings</div>
-            {similar.map((s:any)=>(
+            <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'var(--offwhite)', marginBottom:'14px', padding:'0 2px' }}>Similar Listings</div>
+            {(similar as any[]).map((s:any)=>(
               <Link key={s.id} href={`/jobs/${s.id}`} style={{ textDecoration:'none', display:'block' }}>
                 <div className="gc gc-hover" style={{ padding:'14px', marginBottom:'10px', cursor:'pointer' }}>
-                  <div style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'#fff', marginBottom:'3px' }}>{s.title}</div>
+                  <div style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'var(--offwhite)', marginBottom:'3px' }}>{s.title}</div>
                   <div style={{ fontSize:'10px', color:'var(--muted)' }}>{s.organisationName} · {s.workMode?.replace('_',' ')}</div>
                   <div style={{ fontFamily:'Cinzel,serif', fontSize:'11px', fontWeight:700, background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text', marginTop:'6px' }}>{s.salary||'Competitive'}</div>
                 </div>
@@ -164,5 +254,17 @@ export default function JobDetailPage() {
         )}
       </div>
     </div>
+
+    {showTopUp && <TopUpModal onClose={() => setShowTopUp(false)} />}
+    {showLowBal && (
+      <LowBalanceModal
+        balance={balance}
+        canProceed={balance >= UNLOCK_COST}
+        onProceed={doUnlock}
+        onTopUp={() => { setShowLowBal(false); setShowTopUp(true); }}
+        onClose={() => setShowLowBal(false)}
+      />
+    )}
+    </>
   );
 }

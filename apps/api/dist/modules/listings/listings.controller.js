@@ -36,6 +36,9 @@ let ListingsController = class ListingsController {
     findOne(id) {
         return this.svc.findById(id);
     }
+    getDetails(id, userId) {
+        return this.svc.getDetails(id, userId);
+    }
     getSimilar(id, role) {
         return this.svc.findSimilar(id, role);
     }
@@ -109,12 +112,23 @@ __decorate([
 ], ListingsController.prototype, "getPending", null);
 __decorate([
     (0, common_1.Get)(':id'),
-    (0, swagger_1.ApiOperation)({ summary: 'Get a single listing by ID' }),
+    (0, swagger_1.ApiOperation)({ summary: 'Get a single listing by ID (public teaser — contact fields excluded)' }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ListingsController.prototype, "findOne", null);
+__decorate([
+    (0, common_1.Get)(':id/details'),
+    (0, common_1.UseGuards)(auth_guards_1.JwtAuthGuard),
+    (0, swagger_1.ApiBearerAuth)(),
+    (0, swagger_1.ApiOperation)({ summary: 'Get sensitive contact fields for an unlocked listing. Call POST /wallet/unlock-listing/:id first.' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, auth_guards_1.CurrentUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], ListingsController.prototype, "getDetails", null);
 __decorate([
     (0, common_1.Get)(':id/similar'),
     (0, swagger_1.ApiOperation)({ summary: 'Get similar listings for the same role type' }),

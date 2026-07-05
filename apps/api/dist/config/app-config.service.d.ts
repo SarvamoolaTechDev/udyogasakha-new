@@ -22,4 +22,7 @@ export declare class AppConfigService {
     get storageProvider(): string;
     get azureStorageConnectionString(): string;
     get azureStorageContainerName(): string;
+    get meilisearchUrl(): string;
+    get meilisearchMasterKey(): string;
+    get meilisearchEnabled(): boolean;
 }

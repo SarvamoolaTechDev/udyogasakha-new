@@ -43,7 +43,7 @@ export function SkeletonCard({ height = '260px' }: { height?: string }) {
         display: 'flex',
         flexDirection: 'column',
         gap: '12px',
-        background: 'linear-gradient(160deg,rgba(13,30,90,0.6),rgba(6,13,42,0.7))',
+        background: 'linear-gradient(160deg,#F0F2FA,#E8EBF5)',
       }}>
         {/* Icon + title row */}
         <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start' }}>

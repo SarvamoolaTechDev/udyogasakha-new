@@ -30,10 +30,10 @@ function ResetPasswordForm() {
   };
 
   return (
-    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:'40px 16px', background:'var(--deep)' }}>
+    <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:'40px 16px', background:'#F5F7FF' }}>
       <div style={{ width:'100%', maxWidth:'400px' }}>
         <div style={{ textAlign:'center', marginBottom:'32px' }}>
-          <div style={{ fontFamily:'Cinzel,serif', fontSize:'20px', fontWeight:700, color:'#fff' }}>Sarvamoola</div>
+          <div style={{ fontFamily:'Cinzel,serif', fontSize:'20px', fontWeight:700, color:'var(--offwhite)' }}>Sarvamoola</div>
           <div style={{ fontFamily:'Cinzel,serif', fontSize:'20px', fontWeight:700, background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text', marginBottom:'8px' }}>Udyoga Sakha</div>
           <p style={{ fontSize:'12px', color:'var(--muted)' }}>Set a new password</p>
         </div>

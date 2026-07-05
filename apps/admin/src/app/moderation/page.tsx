@@ -91,7 +91,7 @@ export default function ModerationPage() {
             {data.map((p:any)=>(
               <tr key={p.id}>
                 <td>
-                  <div style={{ fontWeight:600, color:'#fff' }}>{p.fullName}</div>
+                  <div style={{ fontWeight:600, color:'var(--offwhite)' }}>{p.fullName}</div>
                   <div style={{ fontSize:'10px', color:'var(--muted)' }}>{p.city}</div>
                 </td>
                 <td>
@@ -125,7 +125,7 @@ export default function ModerationPage() {
 
   return (
     <div style={{ padding:'28px' }}>
-      <h1 style={{ fontFamily:'Cinzel,serif', fontSize:'22px', fontWeight:700, color:'#fff', marginBottom:'6px' }}>Moderation</h1>
+      <h1 style={{ fontFamily:'Cinzel,serif', fontSize:'22px', fontWeight:700, color:'var(--offwhite)', marginBottom:'6px' }}>Moderation</h1>
       <p style={{ fontSize:'12px', color:'var(--muted)', marginBottom:'24px' }}>Review candidate profiles and job listings before they go live.</p>
 
       {/* Stats row */}
@@ -159,21 +159,21 @@ export default function ModerationPage() {
       {/* Tab content */}
       {tab==='pending' && (
         <div className="gc" style={{ overflow:'hidden' }}>
-          <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'#fff', padding:'18px 18px 14px' }}>⏳ Pending Review</div>
+          <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'var(--offwhite)', padding:'18px 18px 14px' }}>⏳ Pending Review</div>
           {pending.isLoading ? <div style={{ padding:'24px', color:'var(--muted)' }}>Loading…</div> : <><ProfileTable data={pending.data?.data??[]} mode="approve" /><Pager page={pPage} total={pending.data?.total??0} limit={20} onPage={setPPage} /></>}
         </div>
       )}
 
       {tab==='approved' && (
         <div className="gc" style={{ overflow:'hidden' }}>
-          <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'#fff', padding:'18px 18px 14px' }}>✅ Approved Profiles</div>
+          <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'var(--offwhite)', padding:'18px 18px 14px' }}>✅ Approved Profiles</div>
           {approved.isLoading ? <div style={{ padding:'24px', color:'var(--muted)' }}>Loading…</div> : <><ProfileTable data={approved.data?.data??[]} mode="view" /><Pager page={aPage} total={approved.data?.total??0} limit={20} onPage={setAPage} /></>}
         </div>
       )}
 
       {tab==='rejected' && (
         <div className="gc" style={{ overflow:'hidden' }}>
-          <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'#fff', padding:'18px 18px 14px' }}>❌ Rejected Profiles</div>
+          <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'var(--offwhite)', padding:'18px 18px 14px' }}>❌ Rejected Profiles</div>
           {rejected.isLoading ? <div style={{ padding:'24px', color:'var(--muted)' }}>Loading…</div> : <><ProfileTable data={rejected.data?.data??[]} mode="reactivate" /><Pager page={rPage} total={rejected.data?.total??0} limit={20} onPage={setRPage} /></>}
         </div>
       )}
@@ -189,7 +189,7 @@ export default function ModerationPage() {
               ].map(({ f, icon, desc }) => (
                 <div key={f} className="gc" style={{ padding:'22px' }}>
                   <div style={{ fontSize:'28px', marginBottom:'8px' }}>{icon}</div>
-                  <div style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'#fff', marginBottom:'6px' }}>{MF_LABEL[f]}</div>
+                  <div style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'var(--offwhite)', marginBottom:'6px' }}>{MF_LABEL[f]}</div>
                   <div style={{ fontFamily:'Cinzel,serif', fontSize:'28px', fontWeight:700, background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text', marginBottom:'6px' }}>
                     {mktStats.data.profilesByMarket?.[f] ?? 0}
                   </div>
@@ -200,14 +200,14 @@ export default function ModerationPage() {
           )}
           {mktAll.data && (
             <div className="gc" style={{ overflow:'hidden' }}>
-              <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'#fff', padding:'18px 18px 14px' }}>All Approved Profiles</div>
+              <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'var(--offwhite)', padding:'18px 18px 14px' }}>All Approved Profiles</div>
               <div style={{ overflowX:'auto' }}>
                 <table className="rt">
                   <thead><tr>{['Name','Role','Applied For','Org','Market (self-selected)','Mode','Cert'].map(h=><th key={h}>{h}</th>)}</tr></thead>
                   <tbody>
                     {(mktAll.data?.data??[]).map((p:any)=>(
                       <tr key={p.id}>
-                        <td style={{ fontWeight:600, color:'#fff' }}>{p.fullName}</td>
+                        <td style={{ fontWeight:600, color:'var(--offwhite)' }}>{p.fullName}</td>
                         <td style={{ fontSize:'10px', color:'var(--gold3)' }}>{ROLE_ICONS[p.roleType]} {p.roleType?.replace(/_/g,' ')}</td>
                         <td style={{ color:'var(--gold3)' }}>{p.appliedFor}</td>
                         <td style={{ fontSize:'11px' }}>{p.appliedAt}</td>
@@ -229,7 +229,7 @@ export default function ModerationPage() {
 
       {tab==='posts' && (
         <div className="gc" style={{ overflow:'hidden' }}>
-          <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'#fff', padding:'18px 18px 14px' }}>📋 Job Posts Pending Review</div>
+          <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'var(--offwhite)', padding:'18px 18px 14px' }}>📋 Job Posts Pending Review</div>
           {posts.isLoading ? <div style={{ padding:'24px', color:'var(--muted)' }}>Loading…</div> :
             !(posts.data?.data??[]).length ? <div style={{ padding:'24px', fontSize:'12px', color:'var(--muted)' }}>No pending posts.</div> : (
               <>
@@ -239,7 +239,7 @@ export default function ModerationPage() {
                     <tbody>
                       {(posts.data?.data??[]).map((p:any)=>(
                         <tr key={p.id}>
-                          <td style={{ fontWeight:600, color:'#fff' }}>{p.organisationName}</td>
+                          <td style={{ fontWeight:600, color:'var(--offwhite)' }}>{p.organisationName}</td>
                           <td style={{ color:'var(--gold3)' }}>{p.title}</td>
                           <td style={{ fontSize:'11px' }}>{p.targetRoleType?.replace(/_/g,' ')}</td>
                           <td style={{ fontSize:'11px' }}>{p.workMode?.replace(/_/g,' ')}</td>
@@ -263,13 +263,13 @@ export default function ModerationPage() {
 
       {tab==='stats' && (
         <>
-          <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'#fff', marginBottom:'14px' }}>📈 Profiles by Role Type</div>
+          <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'var(--offwhite)', marginBottom:'14px' }}>📈 Profiles by Role Type</div>
           {byRole.isLoading ? <div style={{ color:'var(--muted)' }}>Loading…</div> : (
             <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(150px,1fr))', gap:'12px' }}>
               {(byRole.data??[]).map((r:any)=>(
                 <div key={r.role} className="gc" style={{ padding:'18px', textAlign:'center' }}>
                   <div style={{ fontSize:'26px', marginBottom:'8px' }}>{ROLE_ICONS[r.role]||'💼'}</div>
-                  <div style={{ fontFamily:'Cinzel,serif', fontSize:'11px', fontWeight:700, color:'#fff', marginBottom:'6px' }}>{r.role?.replace(/_/g,' ')}</div>
+                  <div style={{ fontFamily:'Cinzel,serif', fontSize:'11px', fontWeight:700, color:'var(--offwhite)', marginBottom:'6px' }}>{r.role?.replace(/_/g,' ')}</div>
                   <div style={{ fontFamily:'Cinzel,serif', fontSize:'22px', fontWeight:700, background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>{r.count}</div>
                   <div style={{ fontSize:'10px', color:'var(--ok)', marginTop:'2px' }}>approved</div>
                 </div>
@@ -282,14 +282,14 @@ export default function ModerationPage() {
       {/* Profile detail modal */}
       {sel && (
         <div onClick={()=>setSel(null)} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.75)', zIndex:600, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}>
-          <div onClick={e=>e.stopPropagation()} style={{ borderRadius:'22px', width:'100%', maxWidth:'680px', maxHeight:'88vh', overflowY:'auto', background:'linear-gradient(160deg,rgba(13,30,90,0.98),rgba(6,13,42,0.99))', border:'1px solid var(--border)', boxShadow:'0 40px 100px rgba(0,0,0,0.8)', position:'relative' }}>
+          <div onClick={e=>e.stopPropagation()} style={{ borderRadius:'22px', width:'100%', maxWidth:'680px', maxHeight:'88vh', overflowY:'auto', background:'#FFFFFF', border:'1px solid var(--border)', boxShadow:'0 40px 100px rgba(0,0,0,0.8)', position:'relative' }}>
             <div style={{ position:'absolute', top:0, left:0, right:0, height:'3px', borderRadius:'22px 22px 0 0', background:'linear-gradient(90deg,transparent,var(--gold),var(--gold3),var(--gold),transparent)' }} />
             <button onClick={()=>setSel(null)} style={{ position:'absolute', top:'14px', right:'14px', width:'30px', height:'30px', borderRadius:'50%', border:'1px solid var(--bf)', background:'rgba(255,255,255,0.06)', color:'var(--muted)', cursor:'pointer', fontSize:'14px', zIndex:10 }}>✕</button>
             <div style={{ padding:'26px' }}>
               <div style={{ display:'flex', alignItems:'flex-start', gap:'16px', marginBottom:'20px', paddingBottom:'16px', borderBottom:'1px solid var(--bf)' }}>
                 <div style={{ width:'72px', height:'72px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'32px', background:'linear-gradient(135deg,rgba(29,62,160,0.5),rgba(45,107,228,0.4))', border:'3px solid var(--border)', flexShrink:0 }}>{ROLE_ICONS[sel.roleType]}</div>
                 <div style={{ flex:1 }}>
-                  <div style={{ fontFamily:'Cinzel,serif', fontSize:'18px', fontWeight:700, color:'#fff', marginBottom:'4px' }}>{sel.fullName}</div>
+                  <div style={{ fontFamily:'Cinzel,serif', fontSize:'18px', fontWeight:700, color:'var(--offwhite)', marginBottom:'4px' }}>{sel.fullName}</div>
                   <div style={{ fontSize:'11px', color:'var(--muted)', marginBottom:'8px' }}>📍 {sel.city} · Submitted {sel.submittedAt ? new Date(sel.submittedAt).toLocaleDateString('en-IN') : '—'}</div>
                   <MktPill f={sel.marketField} />
                   <span style={{ fontSize:'10px', color:'var(--faint)', marginLeft:'8px' }}>{sel.marketSegment?.replace(/_/g,' ')} (candidate selected)</span>
@@ -315,7 +315,7 @@ export default function ModerationPage() {
 
               <div style={{ display:'flex', gap:'10px', paddingTop:'16px', borderTop:'1px solid var(--bf)' }}>
                 {/* Single Approve button — no market field picker needed */}
-                <button onClick={()=>appMut.mutate(sel.id)} style={{ flex:1, padding:'12px', borderRadius:'11px', border:'none', cursor:'pointer', fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, color:'var(--navy)', background:'linear-gradient(135deg,var(--ok),#22C55E)', boxShadow:'0 4px 14px rgba(74,222,128,0.3)' }}>
+                <button onClick={()=>appMut.mutate(sel.id)} style={{ flex:1, padding:'12px', borderRadius:'11px', border:'none', cursor:'pointer', fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, color:'#FFFFFF', background:'linear-gradient(135deg,var(--ok),#16A34A)', boxShadow:'0 4px 14px rgba(74,222,128,0.3)' }}>
                   ✅ Approve
                 </button>
                 <button onClick={()=>doReject(sel)} style={{ flex:1, padding:'12px', borderRadius:'11px', cursor:'pointer', fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, color:'var(--err)', background:'rgba(255,107,107,0.1)', border:'1px solid rgba(255,107,107,0.3)' }}>

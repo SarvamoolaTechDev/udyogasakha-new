@@ -28,15 +28,15 @@ export declare class MarketService {
             email: string;
         };
         id: string;
-        fullName: string;
+        workMode: import(".prisma/client").$Enums.WorkMode;
+        employmentOption: import(".prisma/client").$Enums.EmpOption;
+        marketField: import(".prisma/client").$Enums.MarketField;
         roleType: import(".prisma/client").$Enums.RoleType;
+        fullName: string;
         appliedFor: string;
         appliedAt: string;
         certificate: import(".prisma/client").$Enums.CertOpt;
-        workMode: import(".prisma/client").$Enums.WorkMode;
-        employmentOption: import(".prisma/client").$Enums.EmpOption;
         marketSegment: import(".prisma/client").$Enums.MarketSegment;
-        marketField: import(".prisma/client").$Enums.MarketField;
         submittedAt: Date;
     }>>;
 }

@@ -123,3 +123,23 @@ export const paymentsApi = {
   // Admin only
   getAll:  (params?: any) => api.get('/payments', { params }).then(r => r.data),
 };
+
+// ── Wallet ───────────────────────────────────────────────────────────────────
+export const walletApi = {
+  get:              ()                                        => api.get('/wallet').then(r => r.data),
+  balance:          ()                                        => api.get('/wallet/balance').then(r => r.data),
+  transactions:     (params?: any)                           => api.get('/wallet/transactions', { params }).then(r => r.data),
+  unlockListing:    (listingId: string)                      => api.post(`/wallet/unlock-listing/${listingId}`).then(r => r.data),
+  unlockProfile:    (profileId: string)                      => api.post(`/wallet/unlock-profile/${profileId}`).then(r => r.data),
+  listingStatus:    (ids: string[])                          => api.post('/wallet/unlock-status/listings', { ids }).then(r => r.data),
+  profileStatus:    (ids: string[])                          => api.post('/wallet/unlock-status/profiles', { ids }).then(r => r.data),
+  getListingDetails:(listingId: string)                      => api.get(`/listings/${listingId}/details`).then(r => r.data),
+  getProfileDetails:(profileId: string)                      => api.get(`/talent/${profileId}/details`).then(r => r.data),
+  createTopUpOrder: (amount: number)                         => api.post('/wallet/topup/create-order', { amount }).then(r => r.data),
+};
+
+// ── Talent (Find Talent — recruiter/hiring manager view of candidates) ───────
+export const talentApi = {
+  browse: (params?: any) => api.get('/talent', { params }).then(r => r.data),
+  findById: (profileId: string) => api.get(`/talent/${profileId}`).then(r => r.data),
+};

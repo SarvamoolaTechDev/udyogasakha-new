@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // Member-facing routes that require a logged-in session
-const PROTECTED = ['/profile', '/post', '/notifications', '/settings'];
+const PROTECTED = ['/profile', '/post', '/notifications', '/settings', '/talent'];
 
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;

@@ -18,14 +18,16 @@ const prisma_service_1 = require("../../prisma/prisma.service");
 const app_config_service_1 = require("../../config/app-config.service");
 const audit_service_1 = require("../audit/audit.service");
 const notifications_service_1 = require("../notifications/notifications.service");
+const wallet_service_1 = require("../wallet/wallet.service");
 const client_1 = require("@prisma/client");
 let AuthService = class AuthService {
-    constructor(prisma, jwt, config, audit, notify) {
+    constructor(prisma, jwt, config, audit, notify, wallet) {
         this.prisma = prisma;
         this.jwt = jwt;
         this.config = config;
         this.audit = audit;
         this.notify = notify;
+        this.wallet = wallet;
     }
     async register(dto) {
         if (await this.prisma.user.findUnique({ where: { email: dto.email } })) {
@@ -44,6 +46,10 @@ let AuthService = class AuthService {
                 data: { userId: user.id, currentLevel: 'L0' },
             }),
         ]);
+        // Create wallet with temporary signup bonus
+        // ⚠️ TEMPORARY: bonus should trigger on 2nd approved profile, not registration.
+        // Replace this once client has reviewed design doc — see WalletService.createForUser().
+        await this.wallet.createForUser(user.id);
         await this.audit.log({
             entityType: 'user',
             entityId: user.id,
@@ -163,6 +169,20 @@ let AuthService = class AuthService {
         await this.audit.log({
             entityType: 'auth', entityId: userId, action: 'PASSWORD_CHANGED', actorId: userId,
         });
+        // Security alert — if the user didn't initiate this, they need to act immediately
+        await this.notify.send({
+            userId,
+            subject: 'Your password was changed',
+            body: [
+                'Your Sarvamoola Udyoga Sakha account password was just changed.',
+                'All existing sessions have been signed out.',
+                '',
+                'If you made this change, no action is needed.',
+                'If you did NOT change your password, please reset it immediately using the "Forgot password?" link on the sign-in page.',
+            ].join('\n'),
+            link: '/forgot-password',
+            email: user.email,
+        });
         return { message: 'Password changed. Please log in again.' };
     }
     async logout(userId) {
@@ -194,6 +214,7 @@ exports.AuthService = AuthService = __decorate([
         jwt_1.JwtService,
         app_config_service_1.AppConfigService,
         audit_service_1.AuditService,
-        notifications_service_1.NotificationsService])
+        notifications_service_1.NotificationsService,
+        wallet_service_1.WalletService])
 ], AuthService);
 //# sourceMappingURL=auth.service.js.map

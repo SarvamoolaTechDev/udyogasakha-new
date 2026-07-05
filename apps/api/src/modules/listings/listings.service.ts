@@ -109,6 +109,27 @@ export class ListingsService {
     return l;
   }
 
+  /**
+   * Returns the sensitive contact fields (phone, email, contactPerson) for a listing.
+   * Requires the calling user to have an active ListingUnlock record.
+   * The unlock itself (point deduction + record creation) is handled by WalletService.
+   */
+  async getDetails(id: string, userId: string) {
+    const unlock = await this.prisma.listingUnlock.findUnique({
+      where: { userId_listingId: { userId, listingId: id } },
+    });
+    if (!unlock) {
+      throw new BadRequestException('This listing has not been unlocked. Use POST /wallet/unlock-listing/:id first.');
+    }
+    const l = await this.prisma.jobListing.findUnique({ where: { id } });
+    if (!l) throw new NotFoundException('Listing not found');
+    return {
+      contactPerson: l.contactPerson,
+      contactEmail:  l.contactEmail,
+      contactPhone:  l.contactPhone,
+    };
+  }
+
   async findSimilar(id: string, role: string, limit = 3) {
     return this.prisma.jobListing.findMany({
       where: { id: { not: id }, status: ProfileStatus.APPROVED, targetRoleType: role as any },
@@ -172,7 +193,9 @@ export class ListingsService {
     });
 
     return after;
-  }(id: string, userId: string, dto: UpdateListingDto) {
+  }
+
+  async update(id: string, userId: string, dto: UpdateListingDto) {
     const listing = await this.findById(id);
 
     // Only the original poster can edit, and only while PENDING or REJECTED

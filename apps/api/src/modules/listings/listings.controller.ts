@@ -54,9 +54,17 @@ export class ListingsController {
   }
 
   @Get(':id')
-  @ApiOperation({ summary: 'Get a single listing by ID' })
+  @ApiOperation({ summary: 'Get a single listing by ID (public teaser — contact fields excluded)' })
   findOne(@Param('id') id: string) {
     return this.svc.findById(id);
+  }
+
+  @Get(':id/details')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get sensitive contact fields for an unlocked listing. Call POST /wallet/unlock-listing/:id first.' })
+  getDetails(@Param('id') id: string, @CurrentUser('id') userId: string) {
+    return this.svc.getDetails(id, userId);
   }
 
   @Get(':id/similar')

@@ -26,9 +26,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
           <div key={t.id} style={{
             display:'flex', alignItems:'center', gap:'9px',
             padding:'11px 22px', borderRadius:'50px', fontSize:'13px', fontWeight:600,
-            color:'#fff', whiteSpace:'nowrap', pointerEvents:'auto',
-            background:'linear-gradient(135deg,rgba(13,30,90,0.98),rgba(6,13,42,0.99))',
-            border:`1px solid ${col(t)}`, boxShadow:'0 12px 40px rgba(0,0,0,0.6)',
+            color:'var(--offwhite)', whiteSpace:'nowrap', pointerEvents:'auto',
+            background:'#FFFFFF',
+            border:`1px solid ${col(t)}`,
+            boxShadow:'0 8px 32px rgba(0,0,0,0.12)',
             fontFamily:'Raleway,sans-serif',
           }}>
             <span>{icon(t)}</span>

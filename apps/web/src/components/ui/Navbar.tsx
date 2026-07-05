@@ -5,10 +5,12 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '@/store/auth.store';
 import { notificationsApi } from '@/lib/api';
+import { WalletBalance } from '@/components/wallet/WalletComponents';
 
 const NAV = [
   { href:'/',        label:'Home'        },
   { href:'/jobs',    label:'Browse Jobs' },
+  { href:'/talent',  label:'Find Talent' },
   { href:'/post',    label:'Post a Job'  },
   { href:'/profile', label:'My Profile'  },
 ];
@@ -72,6 +74,7 @@ export function Navbar() {
         <div className="desktop-nav" style={{ display:'flex', alignItems:'center', gap:'4px' }}>
           {NAV.map(l => <Link key={l.href} href={l.href} style={linkStyle(l.href)}>{l.label}</Link>)}
 
+          {isAuthenticated && <WalletBalance />}
           {isAuthenticated && <NotificationBell />}
 
           {isAuthenticated && (

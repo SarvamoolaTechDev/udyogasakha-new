@@ -37,7 +37,7 @@ export default function AdminUsersPage() {
     <div style={{ padding:'28px' }}>
       <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'24px', flexWrap:'wrap', gap:'12px' }}>
         <div>
-          <h1 style={{ fontFamily:'Cinzel,serif', fontSize:'22px', fontWeight:700, color:'#fff', margin:0 }}>User Management</h1>
+          <h1 style={{ fontFamily:'Cinzel,serif', fontSize:'22px', fontWeight:700, color:'var(--offwhite)', margin:0 }}>User Management</h1>
           <p style={{ fontSize:'12px', color:'var(--muted)', marginTop:'4px' }}>{total} registered users</p>
         </div>
         <div style={{ display:'flex', alignItems:'center', gap:'8px', borderRadius:'50px', padding:'9px 16px', background:'rgba(255,255,255,0.04)', border:'1px solid var(--bf)' }}>
@@ -62,7 +62,7 @@ export default function AdminUsersPage() {
                 users.map((u:any)=>(
                   <tr key={u.id}>
                     <td>
-                      <div style={{ fontWeight:600, color:'#fff' }}>{u.name}</div>
+                      <div style={{ fontWeight:600, color:'var(--offwhite)' }}>{u.name}</div>
                       <div style={{ fontSize:'10px', color:'var(--muted)' }}>{u.email}</div>
                     </td>
                     <td style={{ fontSize:'11px', color:'var(--muted)' }}>{u.phone||'—'}</td>

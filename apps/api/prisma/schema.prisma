@@ -161,6 +161,9 @@ model User {
   resolvedReports  Report[]            @relation("ReportResolver")
   passwordResetTokens PasswordResetToken[]
   payments         Payment[]
+  wallet           Wallet?
+  listingUnlocks   ListingUnlock[]
+  profileUnlocks   ProfileUnlock[]   @relation("ProfileUnlockByUser")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt      @map("updated_at")
@@ -238,6 +241,7 @@ model JobListing {
 
   postedBy   User? @relation("ListingOwner",   fields: [postedById],   references: [id])
   reviewedBy User? @relation("ListingReviewer", fields: [reviewedById], references: [id])
+  unlocks    ListingUnlock[]
 
   @@index([status])
   @@index([targetRoleType])
@@ -292,6 +296,7 @@ model CandidateProfile {
   reviewer    User?               @relation("ProfileReviewer", fields: [reviewedById], references: [id])
   experiences ExperienceEntry[]
   documents   CandidateDocument[]
+  unlocks     ProfileUnlock[]     @relation("ProfileUnlockOnProfile")
 
   @@unique([userId, roleType])
   @@index([status])
@@ -525,6 +530,7 @@ enum PaymentPurpose {
   LISTING_FEATURE
   CERTIFICATION_FEE
   REGISTRATION_FEE
+  WALLET_TOPUP
   OTHER
 }
 
@@ -572,4 +578,76 @@ model Payment {
   @@index([status])
   @@index([purpose, referenceId])
   @@map("payments")
+}
+
+// ── Wallet & Points ──────────────────────────────────────────────────────────
+// One wallet per user. Balance is in points (integer). All mutations go
+// through $transaction so balance and transaction log never diverge.
+
+model Wallet {
+  id        String   @id @default(uuid())
+  userId    String   @unique @map("user_id")
+  balance   Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt      @map("updated_at")
+
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions PointTransaction[]
+
+  @@map("wallets")
+}
+
+enum TransactionType {
+  SIGNUP_BONUS      // 1000 points on 2nd approved profile (deferred — see WalletService)
+  JOB_UNLOCK        // -30 points to unlock a job listing's contact details
+  PROFILE_UNLOCK    // -30 points to unlock a candidate profile's contact details
+  TOPUP             // +N points from Razorpay wallet top-up
+  ADMIN_ADJUSTMENT  // manual credit/debit by admin
+}
+
+model PointTransaction {
+  id          String          @id @default(uuid())
+  walletId    String          @map("wallet_id")
+  amount      Int             // positive = credit, negative = debit
+  type        TransactionType
+  referenceId String?         @map("reference_id") // listingId / profileId / paymentId
+  note        String?
+  createdAt   DateTime        @default(now()) @map("created_at")
+
+  wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
+
+  @@index([walletId])
+  @@map("point_transactions")
+}
+
+// ── Unlocks ──────────────────────────────────────────────────────────────────
+// Once a user unlocks a listing or profile, they never pay again for the same
+// content. Unique constraint enforces this at the DB level.
+
+model ListingUnlock {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  listingId  String   @map("listing_id")
+  unlockedAt DateTime @default(now()) @map("unlocked_at")
+
+  user    User       @relation(fields: [userId],    references: [id], onDelete: Cascade)
+  listing JobListing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, listingId])
+  @@index([userId])
+  @@map("listing_unlocks")
+}
+
+model ProfileUnlock {
+  id         String   @id @default(uuid())
+  userId     String   @map("user_id")
+  profileId  String   @map("profile_id")
+  unlockedAt DateTime @default(now()) @map("unlocked_at")
+
+  user    User             @relation("ProfileUnlockByUser", fields: [userId],    references: [id], onDelete: Cascade)
+  profile CandidateProfile @relation("ProfileUnlockOnProfile", fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, profileId])
+  @@index([userId])
+  @@map("profile_unlocks")
 }
