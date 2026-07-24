@@ -6,12 +6,13 @@ import { parsePage, paginate } from '../../common/pagination';
 import { QUEUES, NOTIFICATION_JOBS } from '../../common/queues';
 
 export interface SendNotificationDto {
-  userId:   string;
-  subject:  string;
-  body:     string;
-  link?:    string;
-  email?:   string;   // recipient email — passed through to email job
-  phone?:   string;   // recipient phone — passed through to SMS job
+  userId:     string;
+  subject:    string;
+  body:       string;
+  link?:      string;
+  linkLabel?: string; // button label for the CTA in emails. Defaults to 'Open →'
+  email?:     string; // recipient email — passed through to email job
+  phone?:     string; // recipient phone — passed through to SMS job
 }
 
 @Injectable()
@@ -41,9 +42,11 @@ export class NotificationsService {
     // prevents the in-app notification from being delivered
     if (dto.email) {
       await this.queue.add(NOTIFICATION_JOBS.SEND_EMAIL, {
-        to:      dto.email,
-        subject: dto.subject,
-        body:    dto.body,
+        to:        dto.email,
+        subject:   dto.subject,
+        body:      dto.body,
+        link:      dto.link ?? null,
+        linkLabel: dto.linkLabel ?? null,
       });
     }
 

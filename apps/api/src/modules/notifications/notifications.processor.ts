@@ -40,9 +40,9 @@ export class NotificationsProcessor {
    * for that fallback behaviour.
    */
   @Process(NOTIFICATION_JOBS.SEND_EMAIL)
-  async handleEmail(job: Job<{ to: string; subject: string; body: string }>) {
-    const { to, subject, body } = job.data;
-    await this.email.send({ to, subject, body });
+  async handleEmail(job: Job<{ to: string; subject: string; body: string; link?: string; linkLabel?: string }>) {
+    const { to, subject, body, link, linkLabel } = job.data;
+    await this.email.send({ to, subject, body, link: link ?? undefined, linkLabel: linkLabel ?? undefined });
   }
 
   /**

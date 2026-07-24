@@ -12,13 +12,11 @@ const ROLE_INFO: Record<string, { icon:string; fields:[string,string][]; expLabe
   INTERN:         { icon:'🎓', fields:[['rf0','College Name'],['rf1','Course & Year'],['rf2','Internship Area'],['rf3','Duration Preference']], expLabel:'Academic Projects & Internships' },
   FRESHER:        { icon:'🌱', fields:[['rf0','Qualification'],['rf1','Branch / Spec'],['rf2','Campus'],['rf3','CGPA / %']], expLabel:'Academic Projects & Certifications' },
   JOB_SEEKER:     { icon:'🔍', fields:[['rf0','Current Designation'],['rf1','Current Company'],['rf2','Notice Period'],['rf3','Expected CTC']], expLabel:'Work Experience' },
-  FREELANCER:     { icon:'💻', fields:[['rf0','Portfolio URL'],['rf1','Hourly Rate'],['rf2','Availability'],['rf3','Project Duration']], expLabel:'Freelance Projects' },
   CONSULTANT:     { icon:'🧑‍💼', fields:[['rf0','Domain of Expertise'],['rf1','Consulting Rate'],['rf2','Industries Served'],['rf3','Engagement Type']], expLabel:'Consulting Engagements' },
   HIRING_MANAGER: { icon:'📊', fields:[['rf0','Organisation'],['rf1','Department'],['rf2','Team Size'],['rf3','Current Openings']], expLabel:'Teams Built' },
   RECRUITER:      { icon:'🤝', fields:[['rf0','Agency / Company'],['rf1','Specialisation'],['rf2','Placements Made'],['rf3','ATS / Tools']], expLabel:'Recruitment Experience' },
   TRAINER:        { icon:'📚', fields:[['rf0','Training Domains'],['rf1','Certifications'],['rf2','Participants Trained'],['rf3','Delivery Mode']], expLabel:'Training Programs' },
   VENDOR:         { icon:'🏭', fields:[['rf0','Business Name'],['rf1','Products / Services'],['rf2','GST Number'],['rf3','Target Clients']], expLabel:'Projects Delivered' },
-  MODERATOR_ROLE: { icon:'🛡️', fields:[['rf0','Domain Expertise'],['rf1','Languages Known'],['rf2','Availability'],['rf3','Prior Experience']], expLabel:'Review Experience' },
   RFP_PROVIDER:   { icon:'📋', fields:[['rf0','Organisation Name'],['rf1','RFP Title'],['rf2','Budget Range'],['rf3','Submission Deadline']], expLabel:'Previous RFPs' },
 };
 

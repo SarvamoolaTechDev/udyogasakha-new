@@ -11,13 +11,11 @@ const ROLES = [
   { slug:'INTERN',         icon:'🎓', name:'Intern',        sub:'Certificate · Stipend'          },
   { slug:'FRESHER',        icon:'🌱', name:'Fresher',       sub:'Entry-level · 0–1 yr'           },
   { slug:'JOB_SEEKER',     icon:'🔍', name:'Job Seeker',    sub:'Experienced · Switch'           },
-  { slug:'FREELANCER',     icon:'💻', name:'Freelancer',    sub:'Project · Hourly · Remote'      },
   { slug:'CONSULTANT',     icon:'🧑‍💼', name:'Consultant', sub:'Advisory · Contract'            },
   { slug:'HIRING_MANAGER', icon:'📊', name:'Hiring Mgr',   sub:'Team Builder · JD'              },
   { slug:'RECRUITER',      icon:'🤝', name:'Recruiter',     sub:'Sourcing · Placement'           },
   { slug:'TRAINER',        icon:'📚', name:'Trainer',       sub:'Corporate · Online'             },
   { slug:'VENDOR',         icon:'🏭', name:'Vendor',        sub:'B2B · Products'                 },
-  { slug:'MODERATOR_ROLE', icon:'🛡️', name:'Moderator',    sub:'Validator · Review'             },
   { slug:'RFP_PROVIDER',   icon:'📋', name:'RFP Provider',  sub:'Tender · Publisher'             },
 ];
 

@@ -97,7 +97,7 @@ export default function AdminLoginPage() {
 
           <p style={{ textAlign:'center', marginTop:'18px', fontSize:'11px', color:'var(--faint)', lineHeight:1.6 }}>
             Access restricted to Moderators and Admins only.<br />
-            Member portal: <a href="http://localhost:3000" style={{ color:'var(--gold3)', textDecoration:'none' }}>localhost:3000</a>
+            Member portal: <a href="https://udyogasakha.sarvamoola.in" style={{ color:'var(--gold3)', textDecoration:'none' }}>udyogasakha.sarvamoola.in</a>
           </p>
         </div>
       </div>

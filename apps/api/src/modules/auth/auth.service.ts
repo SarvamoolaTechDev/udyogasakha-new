@@ -132,7 +132,8 @@ export class AuthService {
       userId:  user.id,
       subject: 'Reset your Udyoga Sakha password',
       body:    'Click the link to set a new password. This link expires in 1 hour. If you did not request this, you can safely ignore this email.',
-      link:    `/reset-password?token=${rawToken}`,
+      link:      `/reset-password?token=${rawToken}`,
+        linkLabel: 'Reset My Password →',
       email:   user.email,
     });
 
@@ -199,8 +200,9 @@ export class AuthService {
         'If you made this change, no action is needed.',
         'If you did NOT change your password, please reset it immediately using the "Forgot password?" link on the sign-in page.',
       ].join('\n'),
-      link:  '/forgot-password',
-      email: user.email,
+      link:      '/forgot-password',
+      linkLabel: 'Reset Password →',
+      email:     user.email,
     });
 
     return { message: 'Password changed. Please log in again.' };

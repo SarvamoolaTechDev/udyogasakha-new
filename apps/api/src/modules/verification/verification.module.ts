@@ -94,8 +94,9 @@ export class VerificationService {
       userId:  req.userId,
       subject: 'Identity verification approved ✅',
       body:    'Your identity documents have been verified and your trust level has been updated to L1.\n\nYou can now access additional features on the Sarvamoola Udyoga Sakha platform.',
-      link:    '/settings',
-      email:   (req as any).user?.email,
+      link:      '/settings',
+      linkLabel: 'View Account →',
+      email:     (req as any).user?.email,
     });
     return updated;
   }
@@ -117,8 +118,9 @@ export class VerificationService {
       userId:  req.userId,
       subject: 'Verification request could not be approved',
       body:    `Your identity verification request could not be approved.\n\nReason: ${dto.reviewNote}\n\nPlease re-upload clearer copies of your documents and submit a new request.`,
-      link:    '/settings',
-      email:   (req as any).user?.email,
+      link:      '/settings',
+      linkLabel: 'Resubmit Documents →',
+      email:     (req as any).user?.email,
     });
     return updated;
   }

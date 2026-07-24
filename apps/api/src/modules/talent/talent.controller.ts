@@ -24,6 +24,7 @@ export class TalentController {
   @ApiQuery({ name: 'page',          required: false, type: Number })
   @ApiQuery({ name: 'limit',         required: false, type: Number })
   browse(
+    @CurrentUser('id')      userId:         string,
     @Query('search')        search?:        string,
     @Query('roleType')      roleType?:      string,
     @Query('marketField')   marketField?:   string,
@@ -32,7 +33,7 @@ export class TalentController {
     @Query('page')          page?:          string,
     @Query('limit')         limit?:         string,
   ) {
-    return this.svc.browse({ search, roleType, marketField, marketSegment, workMode, page: Number(page)||1, limit: Number(limit)||20 });
+    return this.svc.browse(userId, { search, roleType, marketField, marketSegment, workMode, page: Number(page)||1, limit: Number(limit)||20 });
   }
 
   @Get(':profileId')

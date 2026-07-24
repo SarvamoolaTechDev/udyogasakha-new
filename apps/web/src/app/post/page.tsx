@@ -199,7 +199,7 @@ export default function PostJobPage() {
               <div style={mb}>
                 <L>For Role Type</L>
                 <select {...register('targetRoleType')} className="fi">
-                  {[['JOB_SEEKER','Job Seeker'],['INTERN','Intern'],['FRESHER','Fresher'],['FREELANCER','Freelancer'],['CONSULTANT','Consultant'],['TRAINER','Trainer'],['RECRUITER','Recruiter'],['VENDOR','Vendor']].map(([v,l])=><option key={v} value={v}>{l}</option>)}
+                  {[['JOB_SEEKER','Job Seeker'],['INTERN','Intern'],['FRESHER','Fresher'],['CONSULTANT','Consultant'],['TRAINER','Trainer'],['RECRUITER','Recruiter'],['VENDOR','Vendor']].map(([v,l])=><option key={v} value={v}>{l}</option>)}
                 </select>
               </div>
               <div style={{ ...mb, gridColumn:'span 2' }}>

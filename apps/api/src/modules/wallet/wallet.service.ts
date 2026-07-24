@@ -10,10 +10,8 @@ export const UNLOCK_COST = 30;
 // Warning threshold — popup shown when balance falls to this level or below
 export const LOW_BALANCE_THRESHOLD = 200;
 
-// ⚠️ TEMPORARY: 1000 points given at registration until the "2nd approved profile"
-// trigger is implemented. Replace this with the profile-approval hook once the
-// client has reviewed the design doc and confirmed the trigger point.
-export const SIGNUP_BONUS = 1000;
+// Points credited when 1st or 2nd profile is approved by a moderator
+export const PROFILE_APPROVAL_BONUS = 1000;
 
 @Injectable()
 export class WalletService {
@@ -28,18 +26,53 @@ export class WalletService {
    * Called from AuthService.register() immediately after user creation.
    * Creates wallet and credits the temporary signup bonus.
    */
+  /**
+   * Creates an empty wallet for a new user.
+   * No points at registration — bonus given on 1st and 2nd profile approval.
+   */
   async createForUser(userId: string): Promise<void> {
-    const wallet = await this.prisma.wallet.create({
-      data: { userId, balance: SIGNUP_BONUS },
+    await this.prisma.wallet.create({
+      data: { userId, balance: 0 },
+    });
+  }
+
+  /**
+   * Credits 1000 points on the 1st and 2nd moderator-approved profile.
+   * Atomic $transaction prevents race conditions when two profiles are
+   * approved simultaneously. Count checked AFTER approval, so:
+   *   count === 1 → this was the 1st approval → credit
+   *   count === 2 → this was the 2nd approval → credit
+   *   count  > 2 → 3rd+ profile → no bonus
+   */
+  async creditProfileBonus(userId: string): Promise<void> {
+    await this.prisma.$transaction(async tx => {
+      const approvedCount = await tx.candidateProfile.count({
+        where: { userId, status: 'APPROVED' },
+      });
+      if (approvedCount > 2) return;
+
+      const wallet = await tx.wallet.findUnique({ where: { userId } });
+      if (!wallet) return;
+
+      const ordinal = approvedCount === 1 ? '1st' : '2nd';
+
+      await tx.wallet.update({
+        where: { userId },
+        data:  { balance: { increment: PROFILE_APPROVAL_BONUS } },
+      });
+      await tx.pointTransaction.create({
+        data: {
+          walletId: wallet.id,
+          amount:   PROFILE_APPROVAL_BONUS,
+          type:     TransactionType.SIGNUP_BONUS,
+          note:     `${ordinal} profile approval bonus`,
+        },
+      });
     });
 
-    await this.prisma.pointTransaction.create({
-      data: {
-        walletId: wallet.id,
-        amount:   SIGNUP_BONUS,
-        type:     TransactionType.SIGNUP_BONUS,
-        note:     'Welcome bonus — temporary until 2nd-profile-approval trigger is built',
-      },
+    await this.audit.log({
+      entityType: 'wallet', entityId: userId, action: 'PROFILE_BONUS_CREDITED', actorId: userId,
+      metadata: { amount: PROFILE_APPROVAL_BONUS },
     });
   }
 

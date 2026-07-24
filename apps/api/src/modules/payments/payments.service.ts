@@ -217,8 +217,9 @@ export class PaymentsService implements OnModuleInit {
       userId:  payment.userId,
       subject: 'Payment received ✅',
       body:    `Your payment of ${(payment.amountPaise / 100).toFixed(2)} ${payment.currency} was successful. Thank you for using Sarvamoola Udyoga Sakha!`,
-      link:    '/settings',
-      email:   (payment as any).user?.email,
+      link:      '/settings',
+      linkLabel: 'View Wallet →',
+      email:     (payment as any).user?.email,
     });
 
     return updated;
@@ -270,8 +271,9 @@ export class PaymentsService implements OnModuleInit {
       userId:  payment.userId,
       subject: 'Payment unsuccessful',
       body:    `Your payment of ${(payment.amountPaise / 100).toFixed(2)} ${payment.currency} could not be completed.\n\nReason: ${reason}\n\nPlease try again or contact support if the issue persists.`,
-      link:    '/settings',
-      email:   (payment as any).user?.email,
+      link:      '/settings',
+      linkLabel: 'Try Again →',
+      email:     (payment as any).user?.email,
     });
   }
 

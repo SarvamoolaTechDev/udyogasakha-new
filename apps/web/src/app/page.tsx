@@ -315,13 +315,32 @@ export default function HomePage() {
             <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, fontWeight: 300, maxWidth: '240px' }}>India's unified employment ecosystem connecting talent across 11 roles with verified opportunities.</p>
           </div>
           {[
-            { h:'For Job Seekers',   links:['Browse Jobs','Create Profile','Career Guide'] },
-            { h:'For Organisations', links:['Post a Job','Submit RFP','Find Consultants'] },
-            { h:'Platform',          links:['About Us','Moderator Panel','Contact Us'] },
+            {
+              h: 'For Job Seekers',
+              links: [
+                { label: 'Browse Jobs',    href: '/jobs'    },
+                { label: 'Create Profile', href: '/profile' },
+              ],
+            },
+            {
+              h: 'For Organisations',
+              links: [
+                { label: 'Post a Job',       href: '/post'               },
+                { label: 'Submit RFP',       href: '/post'               },
+                { label: 'Find Consultants', href: '/talent'             },
+              ],
+            },
+            {
+              h: 'Platform',
+              links: [
+                { label: 'About Us',   href: '/#about'                  },
+                { label: 'Contact Us', href: 'mailto:info@sarvamoola.in' },
+              ],
+            },
           ].map(col => (
             <div key={col.h}>
               <h4 style={{ fontFamily: 'Cinzel,serif', fontSize: '10px', fontWeight: 700, letterSpacing: '1.5px', textTransform: 'uppercase', background: 'linear-gradient(135deg,var(--gold2),var(--gold3))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', marginBottom: '14px' }}>{col.h}</h4>
-              {col.links.map(l => <a key={l} href="#" style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.45)', textDecoration: 'none', marginBottom: '8px', fontWeight: 300 }}>{l}</a>)}
+              {col.links.map(l => <a key={l.label} href={l.href} style={{ display: 'block', fontSize: '11px', color: 'rgba(255,255,255,0.45)', textDecoration: 'none', marginBottom: '8px', fontWeight: 300 }}>{l.label}</a>)}
             </div>
           ))}
         </div>

@@ -169,8 +169,9 @@ export class ListingsService {
         userId:  before.postedById,
         subject: 'Your listing is live! ✅',
         body:    `Your listing "${before.title}" has been approved and is now visible to candidates on the portal.`,
-        link:    `/jobs/${before.id}`,
-        email:   (before as any).postedBy?.email,
+        link:      `/jobs/${before.id}`,
+        linkLabel: 'View Listing →',
+        email:     (before as any).postedBy?.email,
       });
     }
 
@@ -256,8 +257,9 @@ export class ListingsService {
         userId:  before.postedById,
         subject: 'Listing could not be approved',
         body:    `Your listing "${before.title}" was not approved. Reason: ${reason}. Please update your listing and resubmit.`,
-        link:    '/post',
-        email:   (before as any).postedBy?.email,
+        link:      '/post',
+        linkLabel: 'Update & Repost →',
+        email:     (before as any).postedBy?.email,
       });
     }
 

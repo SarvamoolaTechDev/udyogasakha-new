@@ -10,7 +10,7 @@ import { C } from '@/theme/colors';
 import { useAuthStore } from '@/store/auth.store';
 
 const LISTING_TYPES = [['JOB_OPENING','Job Opening'],['INTERNSHIP','Internship'],['RFP_TENDER','RFP / Tender'],['TRAINING_PROGRAM','Training Program'],['CONSULTANCY_NEED','Consultancy Need'],['VENDOR_REQUIREMENT','Vendor Requirement']];
-const ROLE_TYPES    = [['JOB_SEEKER','Job Seeker'],['INTERN','Intern'],['FRESHER','Fresher'],['FREELANCER','Freelancer'],['CONSULTANT','Consultant'],['TRAINER','Trainer'],['RECRUITER','Recruiter'],['VENDOR','Vendor']];
+const ROLE_TYPES    = [['JOB_SEEKER','Job Seeker'],['INTERN','Intern'],['FRESHER','Fresher'],['CONSULTANT','Consultant'],['TRAINER','Trainer'],['RECRUITER','Recruiter'],['VENDOR','Vendor']];
 const INDUSTRIES     = [['IT_SOFTWARE','IT / Software'],['HEALTHCARE','Healthcare'],['FINANCE_BANKING','Finance / Banking'],['GOVERNMENT_PSU','Government / PSU'],['EDUCATION','Education'],['ENGINEERING','Engineering'],['MARKETING','Marketing'],['SERVICES','Services'],['OTHER','Other']];
 const PAYMENTS       = [['PAID','Paid'],['UNPAID','Unpaid'],['STIPEND','Stipend'],['NEGOTIABLE','Negotiable']];
 const WORK_MODES      = [['WFH','WFH'],['ON_SITE','On-Site'],['HYBRID','Hybrid'],['OFF_SITE','Off-Site']];
