@@ -2,7 +2,7 @@ import { Controller, Get, Query, UseGuards, Module } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { MarketService } from './market.service';
 import { JwtAuthGuard, RolesGuard, Roles } from '../../common/guards/auth.guards';
-import { UserRole } from '@prisma/client';
+import { UserRole } from '../../common/user-role.enum';
 
 @ApiTags('Market')
 @ApiBearerAuth()

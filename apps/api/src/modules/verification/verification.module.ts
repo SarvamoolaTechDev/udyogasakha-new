@@ -79,7 +79,7 @@ export class VerificationService {
         data: { status: VerificationStatus.APPROVED, reviewNote: dto.reviewNote, reviewerId: modId, reviewedAt: new Date() },
       }),
       // Mark each document as verified
-      ...req.documentIds.map(docId =>
+      ...(req.documentIds as string[]).map(docId =>
         this.prisma.userDocument.updateMany({ where: { id: docId }, data: { verifiedAt: new Date(), verifierId: modId } })
       ),
       // Upgrade trust to L1

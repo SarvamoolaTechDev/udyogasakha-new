@@ -2,7 +2,7 @@ import { Controller, Get, Param, Query, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { AuditService } from './audit.service';
 import { JwtAuthGuard, RolesGuard, Roles } from '../../common/guards/auth.guards';
-import { UserRole } from '@prisma/client';
+import { UserRole } from '../../common/user-role.enum';
 
 @ApiTags('Audit')
 @ApiBearerAuth()

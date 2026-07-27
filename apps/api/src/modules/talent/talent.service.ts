@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
-import { UserRole, ProfileStatus } from '@prisma/client';
+import { ProfileStatus } from '@prisma/client';
+import { UserRole } from '../../common/user-role.enum';
 import { parsePage, paginate } from '../../common/pagination';
 
 // Fields visible to everyone on the talent teaser card
@@ -31,7 +32,7 @@ export class TalentService {
    * Browse approved candidate profiles. Available to all authenticated users,
    * but contact fields are never included — those come from getDetails() after unlock.
    */
-  async browse(filters: {
+  async browse(userId: string, filters: {
     search?:        string;
     roleType?:      string;
     marketField?:   string;
@@ -40,6 +41,14 @@ export class TalentService {
     page?:          number;
     limit?:         number;
   }) {
+    // Gate: only qualifying roles can browse talent
+    const hasAccess = await this.checkTalentAccess(userId);
+    if (!hasAccess) {
+      throw new ForbiddenException(
+        'Find Talent is available to Recruiters, Hiring Managers, Trainers, RFP Providers and Vendors with at least one approved profile.',
+      );
+    }
+
     const where: any = { status: ProfileStatus.APPROVED };
     if (filters.roleType)      where.roleType      = filters.roleType;
     if (filters.marketField)   where.marketField   = filters.marketField;
@@ -47,9 +56,10 @@ export class TalentService {
     if (filters.workMode)      where.workMode      = filters.workMode;
     if (filters.search) {
       where.OR = [
-        { fullName:     { contains: filters.search } },
-        { city:         { contains: filters.search } },
-        { summary:      { contains: filters.search } },
+        { fullName:     { contains: filters.search, mode: 'insensitive' } },
+        { skills:       { hasSome:  [filters.search] } },
+        { city:         { contains: filters.search, mode: 'insensitive' } },
+        { summary:      { contains: filters.search, mode: 'insensitive' } },
       ];
     }
 
@@ -58,7 +68,7 @@ export class TalentService {
       this.prisma.candidateProfile.findMany({
         where,
         select: TEASER_SELECT,
-        orderBy: { updatedAt: 'desc' },
+        orderBy: { submittedAt: 'desc' },
         skip: p.skip, take: p.limit,
       }),
       this.prisma.candidateProfile.count({ where }),

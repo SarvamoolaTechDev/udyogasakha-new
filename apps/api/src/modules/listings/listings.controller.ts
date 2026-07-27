@@ -4,7 +4,7 @@ import { ListingsService } from './listings.service';
 import { CreateListingDto, RejectListingDto } from './dto/listing.dto';
 import { UpdateListingDto } from './dto/update-listing.dto';
 import { JwtAuthGuard, RolesGuard, Roles, CurrentUser } from '../../common/guards/auth.guards';
-import { UserRole } from '@prisma/client';
+import { UserRole } from '../../common/user-role.enum';
 
 @ApiTags('Listings')
 @Controller('listings')

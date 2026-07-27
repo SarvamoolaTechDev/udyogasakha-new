@@ -8,7 +8,8 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PrismaService } from '../../prisma/prisma.service';
 import { JwtAuthGuard, RolesGuard, Roles, CurrentUser } from '../../common/guards/auth.guards';
 import { AuditService } from '../audit/audit.service';
-import { ReportStatus, ReportSubjectType, UserRole } from '@prisma/client';
+import { ReportStatus, ReportSubjectType } from '@prisma/client';
+import { UserRole } from '../../common/user-role.enum';
 import { parsePage, paginate } from '../../common/pagination';
 
 class SubmitReportDto {
