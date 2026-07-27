@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger'
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/user.dto';
 import { JwtAuthGuard, RolesGuard, Roles, CurrentUser } from '../../common/guards/auth.guards';
-import { UserRole } from '@prisma/client';
+import { UserRole } from '../../common/user-role.enum';
 
 @ApiTags('Users')
 @ApiBearerAuth()

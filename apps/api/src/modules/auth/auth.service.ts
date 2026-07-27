@@ -7,7 +7,7 @@ import { AppConfigService } from '../../config/app-config.service';
 import { AuditService } from '../audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { WalletService } from '../wallet/wallet.service';
-import { UserRole } from '@prisma/client';
+import { UserRole } from '../../common/user-role.enum';
 
 @Injectable()
 export class AuthService {
@@ -53,7 +53,7 @@ export class AuthService {
       newState:   { email: user.email, name: user.name, roles: user.roles },
     });
 
-    return this.issue({ ...user, roles: (user.roles ?? []) as UserRole[] });
+    return this.issue(user);
   }
 
   async login(dto: { email: string; password: string }) {
@@ -77,7 +77,7 @@ export class AuthService {
       actorEmail: user.email,
     });
 
-    return this.issue({ ...user, roles: (user.roles ?? []) as UserRole[] });
+    return this.issue(user);
   }
 
   async refresh(userId: string, token: string) {
@@ -96,7 +96,7 @@ export class AuthService {
 
     await this.prisma.refreshToken.update({ where: { id: stored.id }, data: { used: true } });
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
-    return this.issue({ ...user, roles: (user.roles ?? []) as UserRole[] });
+    return this.issue(user);
   }
 
   /**

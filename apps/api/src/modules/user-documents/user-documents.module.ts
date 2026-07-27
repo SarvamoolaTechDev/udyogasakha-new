@@ -12,7 +12,8 @@ import { Body } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { IStorageService, STORAGE_SERVICE } from '../../common/storage/storage.interface';
 import { JwtAuthGuard, RolesGuard, Roles, CurrentUser } from '../../common/guards/auth.guards';
-import { UserDocumentType, UserRole } from '@prisma/client';
+import { UserDocumentType } from '@prisma/client';
+import { UserRole } from '../../common/user-role.enum';
 import { AuditService } from '../audit/audit.service';
 
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB

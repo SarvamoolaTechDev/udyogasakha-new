@@ -9,7 +9,8 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { JwtAuthGuard, RolesGuard, Roles, CurrentUser } from '../../common/guards/auth.guards';
 import { AuditService } from '../audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
-import { VerificationStatus, UserRole } from '@prisma/client';
+import { VerificationStatus } from '@prisma/client';
+import { UserRole } from '../../common/user-role.enum';
 import { parsePage, paginate } from '../../common/pagination';
 
 class RequestVerificationDto {
@@ -78,7 +79,7 @@ export class VerificationService {
         data: { status: VerificationStatus.APPROVED, reviewNote: dto.reviewNote, reviewerId: modId, reviewedAt: new Date() },
       }),
       // Mark each document as verified
-      ...(req.documentIds as string[]).map(docId =>
+      ...req.documentIds.map(docId =>
         this.prisma.userDocument.updateMany({ where: { id: docId }, data: { verifiedAt: new Date(), verifierId: modId } })
       ),
       // Upgrade trust to L1
