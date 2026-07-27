@@ -4,13 +4,6 @@ import { UserRole, ProfileStatus } from '@prisma/client';
 import { parsePage, paginate } from '../../common/pagination';
 
 // Fields visible to everyone on the talent teaser card
-// Roles that are permitted to browse candidate profiles.
-// Intern, Fresher, Job Seeker and Consultant are excluded —
-// they are the talent being sought, not the ones doing the seeking.
-const TALENT_SEEKER_ROLES = [
-  'RECRUITER', 'HIRING_MANAGER', 'TRAINER', 'RFP_PROVIDER', 'VENDOR',
-];
-
 const TEASER_SELECT = {
   id: true,
   fullName: true,
@@ -38,22 +31,7 @@ export class TalentService {
    * Browse approved candidate profiles. Available to all authenticated users,
    * but contact fields are never included — those come from getDetails() after unlock.
    */
-  /**
-   * Returns true if the user has at least one APPROVED profile
-   * of a qualifying role type. Used to gate the Find Talent feature.
-   */
-  async checkTalentAccess(userId: string): Promise<boolean> {
-    const count = await this.prisma.candidateProfile.count({
-      where: {
-        userId,
-        status:   ProfileStatus.APPROVED,
-        roleType: { in: TALENT_SEEKER_ROLES as any[] },
-      },
-    });
-    return count > 0;
-  }
-
-  async browse(userId: string, filters: {
+  async browse(filters: {
     search?:        string;
     roleType?:      string;
     marketField?:   string;
@@ -62,13 +40,6 @@ export class TalentService {
     page?:          number;
     limit?:         number;
   }) {
-    // Gate access — only qualifying roles can browse talent
-    const hasAccess = await this.checkTalentAccess(userId);
-    if (!hasAccess) {
-      throw new ForbiddenException(
-        'Find Talent is available to Recruiters, Hiring Managers, Trainers, RFP Providers and Vendors with at least one approved profile.',
-      );
-    }
     const where: any = { status: ProfileStatus.APPROVED };
     if (filters.roleType)      where.roleType      = filters.roleType;
     if (filters.marketField)   where.marketField   = filters.marketField;
@@ -76,10 +47,9 @@ export class TalentService {
     if (filters.workMode)      where.workMode      = filters.workMode;
     if (filters.search) {
       where.OR = [
-        { fullName:     { contains: filters.search, mode: 'insensitive' } },
-        { skills:       { hasSome:  [filters.search] } },
-        { city:         { contains: filters.search, mode: 'insensitive' } },
-        { summary:      { contains: filters.search, mode: 'insensitive' } },
+        { fullName:     { contains: filters.search } },
+        { city:         { contains: filters.search } },
+        { summary:      { contains: filters.search } },
       ];
     }
 

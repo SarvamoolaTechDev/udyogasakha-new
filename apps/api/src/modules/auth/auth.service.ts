@@ -20,12 +20,9 @@ export class AuthService {
     private readonly wallet:  WalletService,
   ) {}
 
-  async register(dto: { email: string; password: string; name: string; phone: string }) {
+  async register(dto: { email: string; password: string; name: string; phone?: string }) {
     if (await this.prisma.user.findUnique({ where: { email: dto.email } })) {
       throw new ConflictException('Email already registered');
-    }
-    if (await this.prisma.user.findUnique({ where: { phone: dto.phone } })) {
-      throw new ConflictException('This mobile number is already registered. Please sign in or use a different number.');
     }
     const hash = await bcrypt.hash(dto.password, 12);
     const user = await this.prisma.user.create({
@@ -56,7 +53,7 @@ export class AuthService {
       newState:   { email: user.email, name: user.name, roles: user.roles },
     });
 
-    return this.issue(user);
+    return this.issue({ ...user, roles: (user.roles ?? []) as UserRole[] });
   }
 
   async login(dto: { email: string; password: string }) {
@@ -80,7 +77,7 @@ export class AuthService {
       actorEmail: user.email,
     });
 
-    return this.issue(user);
+    return this.issue({ ...user, roles: (user.roles ?? []) as UserRole[] });
   }
 
   async refresh(userId: string, token: string) {
@@ -99,7 +96,7 @@ export class AuthService {
 
     await this.prisma.refreshToken.update({ where: { id: stored.id }, data: { used: true } });
     const user = await this.prisma.user.findUniqueOrThrow({ where: { id: userId } });
-    return this.issue(user);
+    return this.issue({ ...user, roles: (user.roles ?? []) as UserRole[] });
   }
 
   /**
@@ -223,7 +220,7 @@ export class AuthService {
     return this.prisma.user.findUnique({ where: { id: userId } });
   }
 
-  private async issue(user: { id: string; roles: UserRole[] }) {
+  private async issue(user: { id: string; roles: any }) {
     const payload = { sub: user.id, roles: user.roles };
     const accessToken  = this.jwt.sign(payload, { expiresIn: this.config.jwtExpiresIn,      secret: this.config.jwtSecret });
     const refreshToken = this.jwt.sign(payload, { expiresIn: this.config.jwtRefreshExpires, secret: this.config.jwtRefreshSecret });

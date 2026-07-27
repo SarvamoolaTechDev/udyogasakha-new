@@ -82,9 +82,8 @@ export class ListingsService {
     // Also the path used until the backfill script has run at least once.
     const where: any = { status: ProfileStatus.APPROVED };
     if (filters.search) where.OR = [
-      { title:            { contains: filters.search, mode: 'insensitive' } },
-      { organisationName: { contains: filters.search, mode: 'insensitive' } },
-      { skills:           { hasSome:  [filters.search] } },
+      { title:            { contains: filters.search } },
+      { organisationName: { contains: filters.search } },
     ];
     if (filters.role)   where.targetRoleType     = filters.role;
     if (filters.market) where.marketField         = filters.market;
@@ -169,9 +168,8 @@ export class ListingsService {
         userId:  before.postedById,
         subject: 'Your listing is live! ✅',
         body:    `Your listing "${before.title}" has been approved and is now visible to candidates on the portal.`,
-        link:      `/jobs/${before.id}`,
-        linkLabel: 'View Listing →',
-        email:     (before as any).postedBy?.email,
+        link:    `/jobs/${before.id}`,
+        email:   (before as any).postedBy?.email,
       });
     }
 
@@ -182,7 +180,7 @@ export class ListingsService {
       organisationName:    after.organisationName,
       description:         after.description,
       location:            after.location,
-      skills:              after.skills,
+      skills:              (after.skills as string[]) ?? [],
       targetRoleType:      after.targetRoleType,
       marketField:         after.marketField,
       workMode:            after.workMode,
@@ -257,9 +255,8 @@ export class ListingsService {
         userId:  before.postedById,
         subject: 'Listing could not be approved',
         body:    `Your listing "${before.title}" was not approved. Reason: ${reason}. Please update your listing and resubmit.`,
-        link:      '/post',
-        linkLabel: 'Update & Repost →',
-        email:     (before as any).postedBy?.email,
+        link:    '/post',
+        email:   (before as any).postedBy?.email,
       });
     }
 

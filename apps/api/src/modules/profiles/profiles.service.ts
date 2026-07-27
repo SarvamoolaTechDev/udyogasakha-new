@@ -182,7 +182,7 @@ export class ProfilesService {
     await this.search.indexProfile({
       id:            after.id,
       fullName:      after.fullName,
-      skills:        after.skills,
+      skills:        (after.skills as string[]) ?? [],
       city:          after.city          ?? '',
       summary:       after.summary       ?? '',
       roleType:      after.roleType,
@@ -218,9 +218,8 @@ export class ProfilesService {
       userId:  before.userId,
       subject: 'Profile review update',
       body:    `Your ${before.roleType.replace(/_/g, ' ')} profile could not be approved. Reason: ${reason}. Please update your profile and resubmit.`,
-      link:      `/profile/${before.roleType}`,
-      linkLabel: 'Update & Resubmit →',
-      email:     (before as any).user?.email,
+      link:    `/profile/${before.roleType}`,
+      email:   (before as any).user?.email,
     });
 
     // Remove from Meilisearch — rejected profiles must not appear in talent search
@@ -250,9 +249,8 @@ export class ProfilesService {
       userId:  before.userId,
       subject: 'Your profile has been reactivated 🔄',
       body:    `Your ${before.roleType.replace(/_/g, ' ')} profile has been reactivated and is back under review. You will be notified once a moderator has reviewed it.`,
-      link:      `/profile/${before.roleType}`,
-      linkLabel: 'View My Profile →',
-      email:     (before as any).user?.email,
+      link:    `/profile/${before.roleType}`,
+      email:   (before as any).user?.email,
     });
 
     // Profile is back to PENDING — remove from search until re-approved

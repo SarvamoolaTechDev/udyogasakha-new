@@ -2,7 +2,8 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AuthService } from '../auth.service';
-import { AppConfigService } from '../../../config/app-config.service';
+import { UserRole } from '@prisma/client';
+import { AppConfigService } from '../../../../config/app-config.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
@@ -12,6 +13,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   async validate(payload: { sub: string }) {
     const user = await this.auth.validateUser(payload.sub);
     if (!user) throw new UnauthorizedException();
-    return user;
+    // Cast roles: MySQL Json column returns runtime array, TS type is JsonValue
+    return { ...user, roles: (user.roles ?? []) as UserRole[] };
   }
 }

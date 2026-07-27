@@ -1,4 +1,4 @@
-// Udyoga Sakha — Prisma Schema
+// Udyoga Sakha — Prisma Schema (MySQL 8.0)
 // npx prisma migrate dev --name init
 
 generator client {
@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -136,34 +136,35 @@ enum Duration {
 // ── Models ────────────────────────────────────────────────────────────────────
 
 model User {
-  id           String     @id @default(uuid())
-  email        String     @unique
+  id           String   @id @default(uuid())
+  email        String   @unique
   phone        String   @unique
   name         String
-  passwordHash String     @map("password_hash")
-  roles        UserRole[]
+  passwordHash String   @map("password_hash")
+  // MySQL has no native array type — roles stored as JSON array e.g. ["PARTICIPANT"]
+  // Read with: (user.roles as UserRole[])
+  roles        Json     @default("[]")
   city         String?
 
-  profiles         CandidateProfile[] @relation("UserProfiles")
-  listings         JobListing[]       @relation("ListingOwner")
-  reviewedProfiles CandidateProfile[] @relation("ProfileReviewer")
-  reviewedListings JobListing[]       @relation("ListingReviewer")
-  refreshTokens    RefreshToken[]
-  notifications    Notification[]
-  // Reconciliation additions
-  userProfile      UserProfile?
-  userDocuments    UserDocument[]
-  verifiedDocuments UserDocument[]      @relation("DocumentVerifier")
-  trustRecord      TrustRecord?
-  verificationRequests VerificationRequest[]
+  profiles              CandidateProfile[]    @relation("UserProfiles")
+  listings              JobListing[]          @relation("ListingOwner")
+  reviewedProfiles      CandidateProfile[]    @relation("ProfileReviewer")
+  reviewedListings      JobListing[]          @relation("ListingReviewer")
+  refreshTokens         RefreshToken[]
+  notifications         Notification[]
+  userProfile           UserProfile?
+  userDocuments         UserDocument[]
+  verifiedDocuments     UserDocument[]        @relation("DocumentVerifier")
+  trustRecord           TrustRecord?
+  verificationRequests  VerificationRequest[]
   reviewedVerifications VerificationRequest[] @relation("VerificationReviewer")
-  reports          Report[]            @relation("ReportReporter")
-  resolvedReports  Report[]            @relation("ReportResolver")
-  passwordResetTokens PasswordResetToken[]
-  payments         Payment[]
-  wallet           Wallet?
-  listingUnlocks   ListingUnlock[]
-  profileUnlocks   ProfileUnlock[]   @relation("ProfileUnlockByUser")
+  reports               Report[]              @relation("ReportReporter")
+  resolvedReports       Report[]              @relation("ReportResolver")
+  passwordResetTokens   PasswordResetToken[]
+  payments              Payment[]
+  wallet                Wallet?
+  listingUnlocks        ListingUnlock[]
+  profileUnlocks        ProfileUnlock[]       @relation("ProfileUnlockByUser")
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt      @map("updated_at")
@@ -174,7 +175,7 @@ model User {
 model RefreshToken {
   id        String   @id @default(uuid())
   userId    String   @map("user_id")
-  token     String   @unique
+  token     String   @unique @db.VarChar(512)
   expiresAt DateTime @map("expires_at")
   used      Boolean  @default(false)
   createdAt DateTime @default(now()) @map("created_at")
@@ -185,14 +186,10 @@ model RefreshToken {
   @@map("refresh_tokens")
 }
 
-// ── Password Reset ───────────────────────────────────────────────────────────
-// Only the SHA-256 hash of the raw token is stored — the raw token is emailed
-// to the user and never persisted. One-time use, 1-hour expiry.
-
 model PasswordResetToken {
   id        String   @id @default(uuid())
   userId    String   @map("user_id")
-  tokenHash String   @unique @map("token_hash")
+  tokenHash String   @unique @map("token_hash") @db.VarChar(512)
   expiresAt DateTime @map("expires_at")
   used      Boolean  @default(false)
   createdAt DateTime @default(now()) @map("created_at")
@@ -221,21 +218,21 @@ model JobListing {
   employmentOption    EmpOption       @default(NOT_EXISTS) @map("employment_option")
   experienceRequired  ExperienceLevel @default(ANY)        @map("experience_required")
   duration            Duration        @default(PERMANENT)
-  skills              String[]
-  facilities          String[]
-  description         String          @default("")
-  experienceDetail    String?         @map("experience_detail")
-  responsibilities    String[]
-  requirements        String[]
+  // String[] fields stored as JSON arrays — cast to string[] in application code
+  skills              Json            @default("[]")
+  facilities          Json            @default("[]")
+  responsibilities    Json            @default("[]")
+  requirements        Json            @default("[]")
+  description         String          @db.Text
+  experienceDetail    String?         @map("experience_detail") @db.Text
   marketField         MarketField     @map("market_field")
   status              ProfileStatus   @default(PENDING)
   icon                String?
   postedById          String?         @map("posted_by_id")
   reviewedById        String?         @map("reviewed_by_id")
   reviewedAt          DateTime?       @map("reviewed_at")
-  rejectionReason     String?         @map("rejection_reason")
+  rejectionReason     String?         @map("rejection_reason") @db.Text
   postedAt            DateTime        @default(now()) @map("posted_at")
-  // Paid promotion — set by PaymentsService when a LISTING_FEATURE payment is captured
   featured            Boolean         @default(false)
   featuredUntil       DateTime?       @map("featured_until")
 
@@ -261,8 +258,9 @@ model CandidateProfile {
   phone       String?
   email       String?
   city        String?
-  skills      String[]
-  summary     String?
+  // String[] stored as JSON array — cast to string[] in application code
+  skills      Json    @default("[]")
+  summary     String? @db.Text
 
   // Education
   highestDegree  String? @map("highest_degree")
@@ -286,14 +284,14 @@ model CandidateProfile {
 
   // Moderator review
   status          ProfileStatus @default(PENDING)
-  rejectionReason String?       @map("rejection_reason")
+  rejectionReason String?       @map("rejection_reason") @db.Text
   marketField     MarketField?  @map("market_field")
   submittedAt     DateTime      @default(now()) @map("submitted_at")
   reviewedAt      DateTime?     @map("reviewed_at")
   reviewedById    String?       @map("reviewed_by_id")
 
-  user        User                @relation("UserProfiles",   fields: [userId],       references: [id], onDelete: Cascade)
-  reviewer    User?               @relation("ProfileReviewer", fields: [reviewedById], references: [id])
+  user        User                @relation("UserProfiles",          fields: [userId],       references: [id], onDelete: Cascade)
+  reviewer    User?               @relation("ProfileReviewer",       fields: [reviewedById], references: [id])
   experiences ExperienceEntry[]
   documents   CandidateDocument[]
   unlocks     ProfileUnlock[]     @relation("ProfileUnlockOnProfile")
@@ -311,7 +309,7 @@ model ExperienceEntry {
   company      String
   fromDate     String? @map("from_date")
   toDate       String? @map("to_date")
-  description  String?
+  description  String? @db.Text
   displayOrder Int     @default(0) @map("display_order")
 
   profile CandidateProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
@@ -338,7 +336,6 @@ model CandidateDocument {
 }
 
 // ── Audit Log ─────────────────────────────────────────────────────────────────
-// Immutable append-only table. Rows are NEVER updated or deleted.
 
 model AuditLog {
   id         String   @id @default(uuid())
@@ -359,16 +356,14 @@ model AuditLog {
 }
 
 // ── Notifications ─────────────────────────────────────────────────────────────
-// In-app notifications. Email/SMS are dispatched via BullMQ stubs
-// and will not create rows here — they go to the external provider.
 
 model Notification {
   id        String   @id @default(uuid())
   userId    String   @map("user_id")
   subject   String
-  body      String
+  body      String   @db.Text
   read      Boolean  @default(false)
-  link      String?  // optional deep-link e.g. "/profile/JOB_SEEKER"
+  link      String?
   createdAt DateTime @default(now()) @map("created_at")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -378,29 +373,20 @@ model Notification {
   @@map("notifications")
 }
 
-// ── A. UserProfile ─────────────────────────────────────────────────────────────
-// Account-level identity — one per user.
-// Separates display info from auth credentials on the users table.
-// Role-specific participation data remains in CandidateProfile.
-
 model UserProfile {
   userId          String  @id @map("user_id")
   fullName        String  @map("full_name")
-  bio             String?
+  bio             String? @db.Text
   location        String?
-  participantType String? @map("participant_type") // e.g. INDIVIDUAL, ORGANISATION
-  orgName         String? @map("org_name")         // if participantType = ORGANISATION
+  participantType String? @map("participant_type")
+  orgName         String? @map("org_name")
   showContact     Boolean @default(true) @map("show_contact")
-  avatarKey       String? @map("avatar_key")       // Azure Blob storage key — never a public URL
+  avatarKey       String? @map("avatar_key")
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_profiles")
 }
-
-// ── B. UserDocument ────────────────────────────────────────────────────────────
-// KYC / identity documents — per user, shared across all roles.
-// Separate from CandidateDocument which is per-role portfolio material.
 
 enum UserDocumentType {
   NATIONAL_ID
@@ -424,16 +410,11 @@ model UserDocument {
   uploadedAt   DateTime         @default(now()) @map("uploaded_at")
 
   user     User  @relation(fields: [userId],    references: [id], onDelete: Cascade)
-  verifier User? @relation("DocumentVerifier", fields: [verifierId], references: [id])
+  verifier User? @relation("DocumentVerifier",  fields: [verifierId], references: [id])
 
   @@index([userId])
   @@map("user_documents")
 }
-
-// ── C. TrustRecord ─────────────────────────────────────────────────────────────
-// Stub for the trust engine — one per user.
-// Created at registration (L0). Upgraded to L1 when first profile is approved.
-// Full trust engine (L2–L4 with badge workflow) deferred pending client decision.
 
 model TrustRecord {
   userId               String   @id @map("user_id")
@@ -447,10 +428,6 @@ model TrustRecord {
   @@map("trust_records")
 }
 
-// ── D. VerificationRequest ─────────────────────────────────────────────────────
-// Formal document verification workflow — user requests L1 verification,
-// moderator reviews the uploaded UserDocuments and approves or rejects.
-
 enum VerificationStatus {
   PENDING
   APPROVED
@@ -460,9 +437,10 @@ enum VerificationStatus {
 model VerificationRequest {
   id          String             @id @default(uuid())
   userId      String             @map("user_id")
-  documentIds String[]           @map("document_ids") // IDs from user_documents
+  // String[] stored as JSON array — cast to string[] in application code
+  documentIds Json               @default("[]") @map("document_ids")
   status      VerificationStatus @default(PENDING)
-  reviewNote  String?            @map("review_note")
+  reviewNote  String?            @map("review_note") @db.Text
   reviewedAt  DateTime?          @map("reviewed_at")
   reviewerId  String?            @map("reviewer_id")
   createdAt   DateTime           @default(now()) @map("created_at")
@@ -474,10 +452,6 @@ model VerificationRequest {
   @@index([status])
   @@map("verification_requests")
 }
-
-// ── E. Report ─────────────────────────────────────────────────────────────────
-// Abuse / misconduct reports submitted by members.
-// Moderators triage and resolve these through the admin portal.
 
 enum ReportStatus {
   PENDING
@@ -497,34 +471,21 @@ model Report {
   reporterId  String            @map("reporter_id")
   subjectType ReportSubjectType @map("subject_type")
   subjectId   String            @map("subject_id")
-  reason      String
-  detail      String?
+  reason      String            @db.Text
+  detail      String?           @db.Text
   status      ReportStatus      @default(PENDING)
-  resolution  String?
+  resolution  String?           @db.Text
   resolvedBy  String?           @map("resolved_by")
   resolvedAt  DateTime?         @map("resolved_at")
   createdAt   DateTime          @default(now()) @map("created_at")
 
-  reporter User  @relation("ReportReporter",  fields: [reporterId], references: [id])
-  resolver User? @relation("ReportResolver",  fields: [resolvedBy],  references: [id])
+  reporter User  @relation("ReportReporter", fields: [reporterId], references: [id])
+  resolver User? @relation("ReportResolver", fields: [resolvedBy],  references: [id])
 
   @@index([status])
   @@index([subjectType, subjectId])
   @@map("reports")
 }
-
-// ── Payments (Razorpay) ──────────────────────────────────────────────────────
-// Generic payment record — not tied to one specific product. `purpose` +
-// `referenceId` together describe what was paid for (e.g. a listing being
-// featured, a future certification fee). Pricing/triggers are a product
-// decision; this table only tracks the payment lifecycle itself.
-//
-// Method selection (UPI / Cards / Netbanking / Wallets / EMI / Pay Later /
-// international cards) is handled entirely by Razorpay's Checkout — the
-// `method` field here just records what the payer actually used, populated
-// from the webhook payload after the fact. We never hardcode "only allow
-// UPI" or similar in the backend; Razorpay's own dashboard configuration
-// controls which methods are offered to the payer.
 
 enum PaymentPurpose {
   LISTING_FEATURE
@@ -535,42 +496,41 @@ enum PaymentPurpose {
 }
 
 enum PaymentStatus {
-  CREATED     // order created on Razorpay, payer hasn't completed checkout yet
-  AUTHORIZED  // payer completed checkout; Razorpay is processing (rare to see, usually instant)
-  CAPTURED    // payment successfully captured — funds are settled
-  FAILED      // payment attempt failed (declined, insufficient funds, cancelled, etc.)
-  REFUNDED    // payment was captured and later refunded
+  CREATED
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
 }
 
-// Populated post-facto from the Razorpay webhook payload — never set by us upfront.
 enum PaymentMethod {
-  CARD          // Debit or credit card — Visa, Mastercard, RuPay, Amex, Diners
-  UPI           // Any UPI app — GPay, PhonePe, Paytm, BHIM, etc. (collect or intent flow)
-  NETBANKING    // Indian net banking — 50+ banks supported by Razorpay
-  WALLET        // Paytm, Mobikwik, Freecharge, Amazon Pay, JioMoney, etc.
-  EMI           // Credit/debit card EMI or cardless EMI (Bajaj Finserv, etc.)
-  PAYLATER      // LazyPay, Simpl, ICICI PayLater, etc.
-  INTERNATIONAL_CARD // Non-Indian-issued card — requires international payments enabled on the Razorpay account
+  CARD
+  UPI
+  NETBANKING
+  WALLET
+  EMI
+  PAYLATER
+  INTERNATIONAL_CARD
   OTHER
 }
 
 model Payment {
-  id                  String         @id @default(uuid())
-  userId              String         @map("user_id")
-  purpose             PaymentPurpose
-  referenceId         String?        @map("reference_id") // e.g. JobListing.id when purpose = LISTING_FEATURE
-  amountPaise         Int            @map("amount_paise")  // smallest currency unit — paise for INR, cents for USD, etc.
-  currency            String         @default("INR")        // ISO 4217 — INR for domestic, USD/EUR/GBP etc. for international
-  razorpayOrderId     String         @unique @map("razorpay_order_id")
-  razorpayPaymentId   String?        @map("razorpay_payment_id")
-  status              PaymentStatus  @default(CREATED)
-  method              PaymentMethod? // populated from webhook once payment completes
-  internationalPayment Boolean       @default(false) @map("international_payment")
-  failureReason       String?        @map("failure_reason")
-  refundedPaise        Int?          @map("refunded_paise")
-  metadata            Json?          // raw Razorpay payload snapshot for audit/debugging
-  createdAt           DateTime       @default(now()) @map("created_at")
-  updatedAt           DateTime       @updatedAt @map("updated_at")
+  id                   String         @id @default(uuid())
+  userId               String         @map("user_id")
+  purpose              PaymentPurpose
+  referenceId          String?        @map("reference_id")
+  amountPaise          Int            @map("amount_paise")
+  currency             String         @default("INR")
+  razorpayOrderId      String         @unique @map("razorpay_order_id")
+  razorpayPaymentId    String?        @map("razorpay_payment_id")
+  status               PaymentStatus  @default(CREATED)
+  method               PaymentMethod?
+  internationalPayment Boolean        @default(false) @map("international_payment")
+  failureReason        String?        @map("failure_reason")
+  refundedPaise        Int?           @map("refunded_paise")
+  metadata             Json?
+  createdAt            DateTime       @default(now()) @map("created_at")
+  updatedAt            DateTime       @updatedAt @map("updated_at")
 
   user User @relation(fields: [userId], references: [id])
 
@@ -579,10 +539,6 @@ model Payment {
   @@index([purpose, referenceId])
   @@map("payments")
 }
-
-// ── Wallet & Points ──────────────────────────────────────────────────────────
-// One wallet per user. Balance is in points (integer). All mutations go
-// through $transaction so balance and transaction log never diverge.
 
 model Wallet {
   id        String   @id @default(uuid())
@@ -598,20 +554,20 @@ model Wallet {
 }
 
 enum TransactionType {
-  SIGNUP_BONUS      // 1000 points on 2nd approved profile (deferred — see WalletService)
-  JOB_UNLOCK        // -30 points to unlock a job listing's contact details
-  PROFILE_UNLOCK    // -30 points to unlock a candidate profile's contact details
-  TOPUP             // +N points from Razorpay wallet top-up
-  ADMIN_ADJUSTMENT  // manual credit/debit by admin
+  SIGNUP_BONUS
+  JOB_UNLOCK
+  PROFILE_UNLOCK
+  TOPUP
+  ADMIN_ADJUSTMENT
 }
 
 model PointTransaction {
   id          String          @id @default(uuid())
   walletId    String          @map("wallet_id")
-  amount      Int             // positive = credit, negative = debit
+  amount      Int
   type        TransactionType
-  referenceId String?         @map("reference_id") // listingId / profileId / paymentId
-  note        String?
+  referenceId String?         @map("reference_id")
+  note        String?         @db.Text
   createdAt   DateTime        @default(now()) @map("created_at")
 
   wallet Wallet @relation(fields: [walletId], references: [id], onDelete: Cascade)
@@ -619,10 +575,6 @@ model PointTransaction {
   @@index([walletId])
   @@map("point_transactions")
 }
-
-// ── Unlocks ──────────────────────────────────────────────────────────────────
-// Once a user unlocks a listing or profile, they never pay again for the same
-// content. Unique constraint enforces this at the DB level.
 
 model ListingUnlock {
   id         String   @id @default(uuid())
@@ -644,7 +596,7 @@ model ProfileUnlock {
   profileId  String   @map("profile_id")
   unlockedAt DateTime @default(now()) @map("unlocked_at")
 
-  user    User             @relation("ProfileUnlockByUser", fields: [userId],    references: [id], onDelete: Cascade)
+  user    User             @relation("ProfileUnlockByUser",    fields: [userId],    references: [id], onDelete: Cascade)
   profile CandidateProfile @relation("ProfileUnlockOnProfile", fields: [profileId], references: [id], onDelete: Cascade)
 
   @@unique([userId, profileId])
