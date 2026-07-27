@@ -7,7 +7,7 @@ import { authApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
 import { PasswordInput } from '@/components/ui/PasswordInput';
 
-type FormValues = { name: string; email: string; phone?: string; password: string; confirm: string };
+type FormValues = { name: string; email: string; phone: string; password: string; confirm: string };
 
 const Err = ({ msg }: { msg?: string }) =>
   msg ? <p style={{ color:'var(--err)', fontSize:'11px', marginTop:'4px' }}>{msg}</p> : null;
@@ -28,7 +28,15 @@ export default function RegisterPage() {
       setTokens(tokens);
       router.push('/profile');
     } catch (err: any) {
-      setServerError(err?.response?.data?.message ?? 'Registration failed. Please try again.');
+      const msg: string = err?.response?.data?.message ?? '';
+      // Surface Prisma unique constraint failures as user-friendly messages
+      if (msg.toLowerCase().includes('phone') || msg.toLowerCase().includes('unique')) {
+        setServerError('This mobile number is already registered. Please sign in or use a different number.');
+      } else if (msg.toLowerCase().includes('email')) {
+        setServerError('This email is already registered. Please sign in or use a different email.');
+      } else {
+        setServerError(msg || 'Registration failed. Please try again.');
+      }
     } finally { setLoading(false); }
   };
 
@@ -55,7 +63,10 @@ export default function RegisterPage() {
             </div>
             <div>
               <label className="il">Mobile</label>
-              <input {...register('phone', { maxLength:{ value:20, message:'Phone number too long' } })} className="fi" placeholder="+91 98765 43210" />
+              <input {...register('phone', {
+                required: 'Mobile number is required',
+                pattern: { value: /^[+]?[0-9]{10,15}$/, message: 'Enter a valid mobile number' },
+              })} type="tel" className="fi" placeholder="+91 98765 43210" style={{ borderColor: errors.phone ? 'var(--err)' : undefined }} />
               <Err msg={errors.phone?.message} />
             </div>
             <div>

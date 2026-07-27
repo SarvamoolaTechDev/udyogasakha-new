@@ -138,7 +138,7 @@ enum Duration {
 model User {
   id           String     @id @default(uuid())
   email        String     @unique
-  phone        String?
+  phone        String   @unique
   name         String
   passwordHash String     @map("password_hash")
   roles        UserRole[]

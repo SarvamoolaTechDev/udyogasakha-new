@@ -1,4 +1,4 @@
-import { IsEmail, IsString, IsNotEmpty, MinLength, MaxLength, IsOptional, Matches } from 'class-validator';
+import { IsEmail, IsString, IsNotEmpty, MinLength, MaxLength, Matches } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class RegisterDto {
@@ -18,11 +18,11 @@ export class RegisterDto {
   @MaxLength(100)
   name: string;
 
-  @ApiPropertyOptional({ example: '+919876543210' })
-  @IsOptional()
+  @ApiProperty({ example: '+919876543210', description: 'Mobile number — used for UPI payment reconciliation and contact. Must be unique across all accounts.' })
   @IsString()
-  @MaxLength(20)
-  phone?: string;
+  @IsNotEmpty({ message: 'Mobile number is required' })
+  @Matches(/^[+]?[0-9]{10,15}$/, { message: 'Enter a valid mobile number (10–15 digits, optional + prefix)' })
+  phone: string;
 }
 
 export class LoginDto {

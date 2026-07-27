@@ -20,9 +20,12 @@ export class AuthService {
     private readonly wallet:  WalletService,
   ) {}
 
-  async register(dto: { email: string; password: string; name: string; phone?: string }) {
+  async register(dto: { email: string; password: string; name: string; phone: string }) {
     if (await this.prisma.user.findUnique({ where: { email: dto.email } })) {
       throw new ConflictException('Email already registered');
+    }
+    if (await this.prisma.user.findUnique({ where: { phone: dto.phone } })) {
+      throw new ConflictException('This mobile number is already registered. Please sign in or use a different number.');
     }
     const hash = await bcrypt.hash(dto.password, 12);
     const user = await this.prisma.user.create({
@@ -132,8 +135,7 @@ export class AuthService {
       userId:  user.id,
       subject: 'Reset your Udyoga Sakha password',
       body:    'Click the link to set a new password. This link expires in 1 hour. If you did not request this, you can safely ignore this email.',
-      link:      `/reset-password?token=${rawToken}`,
-        linkLabel: 'Reset My Password →',
+      link:    `/reset-password?token=${rawToken}`,
       email:   user.email,
     });
 
@@ -200,9 +202,8 @@ export class AuthService {
         'If you made this change, no action is needed.',
         'If you did NOT change your password, please reset it immediately using the "Forgot password?" link on the sign-in page.',
       ].join('\n'),
-      link:      '/forgot-password',
-      linkLabel: 'Reset Password →',
-      email:     user.email,
+      link:  '/forgot-password',
+      email: user.email,
     });
 
     return { message: 'Password changed. Please log in again.' };
