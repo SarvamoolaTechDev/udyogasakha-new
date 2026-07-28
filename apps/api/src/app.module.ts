@@ -20,7 +20,9 @@ import { VerificationModule } from './modules/verification/verification.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { SearchModule }   from './modules/search/search.module';
-import { WalletModule }  from './modules/wallet/wallet.module';
+import { WalletModule }    from './modules/wallet/wallet.module';
+import { AdminAuthModule } from './modules/admin-auth/admin-auth.module';
+import { AdminUsersModule } from './modules/admin-users/admin-users.module';
 import { TalentModule }  from './modules/talent/talent.module';
 import { HealthModule } from './modules/health/health.module';
 import { AuditModule } from './modules/audit/audit.module';
@@ -71,6 +73,8 @@ import { NotificationsModule } from './modules/notifications/notifications.modul
     PaymentsModule,
     SearchModule,
     WalletModule,
+    AdminAuthModule,
+    AdminUsersModule,
     TalentModule,
   ],
   providers: [

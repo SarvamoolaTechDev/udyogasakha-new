@@ -43,7 +43,8 @@ export const useAdminAuthStore = create<AdminAuthState>(() => ({
   isAuthenticated: !!decoded,
   isAdmin:         decoded?.isAdmin ?? false,
 
-  setTokens: ({ accessToken }) => {
+  // Admin auth returns { accessToken, admin } — no refresh token
+  setTokens: ({ accessToken }: { accessToken: string; admin?: any }) => {
     const d = decode(accessToken);
     if (!d) return; // reject tokens without admin role
     document.cookie = `${COOKIE}=${accessToken};path=/;max-age=900;SameSite=Strict`;

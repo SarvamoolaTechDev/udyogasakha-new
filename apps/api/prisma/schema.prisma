@@ -603,3 +603,27 @@ model ProfileUnlock {
   @@index([userId])
   @@map("profile_unlocks")
 }
+
+// ── Admin Portal Users ────────────────────────────────────────────────────────
+// Separate from the main User table. Admin portal staff never need to
+// register on the public platform. Managed via the admin portal's
+// "Manage Admins" page (ADMIN role only).
+
+enum AdminRole {
+  ADMIN
+  MODERATOR
+}
+
+model AdminUser {
+  id           String    @id @default(uuid())
+  email        String    @unique
+  name         String
+  passwordHash String    @map("password_hash")
+  role         AdminRole @default(MODERATOR)
+  isActive     Boolean   @default(true) @map("is_active")
+  createdById  String?   @map("created_by_id")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt      @map("updated_at")
+
+  @@map("admin_users")
+}

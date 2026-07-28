@@ -28,7 +28,7 @@ const RECRUITER_STEPS = [
   { n:1, icon:'📝', title:'Register',            desc:'Create your free account as a Recruiter, Hiring Manager, Vendor or RFP Provider.' },
   { n:2, icon:'📋', title:'Post a Job / RFP',    desc:'Fill in the listing details — role, location, salary, skills required and work mode.' },
   { n:3, icon:'🛡️', title:'Moderator Approval', desc:'Your listing is reviewed for quality and compliance before it goes live on the portal.' },
-  { n:4, icon:'🌐', title:'Listing Goes Live',   desc:'Your job posting is visible to thousands of verified candidates across 11 role types.' },
+  { n:4, icon:'🌐', title:'Listing Goes Live',   desc:'Your job posting is visible to thousands of verified candidates across 9 role types.' },
   { n:5, icon:'👥', title:'Unlock Candidate Details', desc:'Browse approved candidate profiles and unlock contact details using wallet points.' },
   { n:6, icon:'✅', title:'Close the Position',  desc:'Connect with candidates directly, conduct interviews, and successfully fill your role.' },
 ];
@@ -139,7 +139,7 @@ export default function HomePage() {
           </div>
 
           <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap', paddingTop: '28px', borderTop: '1px solid var(--bf)' }}>
-            {[['12,400+','Active Jobs'],['4.8L+','Professionals'],['11','Role Types'],['96%','Placement Rate']].map(([n,l]) => (
+            {[['12,400+','Active Jobs'],['4.8L+','Professionals'],['9','Role Types'],['96%','Placement Rate']].map(([n,l]) => (
               <div key={l}>
                 <div style={{ fontFamily: 'Cinzel,serif', fontSize: '28px', fontWeight: 700, background: 'linear-gradient(135deg,var(--gold2),var(--gold3))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', lineHeight: 1 }}>{n}</div>
                 <div style={{ fontSize: '10px', color: 'var(--muted)', marginTop: '3px' }}>{l}</div>
@@ -187,12 +187,12 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── 11 ROLES ── */}
+      {/* ── 9 ROLES ── */}
       <section style={{ padding: '64px 4%', background: '#F8F9FF', borderTop: '1px solid var(--bf)', borderBottom: '1px solid var(--bf)' }}>
         <div style={{ textAlign: 'center', marginBottom: '48px' }}>
           <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold2)' }}>For Everyone</span>
           <h2 style={{ fontFamily: 'Cinzel,serif', fontSize: 'clamp(22px,3.5vw,40px)', fontWeight: 700, color: 'var(--offwhite)', marginTop: '10px', marginBottom: 0, lineHeight: 1.2 }}>
-            11 Professional <span style={{ background: 'linear-gradient(135deg,var(--gold2),var(--gold3))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Roles</span>
+            9 Professional <span style={{ background: 'linear-gradient(135deg,var(--gold2),var(--gold3))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Roles</span>
           </h2>
           <Orn />
         </div>
@@ -230,7 +230,7 @@ export default function HomePage() {
             {[
               { icon:'🛡️', t:'Moderator-Approved',      d:'All profiles and listings reviewed and validated before going live.' },
               { icon:'📊', t:'Market Mapped',            d:'Every profile classified into IT, Non-IT or Services for precise matching.' },
-              { icon:'🌐', t:'11 Role Types',            d:'Each role has its own profile page with tailored fields and experience timeline.' },
+              { icon:'🌐', t:'9 Role Types',            d:'Each role has its own profile page with tailored fields and experience timeline.' },
               { icon:'📜', t:'Certificate & Employment', d:'Internship listings clearly show certificate availability and post-internship employment option.' },
             ].map(c => (
               <div key={c.t} className="gc" style={{ padding: '18px' }}>
@@ -280,7 +280,7 @@ export default function HomePage() {
             <div style={{ fontFamily: 'Cinzel,serif', fontSize: '12px', fontWeight: 700, color: '#fff', lineHeight: 1.5, marginBottom: '10px' }}>
               Sarvamoola<br /><span style={{ background: 'linear-gradient(135deg,var(--gold2),var(--gold3))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Udyoga Sakha</span>
             </div>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, fontWeight: 300, maxWidth: '240px' }}>India's unified employment ecosystem connecting talent across 11 roles with verified opportunities.</p>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, fontWeight: 300, maxWidth: '240px' }}>India's unified employment ecosystem connecting talent across 9 roles with verified opportunities.</p>
           </div>
           {[
             {
