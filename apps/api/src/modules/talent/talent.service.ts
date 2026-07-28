@@ -32,6 +32,23 @@ export class TalentService {
    * Browse approved candidate profiles. Available to all authenticated users,
    * but contact fields are never included — those come from getDetails() after unlock.
    */
+
+  /**
+   * Returns true if the user has at least one APPROVED profile
+   * of a role type that is permitted to browse talent.
+   * Intern, Fresher, Job Seeker and Consultant are excluded.
+   */
+  private async checkTalentAccess(userId: string): Promise<boolean> {
+    const count = await this.prisma.candidateProfile.count({
+      where: {
+        userId,
+        status:   ProfileStatus.APPROVED,
+        roleType: { in: ['RECRUITER', 'HIRING_MANAGER', 'TRAINER', 'RFP_PROVIDER', 'VENDOR'] as any[] },
+      },
+    });
+    return count > 0;
+  }
+
   async browse(userId: string, filters: {
     search?:        string;
     roleType?:      string;

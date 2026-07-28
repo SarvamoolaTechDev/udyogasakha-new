@@ -2,7 +2,7 @@ export declare class RegisterDto {
     email: string;
     password: string;
     name: string;
-    phone?: string;
+    phone: string;
 }
 export declare class LoginDto {
     email: string;

@@ -81,9 +81,8 @@ let ListingsService = class ListingsService {
         const where = { status: client_1.ProfileStatus.APPROVED };
         if (filters.search)
             where.OR = [
-                { title: { contains: filters.search, mode: 'insensitive' } },
-                { organisationName: { contains: filters.search, mode: 'insensitive' } },
-                { skills: { hasSome: [filters.search] } },
+                { title: { contains: filters.search } },
+                { organisationName: { contains: filters.search } },
             ];
         if (filters.role)
             where.targetRoleType = filters.role;
@@ -178,7 +177,7 @@ let ListingsService = class ListingsService {
             organisationName: after.organisationName,
             description: after.description,
             location: after.location,
-            skills: after.skills,
+            skills: after.skills ?? [],
             targetRoleType: after.targetRoleType,
             marketField: after.marketField,
             workMode: after.workMode,

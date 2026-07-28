@@ -19,7 +19,7 @@ const app_config_service_1 = require("../../config/app-config.service");
 const audit_service_1 = require("../audit/audit.service");
 const notifications_service_1 = require("../notifications/notifications.service");
 const wallet_service_1 = require("../wallet/wallet.service");
-const client_1 = require("@prisma/client");
+const user_role_enum_1 = require("../../common/user-role.enum");
 let AuthService = class AuthService {
     constructor(prisma, jwt, config, audit, notify, wallet) {
         this.prisma = prisma;
@@ -35,7 +35,7 @@ let AuthService = class AuthService {
         }
         const hash = await bcrypt.hash(dto.password, 12);
         const user = await this.prisma.user.create({
-            data: { email: dto.email, name: dto.name, phone: dto.phone, passwordHash: hash, roles: [client_1.UserRole.PARTICIPANT] },
+            data: { email: dto.email, name: dto.name, phone: dto.phone, passwordHash: hash, roles: [user_role_enum_1.UserRole.PARTICIPANT] },
         });
         // Create account-level profile and trust stub in the same transaction
         await this.prisma.$transaction([

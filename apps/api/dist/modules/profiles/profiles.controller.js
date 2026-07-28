@@ -18,7 +18,7 @@ const swagger_1 = require("@nestjs/swagger");
 const profiles_service_1 = require("./profiles.service");
 const profile_dto_1 = require("./dto/profile.dto");
 const auth_guards_1 = require("../../common/guards/auth.guards");
-const client_1 = require("@prisma/client");
+const user_role_enum_1 = require("../../common/user-role.enum");
 let ProfilesController = class ProfilesController {
     constructor(svc) {
         this.svc = svc;
@@ -107,7 +107,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)('pending'),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.MODERATOR, client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.MODERATOR, user_role_enum_1.UserRole.ADMIN),
     (0, swagger_1.ApiOperation)({ summary: '[Moderator] Paginated pending profiles' }),
     (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number }),
     (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number }),
@@ -120,7 +120,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)('approved'),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.MODERATOR, client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.MODERATOR, user_role_enum_1.UserRole.ADMIN),
     (0, swagger_1.ApiOperation)({ summary: '[Moderator] Paginated approved profiles' }),
     (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number }),
     (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number }),
@@ -133,7 +133,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)('rejected'),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.MODERATOR, client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.MODERATOR, user_role_enum_1.UserRole.ADMIN),
     (0, swagger_1.ApiOperation)({ summary: '[Moderator] Paginated rejected profiles' }),
     (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number }),
     (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number }),
@@ -146,7 +146,7 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id/approve'),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.MODERATOR, client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.MODERATOR, user_role_enum_1.UserRole.ADMIN),
     (0, swagger_1.ApiOperation)({ summary: '[Moderator] Approve a profile — market field already set by candidate' }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, auth_guards_1.CurrentUser)('id')),
@@ -157,7 +157,7 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id/reject'),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.MODERATOR, client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.MODERATOR, user_role_enum_1.UserRole.ADMIN),
     (0, swagger_1.ApiOperation)({ summary: '[Moderator] Reject a profile with a reason' }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, auth_guards_1.CurrentUser)('id')),
@@ -169,7 +169,7 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id/reactivate'),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.MODERATOR, client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.MODERATOR, user_role_enum_1.UserRole.ADMIN),
     (0, swagger_1.ApiOperation)({ summary: '[Moderator] Re-open a rejected profile for re-review' }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),

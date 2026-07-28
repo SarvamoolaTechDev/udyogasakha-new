@@ -19,7 +19,7 @@ const listings_service_1 = require("./listings.service");
 const listing_dto_1 = require("./dto/listing.dto");
 const update_listing_dto_1 = require("./dto/update-listing.dto");
 const auth_guards_1 = require("../../common/guards/auth.guards");
-const client_1 = require("@prisma/client");
+const user_role_enum_1 = require("../../common/user-role.enum");
 let ListingsController = class ListingsController {
     constructor(svc) {
         this.svc = svc;
@@ -99,7 +99,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)('pending'),
     (0, common_1.UseGuards)(auth_guards_1.JwtAuthGuard, auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.MODERATOR, client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.MODERATOR, user_role_enum_1.UserRole.ADMIN),
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: '[Moderator] Paginated pending listings' }),
     (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number }),
@@ -153,7 +153,7 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id/approve'),
     (0, common_1.UseGuards)(auth_guards_1.JwtAuthGuard, auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.MODERATOR, client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.MODERATOR, user_role_enum_1.UserRole.ADMIN),
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: '[Moderator] Approve a listing' }),
     __param(0, (0, common_1.Param)('id')),
@@ -165,7 +165,7 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id/reject'),
     (0, common_1.UseGuards)(auth_guards_1.JwtAuthGuard, auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.MODERATOR, client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.MODERATOR, user_role_enum_1.UserRole.ADMIN),
     (0, swagger_1.ApiBearerAuth)(),
     (0, swagger_1.ApiOperation)({ summary: '[Moderator] Reject a listing with a reason' }),
     __param(0, (0, common_1.Param)('id')),

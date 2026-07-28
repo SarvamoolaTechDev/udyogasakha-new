@@ -18,7 +18,7 @@ const swagger_1 = require("@nestjs/swagger");
 const users_service_1 = require("./users.service");
 const user_dto_1 = require("./dto/user.dto");
 const auth_guards_1 = require("../../common/guards/auth.guards");
-const client_1 = require("@prisma/client");
+const user_role_enum_1 = require("../../common/user-role.enum");
 let UsersController = class UsersController {
     constructor(svc) {
         this.svc = svc;
@@ -57,7 +57,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)(),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.ADMIN),
     (0, swagger_1.ApiOperation)({ summary: '[Admin] Paginated list of all users' }),
     (0, swagger_1.ApiQuery)({ name: 'search', required: false }),
     (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number }),
@@ -72,7 +72,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)(':id'),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.MODERATOR, client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.MODERATOR, user_role_enum_1.UserRole.ADMIN),
     (0, swagger_1.ApiOperation)({ summary: '[Moderator] Get a user by ID with their profile statuses' }),
     __param(0, (0, common_1.Param)('id')),
     __metadata("design:type", Function),

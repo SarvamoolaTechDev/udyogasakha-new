@@ -25,6 +25,8 @@ export declare class NotificationsProcessor {
         to: string;
         subject: string;
         body: string;
+        link?: string;
+        linkLabel?: string;
     }>): Promise<void>;
     /**
      * SMS stub — logs to console.

@@ -5,6 +5,7 @@ export interface SendNotificationDto {
     subject: string;
     body: string;
     link?: string;
+    linkLabel?: string;
     email?: string;
     phone?: string;
 }

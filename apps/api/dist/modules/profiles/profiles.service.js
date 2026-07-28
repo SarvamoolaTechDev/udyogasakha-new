@@ -175,7 +175,7 @@ let ProfilesService = class ProfilesService {
         await this.search.indexProfile({
             id: after.id,
             fullName: after.fullName,
-            skills: after.skills,
+            skills: after.skills ?? [],
             city: after.city ?? '',
             summary: after.summary ?? '',
             roleType: after.roleType,

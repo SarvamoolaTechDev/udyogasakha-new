@@ -26,7 +26,7 @@ export declare class ProfilesService {
         userId: string;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: string[];
+        skills: import("@prisma/client/runtime/library").JsonValue;
         marketField: import(".prisma/client").$Enums.MarketField | null;
         status: import(".prisma/client").$Enums.ProfileStatus;
         reviewedById: string | null;
@@ -70,7 +70,7 @@ export declare class ProfilesService {
         userId: string;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: string[];
+        skills: import("@prisma/client/runtime/library").JsonValue;
         marketField: import(".prisma/client").$Enums.MarketField | null;
         status: import(".prisma/client").$Enums.ProfileStatus;
         reviewedById: string | null;
@@ -125,7 +125,7 @@ export declare class ProfilesService {
         userId: string;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: string[];
+        skills: import("@prisma/client/runtime/library").JsonValue;
         marketField: import(".prisma/client").$Enums.MarketField | null;
         status: import(".prisma/client").$Enums.ProfileStatus;
         reviewedById: string | null;
@@ -194,7 +194,7 @@ export declare class ProfilesService {
         userId: string;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: string[];
+        skills: import("@prisma/client/runtime/library").JsonValue;
         marketField: import(".prisma/client").$Enums.MarketField | null;
         status: import(".prisma/client").$Enums.ProfileStatus;
         reviewedById: string | null;
@@ -232,7 +232,7 @@ export declare class ProfilesService {
         userId: string;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: string[];
+        skills: import("@prisma/client/runtime/library").JsonValue;
         marketField: import(".prisma/client").$Enums.MarketField | null;
         status: import(".prisma/client").$Enums.ProfileStatus;
         reviewedById: string | null;
@@ -270,7 +270,7 @@ export declare class ProfilesService {
         userId: string;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: string[];
+        skills: import("@prisma/client/runtime/library").JsonValue;
         marketField: import(".prisma/client").$Enums.MarketField | null;
         status: import(".prisma/client").$Enums.ProfileStatus;
         reviewedById: string | null;
@@ -303,7 +303,7 @@ export declare class ProfilesService {
         userId: string;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: string[];
+        skills: import("@prisma/client/runtime/library").JsonValue;
         marketField: import(".prisma/client").$Enums.MarketField | null;
         status: import(".prisma/client").$Enums.ProfileStatus;
         reviewedById: string | null;
@@ -336,7 +336,7 @@ export declare class ProfilesService {
         userId: string;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: string[];
+        skills: import("@prisma/client/runtime/library").JsonValue;
         marketField: import(".prisma/client").$Enums.MarketField | null;
         status: import(".prisma/client").$Enums.ProfileStatus;
         reviewedById: string | null;
@@ -369,7 +369,7 @@ export declare class ProfilesService {
         userId: string;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: string[];
+        skills: import("@prisma/client/runtime/library").JsonValue;
         marketField: import(".prisma/client").$Enums.MarketField | null;
         status: import(".prisma/client").$Enums.ProfileStatus;
         reviewedById: string | null;

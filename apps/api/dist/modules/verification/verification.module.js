@@ -22,6 +22,7 @@ const auth_guards_1 = require("../../common/guards/auth.guards");
 const audit_service_1 = require("../audit/audit.service");
 const notifications_service_1 = require("../notifications/notifications.service");
 const client_1 = require("@prisma/client");
+const user_role_enum_1 = require("../../common/user-role.enum");
 const pagination_1 = require("../../common/pagination");
 class RequestVerificationDto {
 }
@@ -176,7 +177,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)('pending'),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.MODERATOR, client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.MODERATOR, user_role_enum_1.UserRole.ADMIN),
     (0, swagger_1.ApiOperation)({ summary: '[Moderator] Paginated pending verification requests' }),
     (0, swagger_1.ApiQuery)({ name: 'page', required: false, type: Number }),
     (0, swagger_1.ApiQuery)({ name: 'limit', required: false, type: Number }),
@@ -189,7 +190,7 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id/approve'),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.MODERATOR, client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.MODERATOR, user_role_enum_1.UserRole.ADMIN),
     (0, swagger_1.ApiOperation)({ summary: '[Moderator] Approve verification request — marks docs verified, upgrades to L1' }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, auth_guards_1.CurrentUser)('id')),
@@ -201,7 +202,7 @@ __decorate([
 __decorate([
     (0, common_1.Patch)(':id/reject'),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.MODERATOR, client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.MODERATOR, user_role_enum_1.UserRole.ADMIN),
     (0, swagger_1.ApiOperation)({ summary: '[Moderator] Reject verification request with note' }),
     __param(0, (0, common_1.Param)('id')),
     __param(1, (0, auth_guards_1.CurrentUser)('id')),

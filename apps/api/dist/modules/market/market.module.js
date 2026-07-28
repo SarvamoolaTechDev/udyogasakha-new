@@ -17,7 +17,7 @@ const common_1 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const market_service_1 = require("./market.service");
 const auth_guards_1 = require("../../common/guards/auth.guards");
-const client_1 = require("@prisma/client");
+const user_role_enum_1 = require("../../common/user-role.enum");
 let MarketController = class MarketController {
     constructor(svc) {
         this.svc = svc;
@@ -58,7 +58,7 @@ exports.MarketController = MarketController = __decorate([
     (0, swagger_1.ApiTags)('Market'),
     (0, swagger_1.ApiBearerAuth)(),
     (0, common_1.UseGuards)(auth_guards_1.JwtAuthGuard, auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.MODERATOR, client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.MODERATOR, user_role_enum_1.UserRole.ADMIN),
     (0, common_1.Controller)('market'),
     __metadata("design:paramtypes", [market_service_1.MarketService])
 ], MarketController);

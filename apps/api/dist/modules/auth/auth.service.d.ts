@@ -61,11 +61,11 @@ export declare class AuthService {
         id: string;
         createdAt: Date;
         updatedAt: Date;
-        phone: string | null;
+        phone: string;
         email: string;
         city: string | null;
         passwordHash: string;
-        roles: import(".prisma/client").$Enums.UserRole[];
+        roles: import("@prisma/client/runtime/library").JsonValue;
     }>;
     private issue;
 }

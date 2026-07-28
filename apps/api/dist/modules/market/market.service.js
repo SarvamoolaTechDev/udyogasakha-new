@@ -22,12 +22,12 @@ let MarketService = class MarketService {
         // $queryRaw avoids the Prisma groupBy circular-type-reference TS error (Prisma bug)
         const [profiles, listings] = await this.prisma.$transaction([
             this.prisma.$queryRaw `
-        SELECT market_field AS "marketField", status, COUNT(*)::int AS count
+        SELECT market_field AS marketField, status, COUNT(*) AS count
         FROM candidate_profiles
         GROUP BY market_field, status
       `,
             this.prisma.$queryRaw `
-        SELECT market_field AS "marketField", status, COUNT(*)::int AS count
+        SELECT market_field AS marketField, status, COUNT(*) AS count
         FROM job_listings
         GROUP BY market_field, status
       `,
@@ -56,7 +56,7 @@ let MarketService = class MarketService {
     async getByRole() {
         // $queryRaw for the same reason — groupBy by: ['roleType'] also triggers the Prisma TS bug
         const rows = await this.prisma.$queryRaw `
-      SELECT role_type AS "roleType", COUNT(*)::int AS count
+      SELECT role_type AS roleType, COUNT(*) AS count
       FROM candidate_profiles
       WHERE status = 'APPROVED'
       GROUP BY role_type

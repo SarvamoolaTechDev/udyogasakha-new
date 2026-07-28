@@ -46,8 +46,8 @@ let NotificationsProcessor = NotificationsProcessor_1 = class NotificationsProce
      * for that fallback behaviour.
      */
     async handleEmail(job) {
-        const { to, subject, body } = job.data;
-        await this.email.send({ to, subject, body });
+        const { to, subject, body, link, linkLabel } = job.data;
+        await this.email.send({ to, subject, body, link: link ?? undefined, linkLabel: linkLabel ?? undefined });
     }
     /**
      * SMS stub — logs to console.

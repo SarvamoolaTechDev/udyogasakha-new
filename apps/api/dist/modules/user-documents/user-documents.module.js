@@ -23,6 +23,7 @@ const prisma_service_1 = require("../../prisma/prisma.service");
 const storage_interface_1 = require("../../common/storage/storage.interface");
 const auth_guards_1 = require("../../common/guards/auth.guards");
 const client_1 = require("@prisma/client");
+const user_role_enum_1 = require("../../common/user-role.enum");
 const audit_service_1 = require("../audit/audit.service");
 const MAX_SIZE = 10 * 1024 * 1024; // 10 MB
 let UserDocumentsService = class UserDocumentsService {
@@ -122,7 +123,7 @@ __decorate([
 __decorate([
     (0, common_1.Get)('user/:userId'),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),
-    (0, auth_guards_1.Roles)(client_1.UserRole.MODERATOR, client_1.UserRole.ADMIN),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.MODERATOR, user_role_enum_1.UserRole.ADMIN),
     (0, swagger_1.ApiOperation)({ summary: '[Moderator] List all unverified documents for a user' }),
     __param(0, (0, common_1.Param)('userId')),
     __metadata("design:type", Function),

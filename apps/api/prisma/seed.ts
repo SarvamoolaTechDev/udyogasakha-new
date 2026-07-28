@@ -1,8 +1,9 @@
 import {
-  PrismaClient, UserRole, ListingType, Industry, PaymentType,
+  PrismaClient, ListingType, Industry, PaymentType,
   WorkMode, CertOpt, EmpOption, ExperienceLevel, Duration,
   MarketField, ProfileStatus, RoleType, MarketSegment,
 } from '@prisma/client';
+import { UserRole } from '../src/common/user-role.enum';
 import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();

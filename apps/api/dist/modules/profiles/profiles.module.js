@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProfilesModule = void 0;
 const common_1 = require("@nestjs/common");
+const wallet_module_1 = require("../wallet/wallet.module");
 const profiles_service_1 = require("./profiles.service");
 const profiles_controller_1 = require("./profiles.controller");
 // AuditService is provided globally via @Global() AuditModule — no explicit import needed here.
@@ -15,6 +16,11 @@ let ProfilesModule = class ProfilesModule {
 };
 exports.ProfilesModule = ProfilesModule;
 exports.ProfilesModule = ProfilesModule = __decorate([
-    (0, common_1.Module)({ controllers: [profiles_controller_1.ProfilesController], providers: [profiles_service_1.ProfilesService], exports: [profiles_service_1.ProfilesService] })
+    (0, common_1.Module)({
+        imports: [wallet_module_1.WalletModule],
+        controllers: [profiles_controller_1.ProfilesController],
+        providers: [profiles_service_1.ProfilesService],
+        exports: [profiles_service_1.ProfilesService],
+    })
 ], ProfilesModule);
 //# sourceMappingURL=profiles.module.js.map

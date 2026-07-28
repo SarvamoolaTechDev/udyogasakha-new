@@ -33,11 +33,6 @@ const RECRUITER_STEPS = [
   { n:6, icon:'✅', title:'Close the Position',  desc:'Connect with candidates directly, conduct interviews, and successfully fill your role.' },
 ];
 
-const TESTIMONIALS = [
-  { text:'Found my dream role at a top tech firm through Udyoga Sakha in just 3 weeks. The platform matched my profile perfectly.', name:'Arjun Mehta', role:'Software Engineer · Google', icon:'👨‍💻' },
-  { text:'As a Hiring Manager, the quality of verified profiles here is exceptional. My team was fully staffed in record time.', name:'Priya Sharma', role:'HR Manager · Infosys', icon:'👩‍💼' },
-  { text:'The internship listing showed certificate details and employment option upfront. Perfect transparency, zero surprises.', name:'Kavitha Reddy', role:'Intern → Full-time · TCS', icon:'🎓' },
-];
 
 function Orn() {
   return (
@@ -201,10 +196,10 @@ export default function HomePage() {
           </h2>
           <Orn />
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(155px,1fr))', gap: '14px', maxWidth: '1100px', margin: '0 auto' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'stretch', gap: '14px', maxWidth: '1100px', margin: '0 auto' }}>
           {ROLES.map(r => (
-            <Link key={r.slug} href={`/profile/${r.slug}`} style={{ textDecoration: 'none', display: 'block' }}>
-              <div className="gc gc-hover" style={{ padding: '22px', textAlign: 'center', cursor: 'pointer' }}>
+            <Link key={r.slug} href={`/profile/${r.slug}`} style={{ textDecoration: 'none', display: 'flex', width: '155px' }}>
+              <div className="gc gc-hover" style={{ padding: '22px', textAlign: 'center', cursor: 'pointer', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                 <div style={{ fontSize: '32px', marginBottom: '10px' }}>{r.icon}</div>
                 <div style={{ fontFamily: 'Cinzel,serif', fontSize: '13px', fontWeight: 700, color: 'var(--offwhite)', marginBottom: '5px' }}>{r.name}</div>
                 <div style={{ fontSize: '12px', color: 'var(--muted)', fontWeight: 300, lineHeight: 1.55 }}>{r.desc}</div>
@@ -215,7 +210,7 @@ export default function HomePage() {
       </section>
 
       {/* ── ABOUT ── */}
-      <section style={{ padding: '64px 4%', background: '#FFFFFF' }}>
+      <section id="about" style={{ padding: '64px 4%', background: '#FFFFFF' }}>
         <div className="two-col-section" style={{ maxWidth: '1100px', margin: '0 auto' }}>
           <div>
             <h2 style={{ fontFamily: 'Cinzel,serif', fontSize: 'clamp(22px,3vw,36px)', fontWeight: 700, color: 'var(--offwhite)', marginBottom: '14px' }}>
@@ -262,33 +257,6 @@ export default function HomePage() {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <LifecycleRow label="For Job Seekers" steps={SEEKER_STEPS} />
           <LifecycleRow label="For Recruiters & Employers" steps={RECRUITER_STEPS} />
-        </div>
-      </section>
-
-      {/* ── TESTIMONIALS ── */}
-      <section style={{ padding: '64px 4%', background: '#FFFFFF' }}>
-        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-          <span style={{ fontSize: '10px', fontWeight: 700, letterSpacing: '2.5px', textTransform: 'uppercase', color: 'var(--gold2)' }}>Success Stories</span>
-          <h2 style={{ fontFamily: 'Cinzel,serif', fontSize: 'clamp(22px,3.5vw,40px)', fontWeight: 700, color: 'var(--offwhite)', marginTop: '10px', marginBottom: 0, lineHeight: 1.2 }}>
-            Real <span style={{ background: 'linear-gradient(135deg,var(--gold2),var(--gold3))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Careers</span> Built Here
-          </h2>
-          <Orn />
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: '18px', maxWidth: '1100px', margin: '0 auto' }}>
-          {TESTIMONIALS.map(t => (
-            <div key={t.name} className="gc" style={{ padding: '26px' }}>
-              <div style={{ fontFamily: 'Cormorant Garamond,serif', fontSize: '44px', background: 'linear-gradient(135deg,var(--gold2),var(--gold3))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text', lineHeight: 0.6, marginBottom: '12px' }}>"</div>
-              <p style={{ fontFamily: 'Cormorant Garamond,serif', fontSize: '16px', fontStyle: 'italic', color: 'var(--offwhite)', lineHeight: 1.7, marginBottom: '18px' }}>{t.text}</p>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <div style={{ width: '38px', height: '38px', borderRadius: '50%', border: '2px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '18px', background: 'rgba(200,146,10,0.06)', flexShrink: 0 }}>{t.icon}</div>
-                <div>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--offwhite)' }}>{t.name}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--muted)' }}>{t.role}</div>
-                </div>
-                <div style={{ marginLeft: 'auto', color: 'var(--gold2)', fontSize: '12px' }}>★★★★★</div>
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 

@@ -45,6 +45,8 @@ let NotificationsService = NotificationsService_1 = class NotificationsService {
                 to: dto.email,
                 subject: dto.subject,
                 body: dto.body,
+                link: dto.link ?? null,
+                linkLabel: dto.linkLabel ?? null,
             });
         }
         // SMS stub

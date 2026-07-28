@@ -35,10 +35,10 @@ __decorate([
     __metadata("design:type", String)
 ], RegisterDto.prototype, "name", void 0);
 __decorate([
-    (0, swagger_1.ApiPropertyOptional)({ example: '+919876543210' }),
-    (0, class_validator_1.IsOptional)(),
+    (0, swagger_1.ApiProperty)({ example: '+919876543210', description: 'Mobile number — used for UPI payment reconciliation and contact. Must be unique across all accounts.' }),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.MaxLength)(20),
+    (0, class_validator_1.IsNotEmpty)({ message: 'Mobile number is required' }),
+    (0, class_validator_1.Matches)(/^[+]?[0-9]{10,15}$/, { message: 'Enter a valid mobile number (10–15 digits, optional + prefix)' }),
     __metadata("design:type", String)
 ], RegisterDto.prototype, "phone", void 0);
 class LoginDto {

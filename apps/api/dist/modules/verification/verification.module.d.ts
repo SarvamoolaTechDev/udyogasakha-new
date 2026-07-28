@@ -18,7 +18,7 @@ export declare class VerificationService {
         createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        documentIds: string[];
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
     }>;
@@ -28,7 +28,7 @@ export declare class VerificationService {
         createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        documentIds: string[];
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
     }[]>;
@@ -43,7 +43,7 @@ export declare class VerificationService {
         createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        documentIds: string[];
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
     }>>;
@@ -53,7 +53,7 @@ export declare class VerificationService {
         createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        documentIds: string[];
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
     }>;
@@ -63,7 +63,7 @@ export declare class VerificationService {
         createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        documentIds: string[];
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
     }>;
@@ -77,7 +77,7 @@ export declare class VerificationController {
         createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        documentIds: string[];
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
     }>;
@@ -87,7 +87,7 @@ export declare class VerificationController {
         createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        documentIds: string[];
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
     }[]>;
@@ -102,7 +102,7 @@ export declare class VerificationController {
         createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        documentIds: string[];
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
     }>>;
@@ -112,7 +112,7 @@ export declare class VerificationController {
         createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        documentIds: string[];
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
     }>;
@@ -122,7 +122,7 @@ export declare class VerificationController {
         createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        documentIds: string[];
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
     }>;
