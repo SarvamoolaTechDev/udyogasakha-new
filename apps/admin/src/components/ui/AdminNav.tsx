@@ -4,11 +4,11 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useAdminAuthStore } from '@/store/auth.store';
 
 const LINKS = [
+  { href: '/analytics',  icon: '📊', label: 'Analytics'  },
   { href: '/moderation', icon: '🛡️', label: 'Moderation' },
   { href: '/users',      icon: '👥', label: 'Users'       },
   { href: '/payments',   icon: '💳', label: 'Payments'    },
-  { href: '/audit',         icon: '📋', label: 'Audit Log'   },
-  { href: '/admin-users',   icon: '👤', label: 'Manage Admins' },
+  { href: '/audit',      icon: '📋', label: 'Audit Log'   },
 ];
 
 export function AdminNav() {

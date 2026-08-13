@@ -28,8 +28,7 @@ api.interceptors.response.use(
 );
 
 export const authApi = {
-  login:          (dto: any) => api.post('/admin-auth/login', dto).then(r => r.data),
-  changePassword: (dto: any) => api.post('/admin-auth/change-password', dto).then(r => r.data),
+  login: (dto: any) => api.post('/auth/login', dto).then(r => r.data),
   forgotPassword: (email: string) => api.post('/auth/forgot-password', { email }).then(r => r.data),
   resetPassword:  (token: string, newPassword: string) => api.post('/auth/reset-password', { token, newPassword }).then(r => r.data),
 };
@@ -68,4 +67,10 @@ export const auditApi = {
 
 export const paymentsApi = {
   getAll: (params?: any) => api.get('/payments', { params }).then(r => r.data),
+};
+
+// ── Analytics ─────────────────────────────────────────────────────────────────
+export const analyticsApi = {
+  getDashboard: (period: string = 'month') =>
+    api.get('/analytics', { params: { period } }).then(r => r.data),
 };
