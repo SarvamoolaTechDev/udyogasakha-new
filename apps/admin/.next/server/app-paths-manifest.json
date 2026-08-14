@@ -1,13 +1,14 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/forgot-password/page": "app/forgot-password/page.js",
   "/admin-users/page": "app/admin-users/page.js",
+  "/analytics/page": "app/analytics/page.js",
+  "/audit/page": "app/audit/page.js",
+  "/forgot-password/page": "app/forgot-password/page.js",
+  "/page": "app/page.js",
   "/login/page": "app/login/page.js",
   "/moderation/page": "app/moderation/page.js",
-  "/audit/page": "app/audit/page.js",
-  "/page": "app/page.js",
-  "/payments/page": "app/payments/page.js",
   "/reset-password/page": "app/reset-password/page.js",
+  "/users/[id]/page": "app/users/[id]/page.js",
   "/users/page": "app/users/page.js",
-  "/users/[id]/page": "app/users/[id]/page.js"
+  "/payments/page": "app/payments/page.js"
 }

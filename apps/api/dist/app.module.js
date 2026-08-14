@@ -30,9 +30,8 @@ const reports_module_1 = require("./modules/reports/reports.module");
 const payments_module_1 = require("./modules/payments/payments.module");
 const search_module_1 = require("./modules/search/search.module");
 const wallet_module_1 = require("./modules/wallet/wallet.module");
-const admin_auth_module_1 = require("./modules/admin-auth/admin-auth.module");
-const admin_users_module_1 = require("./modules/admin-users/admin-users.module");
 const talent_module_1 = require("./modules/talent/talent.module");
+const analytics_module_1 = require("./modules/analytics/analytics.module");
 const health_module_1 = require("./modules/health/health.module");
 const audit_module_1 = require("./modules/audit/audit.module");
 const notifications_module_1 = require("./modules/notifications/notifications.module");
@@ -83,9 +82,8 @@ exports.AppModule = AppModule = __decorate([
             payments_module_1.PaymentsModule,
             search_module_1.SearchModule,
             wallet_module_1.WalletModule,
-            admin_auth_module_1.AdminAuthModule,
-            admin_users_module_1.AdminUsersModule,
             talent_module_1.TalentModule,
+            analytics_module_1.AnalyticsModule,
         ],
         providers: [
             { provide: core_1.APP_GUARD, useClass: throttler_1.ThrottlerGuard },
