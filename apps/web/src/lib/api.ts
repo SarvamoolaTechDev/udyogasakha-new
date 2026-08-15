@@ -143,3 +143,15 @@ export const talentApi = {
   browse: (params?: any) => api.get('/talent', { params }).then(r => r.data),
   findById: (profileId: string) => api.get(`/talent/${profileId}`).then(r => r.data),
 };
+
+// ── Advertisements ────────────────────────────────────────────────────────────
+export const adsApi = {
+  browse:        (params?: any)               => api.get('/ads', { params }).then(r => r.data),
+  getMine:       ()                            => api.get('/ads/mine').then(r => r.data),
+  findById:      (id: string)                  => api.get(`/ads/${id}`).then(r => r.data),
+  create:        (dto: any)                    => api.post('/ads', dto).then(r => r.data),
+  update:        (id: string, dto: any)        => api.patch(`/ads/${id}`, dto).then(r => r.data),
+  remove:        (id: string)                  => api.delete(`/ads/${id}`).then(r => r.data),
+  extend:        (id: string)                  => api.post(`/ads/${id}/extend`).then(r => r.data),
+  unlockContact: (id: string)                  => api.post(`/ads/${id}/unlock-contact`).then(r => r.data),
+};

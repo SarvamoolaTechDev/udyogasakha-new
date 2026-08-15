@@ -31,10 +31,10 @@ const payments_module_1 = require("./modules/payments/payments.module");
 const search_module_1 = require("./modules/search/search.module");
 const wallet_module_1 = require("./modules/wallet/wallet.module");
 const talent_module_1 = require("./modules/talent/talent.module");
-const analytics_module_1 = require("./modules/analytics/analytics.module");
 const health_module_1 = require("./modules/health/health.module");
 const audit_module_1 = require("./modules/audit/audit.module");
 const notifications_module_1 = require("./modules/notifications/notifications.module");
+const ads_module_1 = require("./modules/ads/ads.module");
 let AppModule = class AppModule {
     configure(consumer) {
         consumer.apply(http_logger_middleware_1.HttpLoggerMiddleware).forRoutes('*');
@@ -83,7 +83,7 @@ exports.AppModule = AppModule = __decorate([
             search_module_1.SearchModule,
             wallet_module_1.WalletModule,
             talent_module_1.TalentModule,
-            analytics_module_1.AnalyticsModule,
+            ads_module_1.AdsModule,
         ],
         providers: [
             { provide: core_1.APP_GUARD, useClass: throttler_1.ThrottlerGuard },
