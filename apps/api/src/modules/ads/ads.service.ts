@@ -93,7 +93,7 @@ export class AdsService {
     });
     if (!ad || ad.status === AdStatus.DELETED) throw new NotFoundException('Ad not found');
 
-    const isExpired   = ad.expiresAt < now || ad.status !== AdStatus.EXPIRED;
+    const isExpired   = ad.expiresAt < now || ad.status === AdStatus.EXPIRED;
     const isOwner     = ad.userId === viewerUserId;
 
     // Record view (idempotent — unique constraint prevents duplicates)
@@ -128,11 +128,13 @@ export class AdsService {
   // ── Create ad ─────────────────────────────────────────────────────────────
   async create(userId: string, dto: CreateAdDto) {
     // Must have at least one approved JOB_SEEKER profile
+    // Interns and Freshers can also post ads — they are also job-seeking roles
+    const AD_ELIGIBLE_ROLES = [RoleType.JOB_SEEKER, RoleType.INTERN, RoleType.FRESHER];
     const profile = await this.prisma.candidateProfile.findFirst({
-      where: { userId, roleType: RoleType.JOB_SEEKER, status: ProfileStatus.APPROVED },
+      where: { userId, roleType: { in: AD_ELIGIBLE_ROLES as any[] }, status: ProfileStatus.APPROVED },
     });
     if (!profile) {
-      throw new ForbiddenException('Only Job Seekers with an approved profile can post ads.');
+      throw new ForbiddenException('Only Job Seekers, Interns, and Freshers with an approved profile can post ads.');
     }
 
     // Max 2 active ads

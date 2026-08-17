@@ -1,4 +1,8 @@
 {
+  "/ads/create/page": "app/ads/create/page.js",
   "/login/page": "app/login/page.js",
+  "/notifications/page": "app/notifications/page.js",
+  "/ads/[id]/page": "app/ads/[id]/page.js",
+  "/ads/page": "app/ads/page.js",
   "/profile/page": "app/profile/page.js"
 }
