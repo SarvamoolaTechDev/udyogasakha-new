@@ -71,8 +71,13 @@ export default function ModerationPage() {
   // The candidate self-selected their market segment on submission.
   const appMut  = useMutation({ mutationFn:(id:string)=>profilesApi.approve(id),                 onSuccess:()=>{ toast('Profile approved!','ok'); inv(); } });
   const rejMut  = useMutation({ mutationFn:({id,r}:{id:string;r:string})=>profilesApi.reject(id,r), onSuccess:()=>{ toast('Profile rejected.','ok'); inv(); } });
-  const reactMut= useMutation({ mutationFn:(id:string)=>profilesApi.reactivate(id),              onSuccess:()=>{ toast('Re-opened.','ok'); inv(); } });
+  const reactMut = useMutation({ mutationFn:(id:string)=>profilesApi.reactivate(id),             onSuccess:()=>{ toast('Re-opened.','ok'); inv(); } });
+  const removeMut = useMutation({ mutationFn:(id:string)=>profilesApi.remove(id),               onSuccess:()=>{ toast('Profile removed.','ok'); inv(); } });
   const appPost = useMutation({ mutationFn:(id:string)=>listingsApi.approve(id),                 onSuccess:()=>{ toast('Post approved!','ok'); qc.invalidateQueries({ queryKey:['mod','posts'] }); } });
+
+  const doRemove = (p: any) => {
+    if (confirm(`Remove ${p.fullName || 'this profile'} permanently? This cannot be undone.`)) removeMut.mutate(p.id);
+  };
 
   const doReject = (p: any) => {
     const r = prompt(`Reason for rejecting ${p.fullName || 'this profile'}:`);
@@ -107,12 +112,13 @@ export default function ModerationPage() {
                 <td style={{ fontSize:'11px', color: p.certificate==='YES' ? 'var(--ok)' : 'var(--muted)' }}>{p.certificate}</td>
                 <td>
                   <div style={{ display:'flex', gap:'4px', flexWrap:'wrap' }}>
-                    <button onClick={()=>setSel(p)} style={{ padding:'5px 10px', borderRadius:'50px', fontSize:'10px', fontWeight:700, cursor:'pointer', background:'rgba(96,165,250,0.1)', border:'1px solid rgba(96,165,250,0.25)', color:'var(--info)' }}>👁</button>
+                    {mode !== 'view' && <button onClick={()=>setSel(p)} style={{ padding:'5px 10px', borderRadius:'50px', fontSize:'10px', fontWeight:700, cursor:'pointer', background:'rgba(96,165,250,0.1)', border:'1px solid rgba(96,165,250,0.25)', color:'var(--info)' }}>View More</button>}
                     {mode==='approve' && <>
-                      <button onClick={()=>appMut.mutate(p.id)} style={{ padding:'5px 10px', borderRadius:'50px', fontSize:'10px', fontWeight:700, cursor:'pointer', background:'rgba(74,222,128,0.12)', border:'1px solid rgba(74,222,128,0.3)', color:'var(--ok)' }}>✅</button>
-                      <button onClick={()=>doReject(p)} style={{ padding:'5px 10px', borderRadius:'50px', fontSize:'10px', fontWeight:700, cursor:'pointer', background:'rgba(255,107,107,0.1)', border:'1px solid rgba(255,107,107,0.25)', color:'var(--err)' }}>❌</button>
+                      <button onClick={()=>appMut.mutate(p.id)} style={{ padding:'5px 10px', borderRadius:'50px', fontSize:'10px', fontWeight:700, cursor:'pointer', background:'rgba(74,222,128,0.12)', border:'1px solid rgba(74,222,128,0.3)', color:'var(--ok)' }}>Approve</button>
+                      <button onClick={()=>doReject(p)} style={{ padding:'5px 10px', borderRadius:'50px', fontSize:'10px', fontWeight:700, cursor:'pointer', background:'rgba(255,107,107,0.1)', border:'1px solid rgba(255,107,107,0.25)', color:'var(--err)' }}>Reject</button>
                     </>}
-                    {mode==='reactivate' && <button onClick={()=>reactMut.mutate(p.id)} style={{ padding:'5px 10px', borderRadius:'50px', fontSize:'10px', fontWeight:700, cursor:'pointer', background:'rgba(96,165,250,0.1)', border:'1px solid rgba(96,165,250,0.2)', color:'var(--info)' }}>🔄</button>}
+                    {mode==='reactivate' && <button onClick={()=>reactMut.mutate(p.id)} style={{ padding:'5px 10px', borderRadius:'50px', fontSize:'10px', fontWeight:700, cursor:'pointer', background:'rgba(96,165,250,0.1)', border:'1px solid rgba(96,165,250,0.2)', color:'var(--info)' }}>Reactivate</button>}
+                    {mode==='view' && <button onClick={()=>doRemove(p)} style={{ padding:'5px 10px', borderRadius:'50px', fontSize:'10px', fontWeight:700, cursor:'pointer', background:'rgba(220,38,38,0.08)', border:'1px solid rgba(220,38,38,0.25)', color:'var(--err)' }}>Remove Profile</button>}
                   </div>
                 </td>
               </tr>
@@ -246,7 +252,7 @@ export default function ModerationPage() {
                           <td style={{ fontSize:'11px' }}>{p.payment}</td>
                           <td>
                             <div style={{ display:'flex', gap:'4px' }}>
-                              <button onClick={()=>appPost.mutate(p.id)} style={{ padding:'5px 10px', borderRadius:'50px', fontSize:'10px', fontWeight:700, cursor:'pointer', background:'rgba(74,222,128,0.12)', border:'1px solid rgba(74,222,128,0.3)', color:'var(--ok)' }}>✅ Approve</button>
+                              <button onClick={()=>appPost.mutate(p.id)} style={{ padding:'5px 10px', borderRadius:'50px', fontSize:'10px', fontWeight:700, cursor:'pointer', background:'rgba(74,222,128,0.12)', border:'1px solid rgba(74,222,128,0.3)', color:'var(--ok)' }}>Approve</button>
                             </div>
                           </td>
                         </tr>
@@ -314,16 +320,28 @@ export default function ModerationPage() {
               </div>
 
               <div style={{ display:'flex', gap:'10px', paddingTop:'16px', borderTop:'1px solid var(--bf)' }}>
-                {/* Single Approve button — no market field picker needed */}
-                <button onClick={()=>appMut.mutate(sel.id)} style={{ flex:1, padding:'12px', borderRadius:'11px', border:'none', cursor:'pointer', fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, color:'#FFFFFF', background:'linear-gradient(135deg,var(--ok),#16A34A)', boxShadow:'0 4px 14px rgba(74,222,128,0.3)' }}>
-                  ✅ Approve
-                </button>
-                <button onClick={()=>doReject(sel)} style={{ flex:1, padding:'12px', borderRadius:'11px', cursor:'pointer', fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, color:'var(--err)', background:'rgba(255,107,107,0.1)', border:'1px solid rgba(255,107,107,0.3)' }}>
-                  ❌ Reject
-                </button>
-                <button onClick={()=>setSel(null)} style={{ flex:1, padding:'12px', borderRadius:'11px', cursor:'pointer', fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, color:'var(--muted)', background:'rgba(255,255,255,0.05)', border:'1px solid var(--bf)' }}>
-                  Close
-                </button>
+                {sel.status === 'APPROVED' ? (
+                  <>
+                    <button onClick={()=>doRemove(sel)} style={{ flex:1, padding:'12px', borderRadius:'11px', cursor:'pointer', fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, color:'var(--err)', background:'rgba(220,38,38,0.08)', border:'1px solid rgba(220,38,38,0.3)' }}>
+                      Remove Profile
+                    </button>
+                    <button onClick={()=>setSel(null)} style={{ flex:1, padding:'12px', borderRadius:'11px', cursor:'pointer', fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, color:'var(--muted)', background:'rgba(255,255,255,0.05)', border:'1px solid var(--bf)' }}>
+                      Close
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={()=>appMut.mutate(sel.id)} style={{ flex:1, padding:'12px', borderRadius:'11px', border:'none', cursor:'pointer', fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, color:'#FFFFFF', background:'linear-gradient(135deg,var(--ok),#16A34A)', boxShadow:'0 4px 14px rgba(74,222,128,0.3)' }}>
+                      Approve
+                    </button>
+                    <button onClick={()=>doReject(sel)} style={{ flex:1, padding:'12px', borderRadius:'11px', cursor:'pointer', fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, color:'var(--err)', background:'rgba(255,107,107,0.1)', border:'1px solid rgba(255,107,107,0.3)' }}>
+                      Reject
+                    </button>
+                    <button onClick={()=>setSel(null)} style={{ flex:1, padding:'12px', borderRadius:'11px', cursor:'pointer', fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, color:'var(--muted)', background:'rgba(255,255,255,0.05)', border:'1px solid var(--bf)' }}>
+                      Close
+                    </button>
+                  </>
+                )}
               </div>
             </div>
           </div>

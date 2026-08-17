@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAdminAuthStore } from '@/store/auth.store';
+import { useState, useEffect } from 'react';
 
 const LINKS = [
   { href: '/analytics',  icon: '📊', label: 'Analytics'  },
@@ -9,12 +10,19 @@ const LINKS = [
   { href: '/users',      icon: '👥', label: 'Users'       },
   { href: '/payments',   icon: '💳', label: 'Payments'    },
   { href: '/audit',      icon: '📋', label: 'Audit Log'   },
+  { href: '/admin-users',icon: '👤', label: 'Manage Admins'},
 ];
 
 export function AdminNav() {
   const path   = usePathname();
   const router = useRouter();
   const { clearAuth, isAdmin } = useAdminAuthStore();
+
+  // Prevent hydration mismatch — auth state comes from localStorage (client-only)
+  // Server renders with no localStorage so it sees default values; client sees real values.
+  // mounted guard ensures the role badge only renders after client hydration.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   const handleLogout = () => { clearAuth(); router.push('/login'); };
 
@@ -34,7 +42,8 @@ export function AdminNav() {
           </span>
         </div>
         <div style={{ marginTop: '6px', display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '2px 9px', borderRadius: '50px', background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.2)', fontSize: '9px', fontWeight: 700, color: 'var(--err)' }}>
-          🔐 {isAdmin ? 'ADMIN' : 'MODERATOR'} PORTAL
+          {/* suppressHydrationWarning — role is read from localStorage, only available client-side */}
+          🔐 {mounted ? (isAdmin ? 'ADMIN' : 'MODERATOR') : ''} PORTAL
         </div>
       </div>
 
@@ -74,7 +83,7 @@ export function AdminNav() {
 }
 
 /**
- * AdminShell — renders sidebar + content for all routes EXCEPT /login, /forgot-password, /reset-password.
+ * AdminShell — renders sidebar + content for all routes EXCEPT /login.
  */
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const path = usePathname();

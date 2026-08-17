@@ -54,6 +54,9 @@ let ProfilesController = class ProfilesController {
     reject(id, modId, dto) {
         return this.svc.reject(id, modId, dto.reason);
     }
+    remove(id) {
+        return this.svc.remove(id);
+    }
     reactivate(id) {
         return this.svc.reactivate(id);
     }
@@ -166,6 +169,17 @@ __decorate([
     __metadata("design:paramtypes", [String, String, profile_dto_1.RejectProfileDto]),
     __metadata("design:returntype", void 0)
 ], ProfilesController.prototype, "reject", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)(auth_guards_1.JwtAuthGuard, auth_guards_1.RolesGuard),
+    (0, auth_guards_1.Roles)('MODERATOR', 'ADMIN'),
+    (0, swagger_1.ApiOperation)({ summary: 'Hard-delete a profile (moderator/admin only)' }),
+    (0, swagger_1.ApiBearerAuth)(),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ProfilesController.prototype, "remove", null);
 __decorate([
     (0, common_1.Patch)(':id/reactivate'),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),

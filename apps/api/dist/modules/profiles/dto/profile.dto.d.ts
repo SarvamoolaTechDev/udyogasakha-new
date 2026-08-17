@@ -17,7 +17,7 @@ export declare class UpsertProfileDto {
     grade?: string;
     roleFields?: Record<string, string>;
     appliedFor: string;
-    appliedAt: string;
+    appliedAt?: string;
     payment: PaymentType;
     certificate: CertOpt;
     workMode: WorkMode;

@@ -101,6 +101,15 @@ export class ProfilesController {
     return this.svc.reject(id, modId, dto.reason);
   }
 
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('MODERATOR', 'ADMIN')
+  @ApiOperation({ summary: 'Hard-delete a profile (moderator/admin only)' })
+  @ApiBearerAuth()
+  remove(@Param('id') id: string) {
+    return this.svc.remove(id);
+  }
+
   @Patch(':id/reactivate')
   @UseGuards(RolesGuard)
   @Roles(UserRole.MODERATOR, UserRole.ADMIN)

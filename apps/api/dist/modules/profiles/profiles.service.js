@@ -51,6 +51,7 @@ let ProfilesService = class ProfilesService {
         const marketField = deriveMarketField(dto.marketSegment);
         const data = {
             ...dto, userId, skills,
+            appliedAt: dto.appliedAt ?? '', // optional field — defaults to empty string
             marketField, // set on submission, not on approval
             status: client_1.ProfileStatus.PENDING, submittedAt: new Date(),
             reviewedAt: null, reviewedById: null, rejectionReason: null,
@@ -239,6 +240,21 @@ let ProfilesService = class ProfilesService {
         // Profile is back to PENDING — remove from search until re-approved
         await this.search.removeProfile(id);
         return after;
+    }
+    async remove(id) {
+        const profile = await this.prisma.candidateProfile.findUnique({ where: { id } });
+        if (!profile)
+            throw new common_1.NotFoundException('Profile not found');
+        // Remove from search index if it was approved
+        if (profile.status === client_1.ProfileStatus.APPROVED) {
+            await this.search.removeProfile(id).catch(() => { });
+        }
+        await this.prisma.candidateProfile.delete({ where: { id } });
+        await this.audit.log({
+            entityType: 'profile', entityId: id, action: 'PROFILE_REMOVED',
+            metadata: { roleType: profile.roleType, userId: profile.userId },
+        });
+        return { message: 'Profile removed' };
     }
 };
 exports.ProfilesService = ProfilesService;

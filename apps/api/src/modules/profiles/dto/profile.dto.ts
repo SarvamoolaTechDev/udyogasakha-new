@@ -63,7 +63,7 @@ export class UpsertProfileDto {
   institution?: string;
 
   @ApiPropertyOptional({ example: 2022 })
-  @IsOptional() @IsInt() @Min(1970) @Max(2040)
+  @IsOptional() @IsInt() @Min(1900) @Max(2040)
   @Type(() => Number)
   yearOfPassing?: number;
 
@@ -83,9 +83,9 @@ export class UpsertProfileDto {
   @IsString() @IsNotEmpty() @MaxLength(200)
   appliedFor: string;
 
-  @ApiProperty({ example: 'TCS Digital' })
-  @IsString() @IsNotEmpty() @MaxLength(200)
-  appliedAt: string;
+  @ApiPropertyOptional({ example: 'TCS Digital' })
+  @IsOptional() @IsString() @MaxLength(200)
+  appliedAt?: string;
 
   @ApiProperty({ enum: PaymentType })
   @IsEnum(PaymentType)

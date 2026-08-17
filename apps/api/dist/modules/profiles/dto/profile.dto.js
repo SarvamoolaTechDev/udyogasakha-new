@@ -100,7 +100,7 @@ __decorate([
     (0, swagger_1.ApiPropertyOptional)({ example: 2022 }),
     (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsInt)(),
-    (0, class_validator_1.Min)(1970),
+    (0, class_validator_1.Min)(1900),
     (0, class_validator_1.Max)(2040),
     (0, class_transformer_1.Type)(() => Number),
     __metadata("design:type", Number)
@@ -126,9 +126,9 @@ __decorate([
     __metadata("design:type", String)
 ], UpsertProfileDto.prototype, "appliedFor", void 0);
 __decorate([
-    (0, swagger_1.ApiProperty)({ example: 'TCS Digital' }),
+    (0, swagger_1.ApiPropertyOptional)({ example: 'TCS Digital' }),
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsString)(),
-    (0, class_validator_1.IsNotEmpty)(),
     (0, class_validator_1.MaxLength)(200),
     __metadata("design:type", String)
 ], UpsertProfileDto.prototype, "appliedAt", void 0);

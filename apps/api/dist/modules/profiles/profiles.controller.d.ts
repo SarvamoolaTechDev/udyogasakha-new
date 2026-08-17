@@ -357,6 +357,9 @@ export declare class ProfilesController {
         preferredLocation: string | null;
         submittedAt: Date;
     }>;
+    remove(id: string): Promise<{
+        message: string;
+    }>;
     reactivate(id: string): Promise<{
         payment: import(".prisma/client").$Enums.PaymentType;
         id: string;

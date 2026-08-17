@@ -40,6 +40,7 @@ export const profilesApi = {
   approve:     (id: string)               => api.patch(`/profiles/${id}/approve`).then(r => r.data),
   reject:      (id: string, reason: string) => api.patch(`/profiles/${id}/reject`, { reason }).then(r => r.data),
   reactivate:  (id: string)               => api.patch(`/profiles/${id}/reactivate`).then(r => r.data),
+  remove:      (id: string)               => api.delete(`/profiles/${id}`).then(r => r.data),
 };
 
 export const listingsApi = {
@@ -67,10 +68,4 @@ export const auditApi = {
 
 export const paymentsApi = {
   getAll: (params?: any) => api.get('/payments', { params }).then(r => r.data),
-};
-
-// ── Analytics ─────────────────────────────────────────────────────────────────
-export const analyticsApi = {
-  getDashboard: (period: string = 'month') =>
-    api.get('/analytics', { params: { period } }).then(r => r.data),
 };

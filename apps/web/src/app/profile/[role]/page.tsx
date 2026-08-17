@@ -187,7 +187,7 @@ export default function RoleProfilePage() {
               </div>
               <div style={mb}><IL>Specialization</IL><input {...register('specialization')} className="fi" placeholder="e.g. Computer Science" /></div>
               <div style={mb}><IL>Institution / University</IL><input {...register('institution')} className="fi" placeholder="e.g. IIT Bombay" /></div>
-              <div style={mb}><IL>Year of Passing</IL><input {...register('yearOfPassing')} type="number" className="fi" placeholder="e.g. 2022" /></div>
+              <div style={mb}><IL>Year of Passing</IL><input {...register('yearOfPassing', { valueAsNumber: true })} type="number" className="fi" placeholder="e.g. 2027" /></div>
               <div style={mb}><IL>Grade / CGPA / %</IL><input {...register('grade')} className="fi" placeholder="e.g. 8.4 CGPA" /></div>
             </FG>
           </div>
@@ -287,8 +287,6 @@ export default function RoleProfilePage() {
             <FG>
               <div style={mb}><IL>Applied For *</IL><input {...register('appliedFor', { required:'Applied for is required', maxLength:{ value:200, message:'Too long' } })} className="fi" placeholder="Specific role / position title" style={{ borderColor: errors.appliedFor ? 'var(--err)' : undefined }} />
               <Err msg={errors.appliedFor?.message as string} /></div>
-              <div style={mb}><IL>Applied At *</IL><input {...register('appliedAt', { required:'Organisation name is required', maxLength:{ value:200, message:'Too long' } })} className="fi" placeholder="Organisation / Company name" style={{ borderColor: errors.appliedAt ? 'var(--err)' : undefined }} />
-              <Err msg={errors.appliedAt?.message as string} /></div>
               <div style={mb}><IL>💰 Payment Type</IL>
                 <select {...register('payment')} className="fi"><option value="PAID">Paid</option><option value="UNPAID">Unpaid</option><option value="STIPEND">Stipend</option><option value="NEGOTIABLE">Negotiable</option></select>
               </div>
@@ -296,7 +294,7 @@ export default function RoleProfilePage() {
                 <select {...register('certificate')} className="fi"><option value="YES">Yes</option><option value="NO">No</option></select>
               </div>
               <div style={mb}><IL>🏠 Mode of Work</IL>
-                <select {...register('workMode')} className="fi"><option value="WFH">WFH</option><option value="ON_SITE">On-Site</option><option value="OFF_SITE">Off-Site</option><option value="HYBRID">Hybrid</option></select>
+                <select {...register('workMode')} className="fi"><option value="WFH">WFH</option><option value="ON_SITE">On-Site</option><option value="HYBRID">Hybrid</option></select>
               </div>
               <div style={mb}><IL>➡️ Post-Engagement Employment</IL>
                 <select {...register('employmentOption')} className="fi"><option value="EXISTS">Exists — Interested</option><option value="NOT_EXISTS">Not Exists / Not Required</option></select>

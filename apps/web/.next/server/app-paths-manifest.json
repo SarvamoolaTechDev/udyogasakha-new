@@ -1,26 +1,4 @@
 {
-  "/admin/users/page": "app/admin/users/page.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/ads/[id]/edit/page": "app/ads/[id]/edit/page.js",
-  "/admin/users/[id]/page": "app/admin/users/[id]/page.js",
-  "/ads/new/page": "app/ads/new/page.js",
-  "/ads/page": "app/ads/page.js",
-  "/ads/create/page": "app/ads/create/page.js",
-  "/ads/[id]/page": "app/ads/[id]/page.js",
-  "/audit/page": "app/audit/page.js",
-  "/forgot-password/page": "app/forgot-password/page.js",
-  "/jobs/[id]/page": "app/jobs/[id]/page.js",
-  "/jobs/page": "app/jobs/page.js",
-  "/ads/my/page": "app/ads/my/page.js",
   "/login/page": "app/login/page.js",
-  "/notifications/page": "app/notifications/page.js",
-  "/moderator/page": "app/moderator/page.js",
-  "/post/page": "app/post/page.js",
-  "/reset-password/page": "app/reset-password/page.js",
-  "/profile/[role]/page": "app/profile/[role]/page.js",
-  "/talent/[profileId]/page": "app/talent/[profileId]/page.js",
-  "/register/page": "app/register/page.js",
-  "/settings/page": "app/settings/page.js",
-  "/talent/page": "app/talent/page.js",
-  "/page": "app/page.js"
+  "/profile/page": "app/profile/page.js"
 }

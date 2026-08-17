@@ -396,4 +396,7 @@ export declare class ProfilesService {
         preferredLocation: string | null;
         submittedAt: Date;
     }>;
+    remove(id: string): Promise<{
+        message: string;
+    }>;
 }
