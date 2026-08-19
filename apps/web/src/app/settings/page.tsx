@@ -49,7 +49,7 @@ export default function SettingsPage() {
       <h1 style={{ fontFamily:'Cinzel,serif', fontSize:'clamp(20px,3vw,32px)', fontWeight:700, color:'#fff', marginBottom:'6px' }}>
         Account <span style={{ background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>Settings</span>
       </h1>
-      <p style={{ fontSize:'13px', color:'var(--muted)', marginBottom:'32px' }}>Manage your account information and security.</p>
+      <p style={{ fontSize:'13px', color:'var(--offwhite)', fontWeight:700, marginBottom:'32px' }}>Manage your account information and security.</p>
 
       {/* Account info (read-only) */}
       {isLoading ? (
@@ -67,9 +67,9 @@ export default function SettingsPage() {
               ['🔑 User ID', (me as any)?.id?.slice(-8) ?? '—', 'Last 8 chars'],
             ].map(([label, value, note]) => (
               <div key={String(label)}>
-                <div style={{ fontSize:'9px', fontWeight:700, color:'var(--faint)', textTransform:'uppercase', letterSpacing:'1.5px', marginBottom:'3px' }}>{label}</div>
+                <div style={{ fontSize:'10px', fontWeight:700, color:'var(--faint)', textTransform:'uppercase', letterSpacing:'1.5px', marginBottom:'3px' }}>{label}</div>
                 <div style={{ fontSize:'13px', color:'var(--offwhite)', fontWeight:500 }}>{value || '—'}</div>
-                {note && <div style={{ fontSize:'10px', color:'var(--faint)', marginTop:'2px' }}>{note}</div>}
+                {note && <div style={{ fontSize:'10px', color:'var(--muted)', marginTop:'2px' }}>{note}</div>}
               </div>
             ))}
           </div>
@@ -123,7 +123,7 @@ export default function SettingsPage() {
           <div style={{ borderRadius:'10px', padding:'10px 12px', marginBottom:'14px', fontSize:'11px', color:'var(--muted)', lineHeight:1.7, background:'rgba(245,158,11,0.05)', border:'1px solid rgba(245,158,11,0.15)' }}>
             ⚠️ Changing your password will log you out of all devices.
           </div>
-          <button type="submit" disabled={changePwdMut.isPending} className="btn-outline" style={{ padding:'11px 24px', borderRadius:'50px', cursor:'pointer', fontSize:'12px', opacity:changePwdMut.isPending?0.6:1 }}>
+          <button type="submit" disabled={changePwdMut.isPending} className="btn-gold" style={{ padding:'11px 24px', borderRadius:'50px', cursor:'pointer', fontSize:'12px', opacity:changePwdMut.isPending?0.6:1 }}>
             {changePwdMut.isPending ? 'Updating…' : 'Change Password'}
           </button>
         </form>

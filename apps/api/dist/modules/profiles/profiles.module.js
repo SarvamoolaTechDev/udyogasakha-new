@@ -8,10 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProfilesModule = void 0;
 const common_1 = require("@nestjs/common");
-const wallet_module_1 = require("../wallet/wallet.module");
 const profiles_service_1 = require("./profiles.service");
 const profiles_controller_1 = require("./profiles.controller");
-// AuditService is provided globally via @Global() AuditModule — no explicit import needed here.
+const wallet_module_1 = require("../wallet/wallet.module");
 let ProfilesModule = class ProfilesModule {
 };
 exports.ProfilesModule = ProfilesModule;

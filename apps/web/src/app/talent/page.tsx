@@ -3,11 +3,9 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
-import { talentApi, profilesApi } from '@/lib/api';
+import { talentApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
 import { SkeletonCard } from '@/components/ui/Skeleton';
-
-const TALENT_SEEKER_ROLES = ['RECRUITER', 'HIRING_MANAGER', 'TRAINER', 'RFP_PROVIDER', 'VENDOR'];
 
 const ROLE_FILTERS = [
   ['', 'All Roles'], ['JOB_SEEKER','Job Seeker'], ['FRESHER','Fresher'],
@@ -15,7 +13,7 @@ const ROLE_FILTERS = [
   ['RECRUITER','Recruiter'], ['VENDOR','Vendor'],
 ];
 const MARKET_FILTERS = [['','Any Market'],['IT_FIELD','IT Field'],['NON_IT_FIELD','Non-IT'],['SERVICES','Services']];
-const MODE_FILTERS   = [['','Any Mode'],['WFH','WFH'],['ON_SITE','On-Site'],['HYBRID','Hybrid'],['OFF_SITE','Off-Site']];
+const MODE_FILTERS   = [['','Any Mode'],['WFH','WFH'],['ON_SITE','On-Site'],['HYBRID','Hybrid'],];
 
 const MARKET_COLOR: Record<string, string> = {
   IT_FIELD:     'rgba(37,99,235,0.1)',
@@ -34,17 +32,6 @@ export default function TalentPage() {
   const [mode,    setMode]    = useState('');
   const [page,    setPage]    = useState(1);
 
-  // Fetch own profiles to check if user has a qualifying role
-  const { data: myProfiles = [] } = useQuery({
-    queryKey: ['my-profiles'],
-    queryFn:  () => profilesApi.getMine(),
-    enabled:  isAuthenticated,
-  });
-
-  const hasAccess = (myProfiles as any[]).some(
-    p => p.status === 'APPROVED' && TALENT_SEEKER_ROLES.includes(p.roleType)
-  );
-
   const { data, isLoading } = useQuery({
     queryKey: ['talent', query, role, market, mode, page],
     queryFn:  () => talentApi.browse({ search: query||undefined, roleType: role||undefined, marketField: market||undefined, workMode: mode||undefined, page, limit: 18 }),
@@ -60,26 +47,9 @@ export default function TalentPage() {
       <div style={{ fontSize:'48px' }}>🔐</div>
       <h2 style={{ fontFamily:'Cinzel,serif', fontSize:'24px', fontWeight:700, color:'var(--offwhite)' }}>Sign In to Find Talent</h2>
       <p style={{ color:'var(--muted)', fontSize:'14px', textAlign:'center', maxWidth:'400px', lineHeight:1.7 }}>
-        Browse verified candidate profiles. Unlock contact details with your wallet points.
+        Browse verified candidate profiles across all 11 role types. Unlock contact details with your wallet points.
       </p>
       <Link href="/login?from=/talent" className="btn-gold" style={{ padding:'12px 28px', borderRadius:'50px', textDecoration:'none', fontSize:'12px' }}>Sign In →</Link>
-    </div>
-  );
-
-  // Access denied — user is logged in but doesn't have a qualifying approved profile
-  if (isAuthenticated && !hasAccess && (myProfiles as any[]).length > 0) return (
-    <div style={{ minHeight:'70vh', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:'16px', padding:'40px', textAlign:'center' }}>
-      <div style={{ fontSize:'48px' }}>🚫</div>
-      <h2 style={{ fontFamily:'Cinzel,serif', fontSize:'24px', fontWeight:700, color:'var(--offwhite)' }}>Access Restricted</h2>
-      <p style={{ color:'var(--muted)', fontSize:'14px', maxWidth:'480px', lineHeight:1.8 }}>
-        Find Talent is available to <strong>Recruiters, Hiring Managers, Trainers, RFP Providers and Vendors</strong> with at least one approved profile.
-      </p>
-      <p style={{ color:'var(--muted)', fontSize:'13px', maxWidth:'480px', lineHeight:1.7 }}>
-        Create and submit a profile in one of these roles — once a moderator approves it, you'll have full access to browse candidates.
-      </p>
-      <Link href="/profile" className="btn-gold" style={{ padding:'12px 28px', borderRadius:'50px', textDecoration:'none', fontSize:'12px' }}>
-        Create a Profile →
-      </Link>
     </div>
   );
 

@@ -40,23 +40,23 @@ export function JobCard({ job }: { job: Job }) {
             border:'1px solid var(--border)',
           }}>{job.icon || '💼'}</div>
           <div style={{ flex:1, minWidth:0 }}>
-            <div style={{ fontSize:'10px', color:'var(--muted)', marginBottom:'2px' }}>{job.organisationName}</div>
-            <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'#fff', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{job.title}</div>
+            <div style={{ fontSize:'13px', fontStyle:'bold', color:'var(--muted)', fontWeight:700, marginBottom:'2px' }}>{job.organisationName}</div>
+            <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'var(--muted)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{job.title}</div>
           </div>
-          <div style={{ fontSize:'10px', color:'var(--faint)', whiteSpace:'nowrap', flexShrink:0 }}>
+          <div style={{ fontSize:'12px', color:'var(--offwhite)', whiteSpace:'nowrap', flexShrink:0 }}>
             {new Date(job.postedAt).toLocaleDateString('en-IN',{ day:'numeric', month:'short' })}
           </div>
         </div>
 
         {/* Meta */}
-        <div style={{ display:'flex', flexWrap:'wrap', gap:'6px', fontSize:'10px', color:'var(--muted)', marginBottom:'10px' }}>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:'6px', fontSize:'13px', color:'var(--offwhite)', marginBottom:'10px' }}>
           <span>📍 {job.location}</span>
           <span>⏱️ {EXP_LABEL[job.experienceRequired] ?? job.experienceRequired}</span>
           <span>📅 {DUR_LABEL[job.duration] ?? job.duration}</span>
         </div>
 
         {/* Tags */}
-        <div style={{ display:'flex', flexWrap:'wrap', gap:'5px', marginBottom:'12px' }}>
+        <div style={{ display:'flex', flexWrap:'wrap', gap:'5px', marginBottom:'12px', fontSize:'9px' }}>
           <span className={`jtag ${wfh ? 'jtag-wfh' : ''}`}>{job.workMode.replace('_',' ')}</span>
           <span className={`jtag ${job.payment === 'PAID' ? 'jtag-paid' : ''}`}>{job.payment}</span>
           {job.certificateProvided === 'YES' && <span className="jtag jtag-cert">📜 Certificate</span>}
@@ -64,7 +64,7 @@ export function JobCard({ job }: { job: Job }) {
         </div>
 
         {/* Description */}
-        <p style={{ fontSize:'11px', color:'var(--muted)', lineHeight:1.65, marginBottom:'14px', fontWeight:300 }}>
+        <p style={{ fontSize:'13px', color:'var(--offwhite)', lineHeight:1.65, marginBottom:'14px', fontWeight:300 }}>
           {desc}{desc.length === 110 ? '…' : ''}
         </p>
 

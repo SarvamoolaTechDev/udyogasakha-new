@@ -35,13 +35,13 @@ export function AdminNav() {
     }}>
       {/* Logo */}
       <div style={{ padding: '22px 20px 16px', borderBottom: '1px solid var(--bf)' }}>
-        <div style={{ fontFamily: 'Cinzel,serif', fontSize: '11px', fontWeight: 700, color: 'var(--offwhite)', lineHeight: 1.5 }}>
+        <div style={{ fontFamily: 'Cinzel,serif', fontSize: '12px', fontWeight: 700, color: 'var(--offwhite)', lineHeight: 1.5 }}>
           Sarvamoola<br />
           <span style={{ background: 'linear-gradient(135deg,var(--gold2),var(--gold3))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             Udyoga Sakha
           </span>
         </div>
-        <div style={{ marginTop: '6px', display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '2px 9px', borderRadius: '50px', background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.2)', fontSize: '9px', fontWeight: 700, color: 'var(--err)' }}>
+        <div style={{ marginTop: '6px', display: 'inline-flex', alignItems: 'center', gap: '5px', padding: '2px 9px', borderRadius: '50px', background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.2)', fontSize: '10px', fontWeight: 700, color: 'var(--err)' }}>
           {/* suppressHydrationWarning — role is read from localStorage, only available client-side */}
           🔐 {mounted ? (isAdmin ? 'ADMIN' : 'MODERATOR') : ''} PORTAL
         </div>
@@ -54,7 +54,7 @@ export function AdminNav() {
           return (
             <Link key={l.href} href={l.href} style={{
               display: 'flex', alignItems: 'center', gap: '10px', padding: '11px 20px',
-              fontSize: '12px', fontWeight: 500, textDecoration: 'none', transition: 'all 0.2s',
+              fontSize: '13px', fontWeight: 500, textDecoration: 'none', transition: 'all 0.2s',
               position: 'relative', borderRadius: '0',
               color:      on ? 'var(--gold3)' : 'var(--muted)',
               background: on ? 'rgba(200,146,10,0.08)' : 'transparent',
@@ -73,7 +73,7 @@ export function AdminNav() {
           width: '100%', padding: '9px', borderRadius: '50px',
           border: '1px solid var(--border)',
           background: 'transparent', color: 'var(--muted)', cursor: 'pointer',
-          fontSize: '11px', fontFamily: 'Raleway,sans-serif', fontWeight: 600,
+          fontSize: '12px', fontFamily: 'Raleway,sans-serif', fontWeight: 600,
         }}>
           Sign Out
         </button>

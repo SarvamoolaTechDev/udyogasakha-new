@@ -110,6 +110,15 @@ export class ProfilesController {
     return this.svc.remove(id);
   }
 
+  @Get(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('MODERATOR', 'ADMIN')
+  @ApiOperation({ summary: 'Full profile detail for moderation — includes experience entries' })
+  @ApiBearerAuth()
+  getFullById(@Param('id') id: string) {
+    return this.svc.getFullById(id);
+  }
+
   @Patch(':id/reactivate')
   @UseGuards(RolesGuard)
   @Roles(UserRole.MODERATOR, UserRole.ADMIN)

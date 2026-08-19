@@ -31,7 +31,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, InputHTMLAttributes<HT
             background: 'transparent',
             border: 'none',
             cursor: 'pointer',
-            fontSize: '11px',
+            fontSize: '12px',
             fontWeight: 600,
             color: 'var(--gold3)',
             padding: '4px 2px',

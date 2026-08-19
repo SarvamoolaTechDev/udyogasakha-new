@@ -19,7 +19,7 @@ export declare class UpsertProfileDto {
     appliedFor: string;
     appliedAt?: string;
     payment: PaymentType;
-    certificate: CertOpt;
+    certificate?: CertOpt;
     workMode: WorkMode;
     employmentOption: EmpOption;
     marketSegment: MarketSegment;

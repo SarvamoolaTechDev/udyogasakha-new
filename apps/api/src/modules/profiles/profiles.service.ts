@@ -4,6 +4,7 @@ import { ProfileStatus, MarketField, MarketSegment } from '@prisma/client';
 import { parsePage, paginate } from '../../common/pagination';
 import { AuditService } from '../audit/audit.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { WalletService }       from '../wallet/wallet.service';
 import { SearchService }        from '../search/search.service';
 import { UpsertProfileDto, AddExperienceDto } from './dto/profile.dto';
 
@@ -29,6 +30,7 @@ export class ProfilesService {
     private readonly audit:   AuditService,
     private readonly notify:  NotificationsService,
     private readonly search:  SearchService,
+    private readonly wallet:  WalletService,
   ) {}
 
   async upsert(userId: string, dto: UpsertProfileDto) {
@@ -44,6 +46,7 @@ export class ProfilesService {
 
     const data = {
       ...dto, userId, skills,
+      certificate: dto.certificate ?? 'NO',
       appliedAt: dto.appliedAt ?? '',  // optional field — defaults to empty string
       marketField,                  // set on submission, not on approval
       status: ProfileStatus.PENDING, submittedAt: new Date(),
@@ -157,6 +160,9 @@ export class ProfilesService {
       where: { id },
       data: { status: ProfileStatus.APPROVED, reviewedById: modId, reviewedAt: new Date() },
     });
+
+    // Credit 1000 points bonus for 1st and 2nd approved profiles
+    await this.wallet.creditProfileBonus(before.userId);
 
     // Upgrade trust level to L1 on first profile approval (stub — full engine deferred)
     await this.prisma.trustRecord.upsert({
@@ -277,6 +283,30 @@ export class ProfilesService {
     });
 
     return { message: 'Profile removed' };
+  }
+
+
+  /**
+   * Returns the full profile with all submitted fields and experience entries.
+   * Used by the admin moderation modal to give moderators the complete picture.
+   */
+  async getFullById(id: string) {
+    const profile = await this.prisma.candidateProfile.findUnique({
+      where:   { id },
+      include: {
+        user:        { select: { name: true, email: true, phone: true, createdAt: true } },
+        experiences: { orderBy: { displayOrder: 'asc' } },
+        documents:   { select: { id: true, documentType: true, filename: true, storageKey: true } },
+      },
+    });
+    if (!profile) throw new NotFoundException('Profile not found');
+    return {
+      ...profile,
+      skills:       (profile.skills as string[]) ?? [],
+      roleFields:   profile.roleFields ?? {},
+      experiences:  profile.experiences,
+      documents:    profile.documents,
+    };
   }
 
 }

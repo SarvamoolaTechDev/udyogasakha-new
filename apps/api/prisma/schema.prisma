@@ -55,7 +55,6 @@ enum WorkMode {
   WFH
   ON_SITE
   HYBRID
-  OFF_SITE
 }
 
 enum ListingType {
@@ -69,7 +68,6 @@ enum ListingType {
 
 enum PaymentType {
   PAID
-  UNPAID
   STIPEND
   NEGOTIABLE
 }

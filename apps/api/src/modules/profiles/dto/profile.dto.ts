@@ -1,3 +1,4 @@
+import { IsNotIn } from 'class-validator';
 import {
   IsString, IsNotEmpty, IsOptional, IsEnum, IsArray,
   IsInt, Min, Max, MaxLength, IsEmail, IsObject,
@@ -89,14 +90,17 @@ export class UpsertProfileDto {
 
   @ApiProperty({ enum: PaymentType })
   @IsEnum(PaymentType)
+  @IsNotIn(['UNPAID'], { message: 'Unpaid is not a supported payment type' })
   payment: PaymentType;
 
-  @ApiProperty({ enum: CertOpt })
+  @ApiPropertyOptional({ enum: CertOpt, default: 'NO' })
+  @IsOptional()
   @IsEnum(CertOpt)
-  certificate: CertOpt;
+  certificate?: CertOpt;
 
   @ApiProperty({ enum: WorkMode })
   @IsEnum(WorkMode)
+  @IsNotIn(['OFF_SITE'], { message: 'Off-Site work mode is not supported' })
   workMode: WorkMode;
 
   @ApiProperty({ enum: EmpOption })

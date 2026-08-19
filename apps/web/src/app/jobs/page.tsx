@@ -7,8 +7,8 @@ import { SkeletonCard } from '@/components/ui/Skeleton';
 
 const ROLES    = [['INTERN','🎓 Intern'],['FRESHER','🌱 Fresher'],['JOB_SEEKER','🔍 Job Seeker'],['FREELANCER','💻 Freelancer'],['CONSULTANT','🧑‍💼 Consultant'],['TRAINER','📚 Trainer'],['RFP_PROVIDER','📋 RFP']];
 const MARKETS  = [['IT_FIELD','🌐 IT Field'],['NON_IT_FIELD','🎨 Non-IT'],['SERVICES','🤝 Services']];
-const MODES    = [['WFH','🏠 WFH'],['ON_SITE','🏢 On-Site'],['HYBRID','🔀 Hybrid'],['OFF_SITE','🌍 Off-Site']];
-const PAYMENTS = [['PAID','💰 Paid'],['STIPEND','🎓 Stipend'],['UNPAID','🆓 Unpaid']];
+const MODES    = [['WFH','🏠 WFH'],['ON_SITE','🏢 On-Site'],['HYBRID','🔀 Hybrid']];
+const PAYMENTS = [['PAID','💰 Paid'],['STIPEND','🎓 Stipend']];
 const CERTS    = [['YES','📜 Certificate']];
 
 function Pill({ label, active, onClick }: { label:string; active:boolean; onClick:()=>void }) {
@@ -53,7 +53,7 @@ export default function JobsPage() {
     <div style={{ display:'flex', minHeight:'calc(100vh - 68px)' }}>
       {/* Sidebar */}
       <div className={`jobs-sidebar${showFilters ? ' jobs-sidebar-open' : ''}`} style={{ width:'260px', flexShrink:0, display:'flex', flexDirection:'column', background:'linear-gradient(180deg,rgba(6,13,42,0.99),rgba(3,9,26,1))', borderRight:'1px solid var(--border)' }}>
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'18px 20px', borderBottom:'1px solid var(--bf)', position:'sticky', top:'68px', background:'rgba(6,13,42,0.99)', zIndex:10 }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'18px 20px', borderBottom:'1px solid var(--bf)', position:'sticky', top:'64px', background:'rgba(6,13,42,0.99)', zIndex:10 }}>
           <span style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'#fff' }}>🔧 Filters</span>
           <span onClick={()=>{setFilters({}); setPage(1);}} style={{ fontSize:'10px', color:'var(--gold3)', cursor:'pointer', padding:'3px 10px', borderRadius:'50px', background:'rgba(212,160,23,0.08)', border:'1px solid var(--border)' }}>Clear</span>
         </div>
@@ -73,7 +73,7 @@ export default function JobsPage() {
       {/* Main */}
       <div style={{ flex:1, display:'flex', flexDirection:'column', overflowY:'auto' }}>
         {/* Topbar */}
-        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'12px', padding:'16px 24px', position:'sticky', top:'68px', zIndex:10, background:'rgba(6,13,42,0.7)', backdropFilter:'blur(10px)', borderBottom:'1px solid var(--bf)' }}>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', flexWrap:'wrap', gap:'12px', padding:'12px 24px', position:'sticky', top:'64px', zIndex:20, background:'rgba(6,13,42,0.7)', backdropFilter:'blur(10px)', borderBottom:'1px solid var(--bf)' }}>
           <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'#fff' }}>
             Showing <span style={{ background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>{total}</span> Listings
           </div>
@@ -104,7 +104,7 @@ export default function JobsPage() {
         </div>
 
         {/* Cards */}
-        <div style={{ flex:1, padding:'20px 24px' }}>
+        <div style={{ flex:1, padding:'20px 24px', paddingTop:'76px' }}>
           {isLoading ? (
             <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))', gap:'16px' }}>
               {[...Array(6)].map((_,i) => <SkeletonCard key={i} />)}

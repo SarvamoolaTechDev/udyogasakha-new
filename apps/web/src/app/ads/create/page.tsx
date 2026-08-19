@@ -1,11 +1,12 @@
 'use client';
+import { LocationSelect } from '@/components/ui/LocationSelect';
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { adsApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
 
-const MODES = [['WFH','WFH'],['ON_SITE','On-Site'],['HYBRID','Hybrid'],['OFF_SITE','Off-Site']];
+const MODES = [['WFH','WFH'],['ON_SITE','On-Site'],['HYBRID','Hybrid']];
 
 export default function CreateEditAdPage() {
   const router   = useRouter();
@@ -88,7 +89,12 @@ export default function CreateEditAdPage() {
         </div>
 
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'14px' }}>
-          {inp('Location', 'location', 'text', 'e.g. Bengaluru / Remote')}
+          {(() => (
+            <div>
+              <label style={{ fontSize:'10px', fontWeight:700, color:'var(--muted)', letterSpacing:'1px', textTransform:'uppercase', display:'block', marginBottom:'5px' }}>Location</label>
+              <LocationSelect value={form.location ?? ''} onChange={v => setForm(p => ({...p, location: v}))} placeholder="Select location" className="fi" />
+            </div>
+          ))()}
           {inp('Salary / Rate Expectation', 'salaryExpect', 'text', 'e.g. ₹15–20 LPA or ₹2000/day')}
         </div>
 

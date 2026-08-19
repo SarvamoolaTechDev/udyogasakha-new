@@ -4,24 +4,14 @@ import { ProfileStatus } from '@prisma/client';
 import { UserRole } from '../../common/user-role.enum';
 import { parsePage, paginate } from '../../common/pagination';
 
-// Fields visible to everyone on the talent teaser card
+// Roles permitted to browse talent
+const TALENT_SEEKER_ROLES = ['RECRUITER', 'HIRING_MANAGER', 'TRAINER', 'RFP_PROVIDER', 'VENDOR'];
+
+// Fields visible on the talent teaser card (no contact info)
 const TEASER_SELECT = {
-  id: true,
-  fullName: true,
-  roleType: true,
-  marketField: true,
-  marketSegment: true,
-  workMode: true,
-  skills: true,
-  summary: true,
-  city: true,
-  highestDegree: true,
-  institution: true,
-  specialization: true,
-  status: true,
-  // Sensitive fields explicitly excluded from teaser:
-  // phone, email are on the User model — not here
-  // user relation is excluded intentionally
+  id: true, fullName: true, roleType: true, marketField: true,
+  marketSegment: true, workMode: true, skills: true, summary: true,
+  city: true, highestDegree: true, institution: true, specialization: true, status: true,
 };
 
 @Injectable()
@@ -29,26 +19,20 @@ export class TalentService {
   constructor(private readonly prisma: PrismaService) {}
 
   /**
-   * Browse approved candidate profiles. Available to all authenticated users,
-   * but contact fields are never included — those come from getDetails() after unlock.
-   */
-
-  /**
    * Returns true if the user has at least one APPROVED profile
-   * of a role type that is permitted to browse talent.
-   * Intern, Fresher, Job Seeker and Consultant are excluded.
+   * of a role type permitted to browse talent.
    */
   private async checkTalentAccess(userId: string): Promise<boolean> {
     const count = await this.prisma.candidateProfile.count({
-      where: {
-        userId,
-        status:   ProfileStatus.APPROVED,
-        roleType: { in: ['RECRUITER', 'HIRING_MANAGER', 'TRAINER', 'RFP_PROVIDER', 'VENDOR'] as any[] },
-      },
+      where: { userId, status: ProfileStatus.APPROVED, roleType: { in: TALENT_SEEKER_ROLES as any[] } },
     });
     return count > 0;
   }
 
+  /**
+   * Browse approved candidate profiles.
+   * Gated to qualifying roles. Excludes the viewer's own profiles.
+   */
   async browse(userId: string, filters: {
     search?:        string;
     roleType?:      string;
@@ -58,7 +42,6 @@ export class TalentService {
     page?:          number;
     limit?:         number;
   }) {
-    // Gate: only qualifying roles can browse talent
     const hasAccess = await this.checkTalentAccess(userId);
     if (!hasAccess) {
       throw new ForbiddenException(
@@ -66,17 +49,22 @@ export class TalentService {
       );
     }
 
-    const where: any = { status: ProfileStatus.APPROVED };
+    const where: any = {
+      status: ProfileStatus.APPROVED,
+      userId: { not: userId },  // exclude own profiles
+    };
+
     if (filters.roleType)      where.roleType      = filters.roleType;
     if (filters.marketField)   where.marketField   = filters.marketField;
     if (filters.marketSegment) where.marketSegment = filters.marketSegment;
     if (filters.workMode)      where.workMode      = filters.workMode;
     if (filters.search) {
       where.OR = [
-        { fullName:     { contains: filters.search, mode: 'insensitive' } },
-        { skills:       { hasSome:  [filters.search] } },
-        { city:         { contains: filters.search, mode: 'insensitive' } },
-        { summary:      { contains: filters.search, mode: 'insensitive' } },
+        { fullName: { contains: filters.search } },
+        { city:     { contains: filters.search } },
+        { summary:  { contains: filters.search } },
+        // skills hasSome removed — MySQL JSON columns don't support hasSome
+        // search falls back to Meilisearch for skill-based queries
       ];
     }
 
@@ -84,8 +72,8 @@ export class TalentService {
     const [data, total] = await this.prisma.$transaction([
       this.prisma.candidateProfile.findMany({
         where,
-        select: TEASER_SELECT,
-        orderBy: { submittedAt: 'desc' },
+        select:  TEASER_SELECT,
+        orderBy: { submittedAt: 'desc' },   // was updatedAt — CandidateProfile has submittedAt
         skip: p.skip, take: p.limit,
       }),
       this.prisma.candidateProfile.count({ where }),
@@ -94,8 +82,7 @@ export class TalentService {
   }
 
   /**
-   * Returns full candidate contact details — only if the requesting user has
-   * a ProfileUnlock record for this profile.
+   * Full profile details — only if the requesting user has an unlock record.
    */
   async getDetails(profileId: string, requestingUserId: string) {
     const unlock = await this.prisma.profileUnlock.findUnique({
@@ -108,26 +95,26 @@ export class TalentService {
     }
 
     const profile = await this.prisma.candidateProfile.findUnique({
-      where:  { id: profileId },
+      where:   { id: profileId },
       include: { user: { select: { email: true, phone: true } } },
     });
     if (!profile) throw new NotFoundException('Profile not found');
 
     return {
-      profileId:    profile.id,
-      fullName:     profile.fullName,
-      roleType:     profile.roleType,
-      email:        (profile as any).user?.email,
-      phone:        (profile as any).user?.phone,
-      city:         profile.city,
-      marketField:  profile.marketField,
-      marketSegment:profile.marketSegment,
-      skills:       profile.skills,
-      summary:      profile.summary,
+      profileId:     profile.id,
+      fullName:      profile.fullName,
+      roleType:      profile.roleType,
+      email:         (profile as any).user?.email,
+      phone:         (profile as any).user?.phone,
+      city:          profile.city,
+      marketField:   profile.marketField,
+      marketSegment: profile.marketSegment,
+      skills:        (profile.skills as string[]) ?? [],
+      summary:       profile.summary,
     };
   }
 
-  /** Single profile teaser (public — no contact fields) */
+  /** Single profile teaser (no contact fields) */
   async findById(profileId: string) {
     const profile = await this.prisma.candidateProfile.findUnique({
       where:  { id: profileId, status: ProfileStatus.APPROVED },

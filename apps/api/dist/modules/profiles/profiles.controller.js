@@ -57,6 +57,9 @@ let ProfilesController = class ProfilesController {
     remove(id) {
         return this.svc.remove(id);
     }
+    getFullById(id) {
+        return this.svc.getFullById(id);
+    }
     reactivate(id) {
         return this.svc.reactivate(id);
     }
@@ -180,6 +183,17 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ProfilesController.prototype, "remove", null);
+__decorate([
+    (0, common_1.Get)(':id'),
+    (0, common_1.UseGuards)(auth_guards_1.JwtAuthGuard, auth_guards_1.RolesGuard),
+    (0, auth_guards_1.Roles)('MODERATOR', 'ADMIN'),
+    (0, swagger_1.ApiOperation)({ summary: 'Full profile detail for moderation — includes experience entries' }),
+    (0, swagger_1.ApiBearerAuth)(),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ProfilesController.prototype, "getFullById", null);
 __decorate([
     (0, common_1.Patch)(':id/reactivate'),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),

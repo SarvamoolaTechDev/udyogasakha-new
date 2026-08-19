@@ -16,6 +16,7 @@ const client_1 = require("@prisma/client");
 const pagination_1 = require("../../common/pagination");
 const audit_service_1 = require("../audit/audit.service");
 const notifications_service_1 = require("../notifications/notifications.service");
+const wallet_service_1 = require("../wallet/wallet.service");
 const search_service_1 = require("../search/search.service");
 /**
  * Derives the three-bucket market field from the candidate's own segment selection.
@@ -34,11 +35,12 @@ function deriveMarketField(segment) {
     return client_1.MarketField.NON_IT_FIELD;
 }
 let ProfilesService = class ProfilesService {
-    constructor(prisma, audit, notify, search) {
+    constructor(prisma, audit, notify, search, wallet) {
         this.prisma = prisma;
         this.audit = audit;
         this.notify = notify;
         this.search = search;
+        this.wallet = wallet;
     }
     async upsert(userId, dto) {
         const existing = await this.prisma.candidateProfile.findUnique({
@@ -51,6 +53,7 @@ let ProfilesService = class ProfilesService {
         const marketField = deriveMarketField(dto.marketSegment);
         const data = {
             ...dto, userId, skills,
+            certificate: dto.certificate ?? 'NO',
             appliedAt: dto.appliedAt ?? '', // optional field — defaults to empty string
             marketField, // set on submission, not on approval
             status: client_1.ProfileStatus.PENDING, submittedAt: new Date(),
@@ -154,6 +157,8 @@ let ProfilesService = class ProfilesService {
             where: { id },
             data: { status: client_1.ProfileStatus.APPROVED, reviewedById: modId, reviewedAt: new Date() },
         });
+        // Credit 1000 points bonus for 1st and 2nd approved profiles
+        await this.wallet.creditProfileBonus(before.userId);
         // Upgrade trust level to L1 on first profile approval (stub — full engine deferred)
         await this.prisma.trustRecord.upsert({
             where: { userId: before.userId },
@@ -256,6 +261,29 @@ let ProfilesService = class ProfilesService {
         });
         return { message: 'Profile removed' };
     }
+    /**
+     * Returns the full profile with all submitted fields and experience entries.
+     * Used by the admin moderation modal to give moderators the complete picture.
+     */
+    async getFullById(id) {
+        const profile = await this.prisma.candidateProfile.findUnique({
+            where: { id },
+            include: {
+                user: { select: { name: true, email: true, phone: true, createdAt: true } },
+                experiences: { orderBy: { displayOrder: 'asc' } },
+                documents: { select: { id: true, documentType: true, filename: true, storageKey: true } },
+            },
+        });
+        if (!profile)
+            throw new common_1.NotFoundException('Profile not found');
+        return {
+            ...profile,
+            skills: profile.skills ?? [],
+            roleFields: profile.roleFields ?? {},
+            experiences: profile.experiences,
+            documents: profile.documents,
+        };
+    }
 };
 exports.ProfilesService = ProfilesService;
 exports.ProfilesService = ProfilesService = __decorate([
@@ -263,6 +291,7 @@ exports.ProfilesService = ProfilesService = __decorate([
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         audit_service_1.AuditService,
         notifications_service_1.NotificationsService,
-        search_service_1.SearchService])
+        search_service_1.SearchService,
+        wallet_service_1.WalletService])
 ], ProfilesService);
 //# sourceMappingURL=profiles.service.js.map

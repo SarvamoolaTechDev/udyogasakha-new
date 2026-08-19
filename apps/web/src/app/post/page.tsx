@@ -1,4 +1,5 @@
 'use client';
+import { INDIAN_CITIES } from '@/components/ui/LocationSelect';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useForm } from 'react-hook-form';
@@ -79,7 +80,7 @@ export default function PostJobPage() {
       <div style={{ maxWidth:'480px', margin:'0 auto' }}>
         <div className="gc" style={{ padding:'40px', textAlign:'center' }}>
           <div style={{ fontSize:'48px', marginBottom:'16px' }}>🔐</div>
-          <div style={{ fontFamily:'Cinzel,serif', fontSize:'20px', fontWeight:700, color:'#fff', marginBottom:'10px' }}>Sign In to Post</div>
+          <div style={{ fontFamily:'Cinzel,serif', fontSize:'20px', fontWeight:700, color:'var(--offwhite)', marginBottom:'10px' }}>Sign In to Post</div>
           <p style={{ fontSize:'13px', color:'var(--muted)', lineHeight:1.8, marginBottom:'24px' }}>
             You need a free account to post a job or RFP. All listings are reviewed by a Moderator before going live.
           </p>
@@ -146,8 +147,8 @@ export default function PostJobPage() {
       <div style={{ maxWidth:'820px', margin:'0 auto' }}>
         <div style={{ textAlign:'center', marginBottom:'32px' }}>
           <span style={{ fontSize:'10px', fontWeight:700, letterSpacing:'2.5px', textTransform:'uppercase', color:'var(--gold2)' }}>For Recruiters & Organisations</span>
-          <h1 style={{ fontFamily:'Cinzel,serif', fontSize:'clamp(22px,3.5vw,40px)', fontWeight:700, color:'#fff', marginTop:'10px', lineHeight:1.2 }}>
-            Post a Job / <span style={{ background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>RFP</span>
+          <h1 style={{ fontFamily:'Cinzel,serif', fontSize:'clamp(22px,3.5vw,40px)', fontWeight:700, color:'var(--offwhite)', marginTop:'10px', lineHeight:1.2 }}>
+            Post a <span style={{ background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>Listing</span>
           </h1>
           <div className="orn"><div className="ol"/><div className="od"/><div className="ol-r"/></div>
           <p style={{ fontSize:'13px', color:'var(--muted)', fontWeight:300, maxWidth:'500px', margin:'10px auto 0', lineHeight:1.8 }}>
@@ -183,7 +184,7 @@ export default function PostJobPage() {
 
           {/* Job details */}
           <div className="gc" style={{ padding:'28px', marginBottom:'18px' }}>
-            <S>📌 Job / RFP Details</S>
+            <S>Listing Details</S>
             <F>
               <div style={mb}>
                 <L>Posting Type</L>
@@ -199,7 +200,7 @@ export default function PostJobPage() {
               <div style={mb}>
                 <L>For Role Type</L>
                 <select {...register('targetRoleType')} className="fi">
-                  {[['JOB_SEEKER','Job Seeker'],['INTERN','Intern'],['FRESHER','Fresher'],['CONSULTANT','Consultant'],['TRAINER','Trainer'],['RECRUITER','Recruiter'],['VENDOR','Vendor']].map(([v,l])=><option key={v} value={v}>{l}</option>)}
+                  {[['JOB_SEEKER','Job Seeker'],['INTERN','Intern'],['FRESHER','Fresher'],['FREELANCER','Freelancer'],['CONSULTANT','Consultant'],['TRAINER','Trainer'],['RECRUITER','Recruiter'],['VENDOR','Vendor']].map(([v,l])=><option key={v} value={v}>{l}</option>)}
                 </select>
               </div>
               <div style={{ ...mb, gridColumn:'span 2' }}>
@@ -215,7 +216,10 @@ export default function PostJobPage() {
               </div>
               <div style={mb}>
                 <L>Location *</L>
-                <input {...register('location', { required:'Location is required' })} className="fi" placeholder="Bengaluru, Karnataka" style={{ borderColor: errors.location ? 'var(--err)' : undefined }} />
+                <select {...register('location', { required:'Location is required' })} className="fi">
+                  <option value="">Select location</option>
+                  {INDIAN_CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
                 <Err msg={errors.location?.message as string} />
               </div>
               <div style={mb}>
@@ -231,7 +235,7 @@ export default function PostJobPage() {
               <div style={mb}>
                 <L>Mode of Work</L>
                 <select {...register('workMode')} className="fi">
-                  <option value="WFH">WFH</option><option value="ON_SITE">On-Site</option><option value="HYBRID">Hybrid</option><option value="OFF_SITE">Off-Site</option>
+                  <option value="WFH">WFH</option><option value="ON_SITE">On-Site</option><option value="HYBRID">Hybrid</option>
                 </select>
               </div>
               <div style={mb}>

@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { WalletModule } from '../wallet/wallet.module';
 import { ProfilesService } from './profiles.service';
 import { ProfilesController } from './profiles.controller';
+import { WalletModule } from '../wallet/wallet.module';
 
-// AuditService is provided globally via @Global() AuditModule — no explicit import needed here.
 @Module({
   imports:     [WalletModule],
   controllers: [ProfilesController],

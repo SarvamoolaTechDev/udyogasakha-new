@@ -11,7 +11,6 @@ const NAV = [
   { href:'/',        label:'Home'        },
   { href:'/jobs',    label:'Browse Jobs' },
   { href:'/talent',  label:'Find Talent' },
-  { href:'/ads',     label:'Browse Ads'  },
   { href:'/post',    label:'Post a Job'  },
   { href:'/profile', label:'My Profile'  },
 ];
@@ -50,12 +49,12 @@ export function Navbar() {
     href === '/' ? path === '/' : path === href || path.startsWith(href + '/');
 
   const linkBase: React.CSSProperties = {
-    padding:'8px 15px', borderRadius:'50px', fontSize:'11px', fontWeight:600,
+    padding:'8px 15px', borderRadius:'50px', fontSize:'13px', fontWeight:600,
     fontFamily:'Raleway,sans-serif', letterSpacing:'0.5px', textDecoration:'none', transition:'all 0.2s',
   };
   const linkStyle = (href: string): React.CSSProperties => ({
     ...linkBase,
-    color:      active(href) ? 'var(--gold3)' : 'var(--muted)',
+    color:      active(href) ? 'var(--gold3)' : '#FFFFFF',
     background: active(href) ? 'rgba(212,160,23,0.08)' : 'transparent',
     border:     active(href) ? '1px solid var(--border)' : '1px solid transparent',
   });
@@ -65,7 +64,7 @@ export function Navbar() {
       <nav style={{ position:'sticky', top:0, zIndex:50, display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 4%', height:'68px', background:'rgba(3,9,26,0.94)', backdropFilter:'blur(20px)', borderBottom:'1px solid var(--border)' }}>
         {/* Logo */}
         <Link href="/" onClick={close} style={{ textDecoration:'none', flexShrink:0 }}>
-          <div style={{ fontFamily:'Cinzel,serif', fontWeight:700, fontSize:'12px', lineHeight:1.45, color:'#fff' }}>
+          <div style={{ fontFamily:'Cinzel,serif', fontWeight:700, fontSize:'14px', lineHeight:1.45, color:'#fff' }}>
             Sarvamoola<br />
             <span style={{ background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>Udyoga Sakha</span>
           </div>

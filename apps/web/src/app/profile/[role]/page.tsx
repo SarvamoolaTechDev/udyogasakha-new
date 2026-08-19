@@ -1,4 +1,5 @@
 'use client';
+import { INDIAN_CITIES } from '@/components/ui/LocationSelect';
 import { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
@@ -28,7 +29,7 @@ const DOC_DEFS = [
 ];
 
 const SEGMENTS = ['IT_DEVELOPERS','IT_DESIGNERS','IT_PRODUCT_OWNERS','IT_DATA_AI','NON_IT_ARTS_MEDIA','NON_IT_COMMERCE','NON_IT_EDUCATION','NON_IT_SPIRITUAL','NON_IT_MANAGEMENT','NON_IT_HEALTHCARE','NON_IT_ENGINEERING','SERVICES_CONSULTANCY','SERVICES_TRAINING','SERVICES_RECRUITMENT','SERVICES_VENDOR'];
-const LOCATIONS = ['Karnataka','Tamil Nadu','Andhra Pradesh','Telangana','Kerala','Maharashtra','Delhi / NCR','India — Any State','Abroad — UAE','Abroad — USA','Open to Any'];
+// Location options now come from LocationSelect component
 
 const STATUS_STYLE: Record<string, { bg:string; border:string; color:string }> = {
   PENDING:  { bg:'rgba(245,158,11,0.1)',  border:'rgba(245,158,11,0.3)',  color:'var(--warn)' },
@@ -288,11 +289,13 @@ export default function RoleProfilePage() {
               <div style={mb}><IL>Applied For *</IL><input {...register('appliedFor', { required:'Applied for is required', maxLength:{ value:200, message:'Too long' } })} className="fi" placeholder="Specific role / position title" style={{ borderColor: errors.appliedFor ? 'var(--err)' : undefined }} />
               <Err msg={errors.appliedFor?.message as string} /></div>
               <div style={mb}><IL>💰 Payment Type</IL>
-                <select {...register('payment')} className="fi"><option value="PAID">Paid</option><option value="UNPAID">Unpaid</option><option value="STIPEND">Stipend</option><option value="NEGOTIABLE">Negotiable</option></select>
+                <select {...register('payment')} className="fi"><option value="PAID">Paid</option><option value="STIPEND">Stipend</option><option value="NEGOTIABLE">Negotiable</option></select>
               </div>
-              <div style={mb}><IL>📜 Certificate Required</IL>
+              {(role === 'INTERN' || role === 'FRESHER') && (
+              <div style={mb}><IL>Certificate Provided</IL>
                 <select {...register('certificate')} className="fi"><option value="YES">Yes</option><option value="NO">No</option></select>
               </div>
+              )}
               <div style={mb}><IL>🏠 Mode of Work</IL>
                 <select {...register('workMode')} className="fi"><option value="WFH">WFH</option><option value="ON_SITE">On-Site</option><option value="HYBRID">Hybrid</option></select>
               </div>
@@ -306,7 +309,8 @@ export default function RoleProfilePage() {
               </div>
               <div style={mb}><IL>Preferred Location</IL>
                 <select {...register('preferredLocation')} className="fi">
-                  {LOCATIONS.map(l=><option key={l}>{l}</option>)}
+                  <option value="">Select preferred location</option>
+                  {INDIAN_CITIES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
             </FG>

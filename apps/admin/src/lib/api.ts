@@ -40,6 +40,7 @@ export const profilesApi = {
   approve:     (id: string)               => api.patch(`/profiles/${id}/approve`).then(r => r.data),
   reject:      (id: string, reason: string) => api.patch(`/profiles/${id}/reject`, { reason }).then(r => r.data),
   reactivate:  (id: string)               => api.patch(`/profiles/${id}/reactivate`).then(r => r.data),
+  getFullById: (id: string)               => api.get(`/profiles/${id}`).then(r => r.data),
   remove:      (id: string)               => api.delete(`/profiles/${id}`).then(r => r.data),
 };
 
