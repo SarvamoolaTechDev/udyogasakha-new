@@ -37,6 +37,16 @@ const STATUS_STYLE: Record<string, { bg:string; border:string; color:string }> =
   REJECTED: { bg:'rgba(255,107,107,0.1)', border:'rgba(255,107,107,0.3)', color:'var(--err)'  },
 };
 
+const WORK_MODES = ['WFH', 'ON_SITE', 'HYBRID'] as const;
+const WORK_MODE_LABELS: Record<string, string> = { WFH: 'WFH', ON_SITE: 'On-Site', HYBRID: 'Hybrid' };
+const [selectedModes, setSelectedModes] = useState<string[]>([]);
+
+const toggleMode = (mode: string) => {
+  setSelectedModes(prev =>
+    prev.includes(mode) ? prev.filter(m => m !== mode) : [...prev, mode]
+  );
+};
+
 export default function RoleProfilePage() {
   const { role }    = useParams<{ role:string }>();
   const router      = useRouter();
@@ -48,7 +58,7 @@ export default function RoleProfilePage() {
   const [showInfo, setShowInfo]     = useState(false); // mobile sidebar toggle
   const [completion,  setCompletion]  = useState(35);
 
-  const { register, handleSubmit, setValue, formState:{ errors } } = useForm<Record<string, any>>({ defaultValues:{ roleType:role } });
+  const { register, handleSubmit, formState:{ errors }, reset, setValue, watch } = useForm<Record<string, any>>({ defaultValues:{ roleType:role } });
   const expForm = useForm<Record<string, any>>();
 
   // ── Load existing profile ────────────────────────────────────────────────
@@ -296,9 +306,29 @@ export default function RoleProfilePage() {
                 <select {...register('certificate')} className="fi"><option value="YES">Yes</option><option value="NO">No</option></select>
               </div>
               )}
-              <div style={mb}><IL>🏠 Mode of Work</IL>
+              {/* <div style={mb}><IL>🏠 Mode of Work</IL>
                 <select {...register('workMode')} className="fi"><option value="WFH">WFH</option><option value="ON_SITE">On-Site</option><option value="HYBRID">Hybrid</option></select>
+              </div> */}
+
+              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                {WORK_MODES.map(mode => (
+                <button key={mode} type="button" onClick={() => toggleMode(mode)} style={{
+                    padding: '8px 18px', borderRadius: '50px', border: '1px solid',
+                    cursor: 'pointer', fontSize: '12px', fontWeight: 600, transition: 'all 0.15s',
+                    background:  selectedModes.includes(mode) ? 'rgba(200,146,10,0.12)' : 'transparent',
+                    borderColor: selectedModes.includes(mode) ? 'var(--border)' : 'var(--bf)',
+                    color:       selectedModes.includes(mode) ? 'var(--gold3)'  : 'var(--muted)',
+                  }}>
+                  {WORK_MODE_LABELS[mode]}
+                </button>
+                ))}
               </div>
+              {selectedModes.length === 0 && (
+              <p style={{ fontSize: '11px', color: 'var(--warn)', marginTop: '6px' }}>
+                Select at least one work mode
+              </p>
+              )}
+
               <div style={mb}><IL>➡️ Post-Engagement Employment</IL>
                 <select {...register('employmentOption')} className="fi"><option value="EXISTS">Exists — Interested</option><option value="NOT_EXISTS">Not Exists / Not Required</option></select>
               </div>
@@ -314,7 +344,7 @@ export default function RoleProfilePage() {
                 </select>
               </div>
             </FG>
-            <button onClick={handleSubmit(d=>submitMut.mutate(d))} disabled={submitMut.isPending} className="btn-gold" style={{ width:'100%', padding:'14px', fontSize:'14px', borderRadius:'12px', border:'none', cursor:'pointer', opacity:submitMut.isPending?0.6:1, marginTop:'8px' }}>
+            <button onClick={handleSubmit( d => submitMut.mutate({...d, workMode: selectedModes[0] ?? 'WFH' }))} disabled={submitMut.isPending} className="btn-gold" style={{ width:'100%', padding:'14px', fontSize:'14px', borderRadius:'12px', border:'none', cursor:'pointer', opacity:submitMut.isPending?0.6:1, marginTop:'8px' }}>
               {submitMut.isPending ? 'Submitting…' : '✦ Submit for Moderator Review ✦'}
             </button>
           </div>

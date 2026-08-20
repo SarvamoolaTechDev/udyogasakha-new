@@ -70,3 +70,8 @@ export const auditApi = {
 export const paymentsApi = {
   getAll: (params?: any) => api.get('/payments', { params }).then(r => r.data),
 };
+
+export const analyticsApi = {
+  getDashboard: (period: string = 'month') =>
+    api.get('/analytics', { params: { period } }).then(r => r.data),
+};

@@ -58,7 +58,7 @@ export default function AuditPage() {
 
   return (
     <div style={{ padding: '28px' }}>
-      <h1 style={{ fontFamily: 'Cinzel,serif', fontSize: '22px', fontWeight: 700, color: '#fff', marginBottom: '4px' }}>Audit Log</h1>
+      <h1 style={{ fontFamily: 'Cinzel,serif', fontSize: '22px', fontWeight: 700, color: 'var(--offwhite)', marginBottom: '4px' }}>Audit Log</h1>
       <p style={{ fontSize: '12px', color: 'var(--muted)', marginBottom: '24px' }}>Immutable record of all platform state changes. Read-only.</p>
 
       {/* Mode + filter controls */}

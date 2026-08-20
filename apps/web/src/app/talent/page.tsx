@@ -57,11 +57,11 @@ export default function TalentPage() {
     <div style={{ maxWidth:'1200px', margin:'0 auto', padding:'36px 4%' }}>
       {/* Header */}
       <div style={{ marginBottom:'32px' }}>
-        <span style={{ fontSize:'10px', fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold2)' }}>Talent Search</span>
+        <span style={{ fontSize:'12px', fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold2)' }}>Talent Search</span>
         <h1 style={{ fontFamily:'Cinzel,serif', fontSize:'clamp(24px,3vw,40px)', fontWeight:700, color:'var(--offwhite)', marginTop:'6px', marginBottom:'8px' }}>
           Find <span style={{ background:'linear-gradient(135deg,var(--gold2),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>Talent</span>
         </h1>
-        <p style={{ fontSize:'13px', color:'var(--muted)' }}>{total} verified candidates · Unlock contact details for 30 points</p>
+        <p style={{ fontSize:'15px', color:'var(--offwhite)' }}>{total} verified candidates · Unlock contact details for 30 points</p>
       </div>
 
       {/* Search bar */}
@@ -83,7 +83,7 @@ export default function TalentPage() {
       <div style={{ display:'flex', gap:'8px', flexWrap:'wrap', marginBottom:'12px' }}>
         {ROLE_FILTERS.map(([v,l]) => (
           <button key={v} onClick={() => { setRole(v); setPage(1); }} style={{
-            padding:'6px 14px', borderRadius:'50px', border:'1px solid', fontSize:'11px', fontWeight:600, cursor:'pointer',
+            padding:'6px 14px', borderRadius:'50px', border:'1px solid', fontSize:'12px', fontWeight:600, cursor:'pointer',
             background:  role===v ? 'rgba(200,146,10,0.1)' : 'transparent',
             borderColor: role===v ? 'var(--border)' : 'var(--bf)',
             color:       role===v ? 'var(--gold3)' : 'var(--muted)',
@@ -98,7 +98,7 @@ export default function TalentPage() {
           const active   = isMarket ? market===v : mode===v;
           const toggle   = () => { if (isMarket) { setMarket(v); } else { setMode(v); } setPage(1); };
           return (
-            <button key={v+l} onClick={toggle} style={{ padding:'5px 12px', borderRadius:'50px', border:'1px solid', fontSize:'10px', fontWeight:600, cursor:'pointer', background: active?'rgba(200,146,10,0.08)':'transparent', borderColor: active?'var(--border)':'var(--bf)', color: active?'var(--gold3)':'var(--muted)' }}>{l}</button>
+            <button key={v+l} onClick={toggle} style={{ padding:'5px 12px', borderRadius:'50px', border:'1px solid', fontSize:'12px', fontWeight:600, cursor:'pointer', background: active?'rgba(200,146,10,0.08)':'transparent', borderColor: active?'var(--border)':'var(--bf)', color: active?'var(--gold3)':'var(--muted)' }}>{l}</button>
           );
         })}
       </div>
@@ -117,10 +117,10 @@ export default function TalentPage() {
               <div className="gc gc-hover" style={{ padding:'22px', cursor:'pointer', height:'100%' }}>
                 {/* Role + market badge */}
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:'12px' }}>
-                  <span style={{ padding:'3px 10px', borderRadius:'50px', fontSize:'9px', fontWeight:700, background:'rgba(200,146,10,0.08)', color:'var(--gold3)', border:'1px solid var(--border)' }}>
+                  <span style={{ padding:'3px 10px', borderRadius:'50px', fontSize:'11px', fontWeight:700, background:'rgba(200,146,10,0.08)', color:'var(--gold3)', border:'1px solid var(--border)' }}>
                     {c.roleType?.replace(/_/g,' ')}
                   </span>
-                  <span style={{ padding:'3px 9px', borderRadius:'50px', fontSize:'9px', fontWeight:700, background: MARKET_COLOR[c.marketField] ?? 'rgba(0,0,0,0.04)', color:'var(--muted)', border:'1px solid var(--bf)' }}>
+                  <span style={{ padding:'3px 9px', borderRadius:'50px', fontSize:'11px', fontWeight:700, background: MARKET_COLOR[c.marketField] ?? 'rgba(0,0,0,0.04)', color:'var(--muted)', border:'1px solid var(--bf)' }}>
                     {c.marketField?.replace('_FIELD','').replace('_',' ')}
                   </span>
                 </div>
@@ -137,9 +137,9 @@ export default function TalentPage() {
                 {c.skills?.length > 0 && (
                   <div style={{ display:'flex', flexWrap:'wrap', gap:'5px', marginBottom:'10px' }}>
                     {c.skills.slice(0,4).map((s: string) => (
-                      <span key={s} style={{ padding:'2px 8px', borderRadius:'50px', fontSize:'9px', background:'rgba(0,0,0,0.04)', border:'1px solid var(--bf)', color:'var(--muted)' }}>{s}</span>
+                      <span key={s} style={{ padding:'2px 8px', borderRadius:'50px', fontSize:'11px', background:'rgba(0,0,0,0.04)', border:'1px solid var(--bf)', color:'var(--muted)' }}>{s}</span>
                     ))}
-                    {c.skills.length > 4 && <span style={{ fontSize:'9px', color:'var(--faint)' }}>+{c.skills.length-4}</span>}
+                    {c.skills.length > 4 && <span style={{ fontSize:'11px', color:'var(--faint)' }}>+{c.skills.length-4}</span>}
                   </div>
                 )}
 

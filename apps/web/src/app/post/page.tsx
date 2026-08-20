@@ -15,6 +15,8 @@ const Err = ({ msg }: { msg?: string }) =>
   msg ? <p style={{ color:'var(--err)', fontSize:'11px', marginTop:'4px' }}>{msg}</p> : null;
 
 export default function PostJobPage() {
+  const [customExp, setCustomExp] = useState('');
+  const [customDur, setCustomDur] = useState('');
   const { isAuthenticated, userName } = useAuthStore();
   const [done, setDone] = useState(false);
   const [ref,  setRef]  = useState('');
@@ -24,7 +26,7 @@ export default function PostJobPage() {
   const { toast } = useToast();
   const { startPayment } = useRazorpayCheckout();
 
-  const { register, handleSubmit, formState: { errors } } = useForm<Record<string, any>>();
+  const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<Record<string, any>>();
 
   const mut = useMutation({
     mutationFn: (d: any) => listingsApi.post({
@@ -152,7 +154,7 @@ export default function PostJobPage() {
           </h1>
           <div className="orn"><div className="ol"/><div className="od"/><div className="ol-r"/></div>
           <p style={{ fontSize:'13px', color:'var(--muted)', fontWeight:300, maxWidth:'500px', margin:'10px auto 0', lineHeight:1.8 }}>
-            All postings reviewed by Moderator before going live. Free to post.
+            All postings reviewed by Moderators before going live.
           </p>
         </div>
 
@@ -238,28 +240,48 @@ export default function PostJobPage() {
                   <option value="WFH">WFH</option><option value="ON_SITE">On-Site</option><option value="HYBRID">Hybrid</option>
                 </select>
               </div>
+              {watch('listingType') === 'INTERNSHIP' && (
               <div style={mb}>
                 <L>Certificate Provided</L>
-                <select {...register('certificateProvided')} className="fi">
-                  <option value="YES">Yes</option><option value="NO">No</option>
-                </select>
+                  <select {...register('certificateProvided')} className="fi">
+                    <option value="NO">No</option>
+                    <option value="YES">Yes</option>
+                  </select>
               </div>
+              )}
+              {watch('listingType') === 'INTERNSHIP' && (
               <div style={mb}>
-                <L>Post-Engagement Employment</L>
+                <L>Post-Internship Employment Option</L>
                 <select {...register('employmentOption')} className="fi">
-                  <option value="EXISTS">Exists</option><option value="NOT_EXISTS">Not Exists</option>
+                  <option value="NOT_EXISTS">No (internship only)</option>
+                  <option value="EXISTS">Yes (PPO possible)</option>
                 </select>
               </div>
+              )}
               <div style={mb}>
                 <L>Experience Required</L>
                 <select {...register('experienceRequired')} className="fi">
-                  <option value="ANY">Any</option><option value="FRESHER_0_1">Fresher / 0–1 yr</option><option value="EXP_1_3">1–3 yrs</option><option value="EXP_3_5">3–5 yrs</option><option value="EXP_5_8">5–8 yrs</option><option value="EXP_8_PLUS">8+ yrs</option>
+                  <option value="ANY">Any</option><option value="FRESHER_0_1">Fresher / 0–1 yr</option><option value="EXP_1_3">1–3 yrs</option><option value="EXP_3_5">3–5 yrs</option><option value="EXP_5_8">5–8 yrs</option><option value="EXP_8_PLUS">8+ yrs</option><option value="CUSTOM">Custom (specify below)</option>
+                  {watch('experienceRequired') === 'CUSTOM' && (
+                  <div style={mb}>
+                    <L>Specify Experience Required</L>
+                      <input value={customExp} onChange={e => setCustomExp(e.target.value)}
+                    className="fi" placeholder="e.g. 4–6 years, 10+ years" />
+                  </div>
+                  )}
                 </select>
               </div>
               <div style={mb}>
                 <L>Duration</L>
                 <select {...register('duration')} className="fi">
-                  <option value="PERMANENT">Permanent</option><option value="SHORT_TERM">Short Term</option><option value="MEDIUM_TERM">Medium Term</option><option value="LONG_TERM">Long Term</option><option value="PROJECT_BASED">Project Based</option>
+                  <option value="PERMANENT">Permanent</option><option value="SHORT_TERM">Short Term</option><option value="MEDIUM_TERM">Medium Term</option><option value="LONG_TERM">Long Term</option><option value="PROJECT_BASED">Project Based</option><option value="CUSTOM">Custom (specify below)</option>
+                  {watch('duration') === 'CUSTOM' && (
+                  <div style={mb}>
+                    <L>Specify Duration</L>
+                      <input value={customDur} onChange={e => setCustomDur(e.target.value)}
+                        className="fi" placeholder="e.g. 18 months, 2 years" />
+                  </div>
+                  )}
                 </select>
               </div>
               <div style={{ ...mb, gridColumn:'span 2' }}>
@@ -287,7 +309,8 @@ export default function PostJobPage() {
               </div>
             )}
 
-            <button type="submit" disabled={mut.isPending} className="btn-gold" style={{ width:'100%', padding:'15px', fontSize:'14px', borderRadius:'12px', border:'none', cursor:'pointer', opacity:mut.isPending?0.6:1, marginTop:'8px' }}>
+            <button onClick={handleSubmit(d => mut.mutate({d}))} disabled={mut.isPending} className="btn-gold"
+              style={{ width:'100%', padding:'14px', fontSize:'14px', borderRadius:'12px', border:'none', cursor:'pointer', opacity:mut.isPending?0.6:1, marginTop:'8px' }}>
               {mut.isPending ? 'Submitting…' : '✦ Submit for Moderator Review ✦'}
             </button>
           </div>
