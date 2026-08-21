@@ -150,6 +150,9 @@ function Info({ label, value }: { label: string; value: string }) {
 export default function MyProfilePage() {
   const { isAuthenticated } = useAuthStore();
 
+  const [showPicker, setShowPicker] = useState(false);
+  const [warnRole, setWarnRole] = useState<string | null>(null);
+
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ['my-profiles'],
     queryFn:  () => profilesApi.getMine(),
@@ -180,9 +183,10 @@ export default function MyProfilePage() {
           </h1>
         </div>
         {list.length < 2 && (
-          <Link href="/profile/create" className="btn-gold" style={{ padding:'10px 22px', borderRadius:'50px', textDecoration:'none', fontSize:'12px' }}>
+
+            <button onClick={() => setShowPicker(v => !v)} className="btn-gold" style={{ padding:'10px 22px', borderRadius:'50px', border:'none', cursor:'pointer', fontSize:'12px', fontFamily:'Raleway,sans-serif', fontWeight:700 }}>
             + Create New Profile
-          </Link>
+          </button>
         )}
       </div>
 
@@ -196,9 +200,10 @@ export default function MyProfilePage() {
           <p style={{ fontSize:'13px', color:'var(--muted)', lineHeight:1.8, marginBottom:'24px' }}>
             Create your first profile to be discovered by recruiters, organisations and trainers.
           </p>
-          <Link href="/profile/create" className="btn-gold" style={{ padding:'12px 28px', borderRadius:'50px', textDecoration:'none', fontSize:'12px' }}>
+
+          <button onClick={() => setShowPicker(true)} className="btn-gold" style={{ padding:'12px 28px', borderRadius:'50px', border:'none', cursor:'pointer', fontSize:'12px', fontFamily:'Raleway,sans-serif', fontWeight:700 }}>
             Create Your First Profile →
-          </Link>
+          </button>
         </div>
       ) : single ? (
         <ProfileCard p={list[0]} single={true} />
