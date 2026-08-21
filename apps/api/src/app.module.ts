@@ -35,7 +35,8 @@ import { AdsModule }       from './modules/ads/ads.module';
     ThrottlerModule.forRoot([{ ttl: 60_000, limit: 60 }]),
 
     // BullMQ — Redis connection shared by all queues
-    BullModule.forRootAsync({
+    ...(process.env.REDIS_URL
+    ? [BullModule.forRootAsync({
       imports:    [AppConfigModule],
       inject:     [AppConfigService],
       useFactory: (cfg: AppConfigService) => ({
@@ -47,7 +48,8 @@ import { AdsModule }       from './modules/ads/ads.module';
           removeOnFail:     500,
         },
       }),
-    }),
+    })]
+    : []),
 
     PrismaModule,
     AppConfigModule,
