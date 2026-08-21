@@ -1,9 +1,10 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { PrismaService } from '../../prisma/prisma.service';
 import { parsePage, paginate } from '../../common/pagination';
 import { QUEUES, NOTIFICATION_JOBS } from '../../common/queues';
+import { EmailService } from '../../common/email/email.service';
 
 export interface SendNotificationDto {
   userId:     string;
@@ -21,7 +22,8 @@ export class NotificationsService {
 
   constructor(
     private readonly prisma: PrismaService,
-    @InjectQueue(QUEUES.NOTIFICATIONS) private readonly queue: Queue,
+    @Optional() @InjectQueue(QUEUES.NOTIFICATIONS) private readonly queue: Queue | null,
+    private readonly email: EmailService,
   ) {}
 
   /**
@@ -41,13 +43,18 @@ export class NotificationsService {
     // Email stub — dispatched separately so a failed email never
     // prevents the in-app notification from being delivered
     if (dto.email) {
-      await this.queue.add(NOTIFICATION_JOBS.SEND_EMAIL, {
-        to:        dto.email,
-        subject:   dto.subject,
-        body:      dto.body,
-        link:      dto.link ?? null,
-        linkLabel: dto.linkLabel ?? null,
-      });
+      if (this.queue) {
+        await this.queue.add(NOTIFICATION_JOBS.SEND_EMAIL, { 
+          to:        dto.email,
+          subject:   dto.subject,
+          body:      dto.body,
+          link:      dto.link ?? null,
+          linkLabel: dto.linkLabel ?? null,
+        });
+      } else {
+        // Redis not available — send email directly (synchronous fallback)
+        await this.email.send({ to: dto.email, subject: dto.subject, body: dto.body, link: dto.link ?? undefined, linkLabel: dto.linkLabel ?? undefined });
+      }
     }
 
     // SMS stub
