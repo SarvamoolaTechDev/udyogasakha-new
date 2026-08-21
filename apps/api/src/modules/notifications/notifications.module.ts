@@ -10,7 +10,7 @@ import { QUEUES } from '../../common/queues';
 @Global()
 @Module({
   imports: [
-    BullModule.registerQueue({ name: QUEUES.NOTIFICATIONS }),
+    ...(process.env.REDIS_URL ? [BullModule.registerQueue({ name: QUEUES.NOTIFICATIONS })] : []),
   ],
   controllers: [NotificationsController],
   providers:   [NotificationsService, NotificationsProcessor],
