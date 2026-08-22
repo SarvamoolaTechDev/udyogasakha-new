@@ -19,6 +19,7 @@ const storage_module_1 = require("./common/storage/storage.module");
 const email_module_1 = require("./common/email/email.module");
 const http_logger_middleware_1 = require("./common/middleware/http-logger.middleware");
 const auth_module_1 = require("./modules/auth/auth.module");
+const admin_auth_module_1 = require("./modules/admin-auth/admin-auth.module");
 const users_module_1 = require("./modules/users/users.module");
 const listings_module_1 = require("./modules/listings/listings.module");
 const profiles_module_1 = require("./modules/profiles/profiles.module");
@@ -73,6 +74,7 @@ exports.AppModule = AppModule = __decorate([
             // Feature modules
             health_module_1.HealthModule,
             auth_module_1.AuthModule,
+            admin_auth_module_1.AdminAuthModule,
             users_module_1.UsersModule,
             listings_module_1.ListingsModule,
             profiles_module_1.ProfilesModule,

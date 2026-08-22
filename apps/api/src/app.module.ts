@@ -10,6 +10,7 @@ import { StorageModule } from './common/storage/storage.module';
 import { EmailModule } from './common/email/email.module';
 import { HttpLoggerMiddleware } from './common/middleware/http-logger.middleware';
 import { AuthModule } from './modules/auth/auth.module';
+import { AdminAuthModule } from './modules/admin-auth/admin-auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ListingsModule } from './modules/listings/listings.module';
 import { ProfilesModule } from './modules/profiles/profiles.module';
@@ -63,6 +64,7 @@ import { AdsModule }       from './modules/ads/ads.module';
     // Feature modules
     HealthModule,
     AuthModule,
+    AdminAuthModule,
     UsersModule,
     ListingsModule,
     ProfilesModule,
