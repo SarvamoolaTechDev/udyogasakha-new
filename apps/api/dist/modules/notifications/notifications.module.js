@@ -13,6 +13,7 @@ const notifications_service_1 = require("./notifications.service");
 const notifications_controller_1 = require("./notifications.controller");
 const notifications_processor_1 = require("./notifications.processor");
 const queues_1 = require("../../common/queues");
+const email_service_1 = require("../../common/email/email.service");
 // @Global() so NotificationsService can be injected anywhere (e.g. ProfilesService)
 // without each consuming module needing to import NotificationsModule.
 let NotificationsModule = class NotificationsModule {
@@ -22,10 +23,10 @@ exports.NotificationsModule = NotificationsModule = __decorate([
     (0, common_1.Global)(),
     (0, common_1.Module)({
         imports: [
-            bull_1.BullModule.registerQueue({ name: queues_1.QUEUES.NOTIFICATIONS }),
+            ...(process.env.REDIS_URL ? [bull_1.BullModule.registerQueue({ name: queues_1.QUEUES.NOTIFICATIONS })] : []),
         ],
         controllers: [notifications_controller_1.NotificationsController],
-        providers: [notifications_service_1.NotificationsService, notifications_processor_1.NotificationsProcessor],
+        providers: [notifications_service_1.NotificationsService, notifications_processor_1.NotificationsProcessor, email_service_1.EmailService],
         exports: [notifications_service_1.NotificationsService],
     })
 ], NotificationsModule);

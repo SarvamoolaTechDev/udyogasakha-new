@@ -39,13 +39,7 @@ const STATUS_STYLE: Record<string, { bg:string; border:string; color:string }> =
 
 const WORK_MODES = ['WFH', 'ON_SITE', 'HYBRID'] as const;
 const WORK_MODE_LABELS: Record<string, string> = { WFH: 'WFH', ON_SITE: 'On-Site', HYBRID: 'Hybrid' };
-const [selectedModes, setSelectedModes] = useState<string[]>([]);
 
-const toggleMode = (mode: string) => {
-  setSelectedModes(prev =>
-    prev.includes(mode) ? prev.filter(m => m !== mode) : [...prev, mode]
-  );
-};
 
 export default function RoleProfilePage() {
   const { role }    = useParams<{ role:string }>();
@@ -57,6 +51,13 @@ export default function RoleProfilePage() {
   const [showExpForm, setShowExpForm] = useState(false);
   const [showInfo, setShowInfo]     = useState(false); // mobile sidebar toggle
   const [completion,  setCompletion]  = useState(35);
+
+  const [selectedModes, setSelectedModes] = useState<string[]>([]);
+  const toggleMode = (mode: string) => {
+    setSelectedModes(prev =>
+      prev.includes(mode) ? prev.filter(m => m !== mode) : [...prev, mode]
+    );
+  };
 
   const { register, handleSubmit, formState:{ errors }, reset, setValue, watch } = useForm<Record<string, any>>({ defaultValues:{ roleType:role } });
   const expForm = useForm<Record<string, any>>();
@@ -138,7 +139,7 @@ export default function RoleProfilePage() {
   const IL = ({ children }: { children: React.ReactNode }) => <label className="il">{children}</label>;
   const FG = ({ children }: { children: React.ReactNode }) => <div className="form-grid">{children}</div>;
   const SEC = ({ children }: { children: React.ReactNode }) => (
-    <div style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'var(--gold3)', marginBottom:'14px', display:'flex', alignItems:'center', gap:'8px' }}>
+    <div style={{ fontFamily:'Cinzel,serif', fontSize:'15px', fontWeight:700, color:'var(--gold3)', marginBottom:'14px', display:'flex', alignItems:'center', gap:'8px' }}>
       {children}<span style={{ flex:1, height:'1px', background:'rgba(212,160,23,0.1)' }} />
     </div>
   );
@@ -148,15 +149,15 @@ export default function RoleProfilePage() {
       {/* Banner */}
       <div style={{ padding:'56px 4% 40px', background:'linear-gradient(135deg,rgba(13,30,90,0.9),rgba(6,13,42,0.95))', borderBottom:'1px solid var(--border)' }}>
         <div style={{ maxWidth:'1100px', margin:'0 auto' }}>
-          <button onClick={()=>router.push('/profile')} style={{ display:'flex', alignItems:'center', gap:'8px', fontSize:'12px', color:'var(--muted)', background:'transparent', border:'none', cursor:'pointer', marginBottom:'22px' }}>
+          <button onClick={()=>router.push('/profile')} style={{ display:'flex', alignItems:'center', gap:'8px', fontSize:'15px', color:'var(--gold2)', background:'transparent', border:'none', cursor:'pointer', marginBottom:'22px' }}>
             ← Back to My Profile
           </button>
-          <div style={{ fontSize:'52px', marginBottom:'14px' }}>{ri.icon}</div>
-          <div style={{ fontSize:'10px', fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold2)', marginBottom:'6px' }}>Role Profile</div>
-          <h1 style={{ fontFamily:'Cinzel,serif', fontSize:'clamp(22px,4vw,40px)', fontWeight:700, color:'#fff', marginBottom:'10px' }}>
+          {/*<div style={{ fontSize:'30px', marginBottom:'14px' }}>{ri.icon}</div>*/}
+          <div style={{ fontSize:'20px', fontWeight:700, letterSpacing:'2px', textTransform:'uppercase', color:'var(--gold2)', marginBottom:'6px' }}>Role Profile</div>
+          {/*<h1 style={{ fontFamily:'Cinzel,serif', fontSize:'clamp(22px,4vw,30px)', fontWeight:700, color:'#fff', marginBottom:'10px' }}>
             I am a <span style={{ background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>{role.replace(/_/g,' ')}</span>
-          </h1>
-          <p style={{ fontSize:'14px', color:'var(--muted)', fontWeight:300, maxWidth:'600px', lineHeight:1.8 }}>{ri.desc}</p>
+          </h1> */}
+          <p style={{ fontSize:'18px', color:'var(--muted)', fontWeight:300, maxWidth:'600px', lineHeight:1.8 }}>{ri.desc}</p>
         </div>
       </div>
 
@@ -182,7 +183,7 @@ export default function RoleProfilePage() {
               <div style={{ ...mb, gridColumn:'span 2' }}><IL>Professional Summary *</IL><textarea {...register('summary')} className="fi" style={{ minHeight:'90px' }} placeholder={`Write 3–4 lines about yourself as a ${role.replace(/_/g,' ')}…`} /></div>
             </FG>
             <button onClick={handleSubmit(d=>saveMut.mutate(d))} disabled={saveMut.isPending} className="btn-gold" style={{ padding:'11px 24px', borderRadius:'50px', border:'none', cursor:'pointer', fontSize:'12px', opacity:saveMut.isPending?0.6:1 }}>
-              {saveMut.isPending?'Saving…':'💾 Save Profile'}
+              {saveMut.isPending?'Saving…':'Save Profile'}
             </button>
           </div>
 
@@ -271,8 +272,8 @@ export default function RoleProfilePage() {
                 return (
                   <label key={d.key} style={{ borderRadius:'14px', padding:'18px', textAlign:'center', cursor:'pointer', border:`2px dashed ${uploaded ? 'rgba(74,222,128,0.4)' : 'rgba(212,160,23,0.3)'}`, display:'block', transition:'all 0.2s' }}>
                     <div style={{ fontSize:'28px', marginBottom:'8px' }}>{uploaded ? '✅' : d.icon}</div>
-                    <div style={{ fontFamily:'Cinzel,serif', fontSize:'11px', fontWeight:700, color:'#fff', marginBottom:'3px' }}>{d.label}</div>
-                    <div style={{ fontSize:'10px', color: uploaded ? 'var(--ok)' : 'var(--muted)', fontWeight: uploaded ? 600 : 300, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                    <div style={{ fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, color:'#fff', marginBottom:'3px' }}>{d.label}</div>
+                    <div style={{ fontSize:'12px', color: uploaded ? 'var(--ok)' : 'var(--muted)', fontWeight: uploaded ? 600 : 300, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                       {uploaded ? uploaded.filename : `${d.accept} · Max 10MB`}
                     </div>
                     {uploaded && (
@@ -287,7 +288,7 @@ export default function RoleProfilePage() {
                 );
               })}
             </div>
-            <div style={{ marginTop:'14px', borderRadius:'10px', padding:'10px', fontSize:'11px', color:'var(--muted)', lineHeight:1.7, background:'rgba(245,158,11,0.06)', border:'1px solid rgba(245,158,11,0.2)' }}>
+            <div style={{ marginTop:'14px', borderRadius:'10px', padding:'10px', fontSize:'12px', color:'var(--offwhite)', lineHeight:1.7, background:'rgba(245,158,11,0.06)', border:'1px solid rgba(245,158,11,0.2)' }}>
               ⚠️ Documents are visible only to you and the Admin. They will be reviewed before your profile goes live.
             </div>
           </div>
@@ -296,9 +297,9 @@ export default function RoleProfilePage() {
           <div className="gc" style={{ padding:'28px' }}>
             <SEC>⬛ Submission Details</SEC>
             <FG>
-              <div style={mb}><IL>Applied For *</IL><input {...register('appliedFor', { required:'Applied for is required', maxLength:{ value:200, message:'Too long' } })} className="fi" placeholder="Specific role / position title" style={{ borderColor: errors.appliedFor ? 'var(--err)' : undefined }} />
-              <Err msg={errors.appliedFor?.message as string} /></div>
-              <div style={mb}><IL>💰 Payment Type</IL>
+              { /*<div style={mb}><IL>Applied For *</IL><input {...register('appliedFor', { required:'Applied for is required', maxLength:{ value:200, message:'Too long' } })} className="fi" placeholder="Specific role / position title" style={{ borderColor: errors.appliedFor ? 'var(--err)' : undefined }} />
+              <Err msg={errors.appliedFor?.message as string} /></div> */}
+              <div style={mb}><IL>Payment Type</IL>
                 <select {...register('payment')} className="fi"><option value="PAID">Paid</option><option value="STIPEND">Stipend</option><option value="NEGOTIABLE">Negotiable</option></select>
               </div>
               {(role === 'INTERN' || role === 'FRESHER') && (
@@ -306,11 +307,11 @@ export default function RoleProfilePage() {
                 <select {...register('certificate')} className="fi"><option value="YES">Yes</option><option value="NO">No</option></select>
               </div>
               )}
-              {/* <div style={mb}><IL>🏠 Mode of Work</IL>
+              <div style={mb}><IL>Mode of Work</IL>
                 <select {...register('workMode')} className="fi"><option value="WFH">WFH</option><option value="ON_SITE">On-Site</option><option value="HYBRID">Hybrid</option></select>
-              </div> */}
+              </div> 
 
-              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+               {/*<div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 {WORK_MODES.map(mode => (
                 <button key={mode} type="button" onClick={() => toggleMode(mode)} style={{
                     padding: '8px 18px', borderRadius: '50px', border: '1px solid',
@@ -322,16 +323,23 @@ export default function RoleProfilePage() {
                   {WORK_MODE_LABELS[mode]}
                 </button>
                 ))}
-              </div>
+              </div> */}
               {selectedModes.length === 0 && (
               <p style={{ fontSize: '11px', color: 'var(--warn)', marginTop: '6px' }}>
                 Select at least one work mode
               </p>
               )}
 
-              <div style={mb}><IL>➡️ Post-Engagement Employment</IL>
-                <select {...register('employmentOption')} className="fi"><option value="EXISTS">Exists — Interested</option><option value="NOT_EXISTS">Not Exists / Not Required</option></select>
-              </div>
+              {/* Only visible for INTERN: */}
+              {role === 'INTERN' && (
+                <div style={mb}><IL>Post-Internship Employment</IL>
+                  <select {...register('employmentOption')} className="fi">
+                    <option value="NOT_EXISTS">No (internship only)</option>
+                    <option value="EXISTS">Yes (PPO possible)</option>
+                  </select>
+                </div>
+              )}
+
               <div style={mb}><IL>Market Segment *</IL>
                 <select {...register('marketSegment')} className="fi">
                   {SEGMENTS.map(s=><option key={s} value={s}>{s.replace(/_/g,' ')}</option>)}

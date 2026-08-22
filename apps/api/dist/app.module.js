@@ -48,19 +48,21 @@ exports.AppModule = AppModule = __decorate([
             // Global rate limit: 60 req / 60 s per IP
             throttler_1.ThrottlerModule.forRoot([{ ttl: 60_000, limit: 60 }]),
             // BullMQ — Redis connection shared by all queues
-            bull_1.BullModule.forRootAsync({
-                imports: [app_config_module_1.AppConfigModule],
-                inject: [app_config_service_1.AppConfigService],
-                useFactory: (cfg) => ({
-                    redis: cfg.redisUrl,
-                    defaultJobOptions: {
-                        attempts: 3,
-                        backoff: { type: 'exponential', delay: 2000 },
-                        removeOnComplete: 200,
-                        removeOnFail: 500,
-                    },
-                }),
-            }),
+            ...(process.env.REDIS_URL
+                ? [bull_1.BullModule.forRootAsync({
+                        imports: [app_config_module_1.AppConfigModule],
+                        inject: [app_config_service_1.AppConfigService],
+                        useFactory: (cfg) => ({
+                            redis: cfg.redisUrl,
+                            defaultJobOptions: {
+                                attempts: 3,
+                                backoff: { type: 'exponential', delay: 2000 },
+                                removeOnComplete: 200,
+                                removeOnFail: 500,
+                            },
+                        }),
+                    })]
+                : []),
             prisma_module_1.PrismaModule,
             app_config_module_1.AppConfigModule,
             // @Global() modules — services injectable everywhere without re-importing

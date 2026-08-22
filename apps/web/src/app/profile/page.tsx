@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { profilesApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
+import { useRouter } from 'next/navigation';
 
 const ROLE_ICON: Record<string, string> = {
   INTERN:'🎓', FRESHER:'🌱', JOB_SEEKER:'🔍', CONSULTANT:'🧑‍💼',
@@ -21,6 +22,18 @@ const STATUS: Record<string, { bg:string; border:string; color:string; label:str
   APPROVED: { bg:'rgba(22,163,74,0.1)',   border:'rgba(22,163,74,0.3)',   color:'#16A34A',  label:'✅ Live'           },
   REJECTED: { bg:'rgba(220,38,38,0.1)',   border:'rgba(220,38,38,0.3)',   color:'#DC2626',  label:'❌ Needs Changes'  },
 };
+
+const ALL_ROLES = [
+  { slug:'INTERN',         icon:'🎓', name:'Intern',         sub:'Certificate · Stipend · Employment'  },
+  { slug:'FRESHER',        icon:'🌱', name:'Fresher',        sub:'Entry-level · Campus · 0–1 yr'       },
+  { slug:'JOB_SEEKER',     icon:'🔍', name:'Job Seeker',     sub:'Experienced · Switch · Relocation'   },
+  { slug:'CONSULTANT',     icon:'🧑‍💼', name:'Consultant',     sub:'Freelance · Domain Expert · Contract'},
+  { slug:'HIRING_MANAGER', icon:'📊', name:'Hiring Manager', sub:'Team Builder · JD · Interviews'      },
+  { slug:'RECRUITER',      icon:'🤝', name:'Recruiter',      sub:'Sourcing · ATS · Placement'          },
+  { slug:'TRAINER',        icon:'📚', name:'Trainer',        sub:'Corporate · Online · L&D'            },
+  { slug:'VENDOR',         icon:'🏭', name:'Vendor',         sub:'B2B · Products · Partnership'        },
+  { slug:'RFP_PROVIDER',   icon:'📋', name:'RFP Provider',   sub:'Tender · Publisher · Org'            },
+];
 
 function ProfileCard({ p, single }: { p: any; single: boolean }) {
   const st = STATUS[p.status] ?? STATUS.PENDING;
@@ -150,9 +163,6 @@ function Info({ label, value }: { label: string; value: string }) {
 export default function MyProfilePage() {
   const { isAuthenticated } = useAuthStore();
 
-  const [showPicker, setShowPicker] = useState(false);
-  const [warnRole, setWarnRole] = useState<string | null>(null);
-
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ['my-profiles'],
     queryFn:  () => profilesApi.getMine(),
@@ -160,6 +170,20 @@ export default function MyProfilePage() {
   });
 
   const list = profiles as any[];
+  {/*
+  const existingRoles  = new Set(list.map((p: any) => p.roleType));
+  const approvedCount  = list.filter((p: any) => p.status === 'APPROVED').length;
+  const availableRoles = ALL_ROLES.filter(r => !existingRoles.has(r.slug));
+  const router         = useRouter();
+
+  const handleRoleClick = (slug: string) => {
+    if (approvedCount >= 2 && !existingRoles.has(slug)) {
+      setWarnRole(slug);
+    } else {
+      router.push(`/profile/${slug}`);
+    }
+  };
+  */}
   const single = list.length === 1;
 
   if (!isAuthenticated) {
@@ -184,11 +208,54 @@ export default function MyProfilePage() {
         </div>
         {list.length < 2 && (
 
-            <button onClick={() => setShowPicker(v => !v)} className="btn-gold" style={{ padding:'10px 22px', borderRadius:'50px', border:'none', cursor:'pointer', fontSize:'12px', fontFamily:'Raleway,sans-serif', fontWeight:700 }}>
-            + Create New Profile
-          </button>
+            <Link href="/profile/create" className="btn-gold" style={{ padding:'10px 22px', borderRadius:'50px', textDecoration:'none', fontSize:'12px', fontFamily:'Raleway,sans-serif', fontWeight:700 }}>
+                + Create New Profile
+            </Link>
         )}
       </div>
+
+
+    {/* Role picker */}
+    {/*  {showPicker && availableRoles.length > 0 && (
+        <div className="gc" style={{ padding:'22px', marginBottom:'24px' }}>
+          <div style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'var(--offwhite)', marginBottom:'14px' }}>Select a role type to create</div>
+          <div style={{ display:'flex', flexWrap:'wrap', gap:'10px' }}>
+            {availableRoles.map(r => (
+              <div key={r.slug} onClick={() => handleRoleClick(r.slug)}
+                style={{ display:'flex', alignItems:'center', gap:'10px', padding:'10px 16px', borderRadius:'12px', border:'1px solid var(--bf)', cursor:'pointer', background:'rgba(255,255,255,0.02)' }}>
+                <span style={{ fontSize:'22px' }}>{r.icon}</span>
+                <div>
+                  <div style={{ fontSize:'13px', fontWeight:700, color:'var(--offwhite)' }}>{r.name}</div>
+                  <div style={{ fontSize:'10px', color:'var(--muted)' }}>{r.sub}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )} 
+    */}
+
+      {/* 3rd profile warning */}
+      { /*{warnRole && (
+        <div onClick={() => setWarnRole(null)} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px', padding:'28px', maxWidth:'400px', width:'100%', textAlign:'center' }}>
+            <div style={{ fontSize:'36px', marginBottom:'12px' }}>ℹ️</div>
+            <h3 style={{ fontFamily:'Cinzel,serif', fontSize:'17px', fontWeight:700, color:'var(--offwhite)', marginBottom:'10px' }}>No Bonus Points</h3>
+            <p style={{ fontSize:'13px', color:'var(--muted)', lineHeight:1.75, marginBottom:'20px' }}>You already have 2 approved profiles. The 1,000-point bonus only applies to your 1st and 2nd approved profiles.</p>
+            <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
+              <button onClick={() => { setWarnRole(null); router.push(`/profile/${warnRole}`); }}
+                className="btn-gold" style={{ padding:'13px', borderRadius:'50px', border:'none', cursor:'pointer', fontSize:'12px' }}>
+                Continue Without Bonus
+              </button>
+              <button onClick={() => setWarnRole(null)}
+                style={{ padding:'10px', background:'transparent', border:'none', cursor:'pointer', fontSize:'12px', color:'var(--muted)' }}>
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )} 
+      */}
 
       {/* Content */}
       {isLoading ? (
@@ -201,9 +268,10 @@ export default function MyProfilePage() {
             Create your first profile to be discovered by recruiters, organisations and trainers.
           </p>
 
-          <button onClick={() => setShowPicker(true)} className="btn-gold" style={{ padding:'12px 28px', borderRadius:'50px', border:'none', cursor:'pointer', fontSize:'12px', fontFamily:'Raleway,sans-serif', fontWeight:700 }}>
+        <Link href="/profile/create" className="btn-gold" style={{ padding:'12px 28px', borderRadius:'50px', textDecoration:'none', fontSize:'12px', fontFamily:'Raleway,sans-serif', fontWeight:700 }}>
             Create Your First Profile →
-          </button>
+        </Link>
+
         </div>
       ) : single ? (
         <ProfileCard p={list[0]} single={true} />

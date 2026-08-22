@@ -19,10 +19,12 @@ const bull_1 = require("@nestjs/bull");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const pagination_1 = require("../../common/pagination");
 const queues_1 = require("../../common/queues");
+const email_service_1 = require("../../common/email/email.service");
 let NotificationsService = NotificationsService_1 = class NotificationsService {
-    constructor(prisma, queue) {
+    constructor(prisma, queue, email) {
         this.prisma = prisma;
         this.queue = queue;
+        this.email = email;
         this.logger = new common_1.Logger(NotificationsService_1.name);
     }
     /**
@@ -41,13 +43,19 @@ let NotificationsService = NotificationsService_1 = class NotificationsService {
         // Email stub — dispatched separately so a failed email never
         // prevents the in-app notification from being delivered
         if (dto.email) {
-            await this.queue.add(queues_1.NOTIFICATION_JOBS.SEND_EMAIL, {
-                to: dto.email,
-                subject: dto.subject,
-                body: dto.body,
-                link: dto.link ?? null,
-                linkLabel: dto.linkLabel ?? null,
-            });
+            if (this.queue) {
+                await this.queue.add(queues_1.NOTIFICATION_JOBS.SEND_EMAIL, {
+                    to: dto.email,
+                    subject: dto.subject,
+                    body: dto.body,
+                    link: dto.link ?? null,
+                    linkLabel: dto.linkLabel ?? null,
+                });
+            }
+            else {
+                // Redis not available — send email directly (synchronous fallback)
+                await this.email.send({ to: dto.email, subject: dto.subject, body: dto.body, link: dto.link ?? undefined, linkLabel: dto.linkLabel ?? undefined });
+            }
         }
         // SMS stub
         if (dto.phone) {
@@ -94,7 +102,8 @@ let NotificationsService = NotificationsService_1 = class NotificationsService {
 exports.NotificationsService = NotificationsService;
 exports.NotificationsService = NotificationsService = NotificationsService_1 = __decorate([
     (0, common_1.Injectable)(),
+    __param(1, (0, common_1.Optional)()),
     __param(1, (0, bull_1.InjectQueue)(queues_1.QUEUES.NOTIFICATIONS)),
-    __metadata("design:paramtypes", [prisma_service_1.PrismaService, Object])
+    __metadata("design:paramtypes", [prisma_service_1.PrismaService, Object, email_service_1.EmailService])
 ], NotificationsService);
 //# sourceMappingURL=notifications.service.js.map

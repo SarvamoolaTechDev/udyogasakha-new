@@ -1,5 +1,6 @@
 import { Queue } from 'bull';
 import { PrismaService } from '../../prisma/prisma.service';
+import { EmailService } from '../../common/email/email.service';
 export interface SendNotificationDto {
     userId: string;
     subject: string;
@@ -12,8 +13,9 @@ export interface SendNotificationDto {
 export declare class NotificationsService {
     private readonly prisma;
     private readonly queue;
+    private readonly email;
     private readonly logger;
-    constructor(prisma: PrismaService, queue: Queue);
+    constructor(prisma: PrismaService, queue: Queue | null, email: EmailService);
     /**
      * Enqueue an in-app notification (and optionally email/SMS stubs).
      * The actual DB write happens in the processor so it doesn't block
