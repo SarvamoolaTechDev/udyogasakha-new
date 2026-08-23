@@ -26,6 +26,7 @@ function LoginForm() {
     try {
       const tokens = await authApi.login(data);
       setTokens(tokens);
+      await new Promise(resolve => setTimeout(resolve, 150));
       router.push(params.get('from') ?? '/profile');
     } catch (err: any) {
       const status = err?.response?.status;

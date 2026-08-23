@@ -26,6 +26,7 @@ export default function RegisterPage() {
     try {
       const tokens = await authApi.register(data);
       setTokens(tokens);
+      await new Promise(resolve => setTimeout(resolve, 150));
       router.push('/profile');
     } catch (err: any) {
       const msg: string = err?.response?.data?.message ?? '';
