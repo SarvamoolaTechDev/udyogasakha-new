@@ -136,7 +136,11 @@ export default function RoleProfilePage() {
   const mb: React.CSSProperties = { marginBottom:'16px' };
   const Err = ({ msg }: { msg?: string }) =>
     msg ? <p style={{ color:'var(--err)', fontSize:'11px', marginTop:'4px' }}>{msg}</p> : null;
-  const IL = ({ children }: { children: React.ReactNode }) => <label className="il">{children}</label>;
+
+  const IL = ({ children, req }: { children: React.ReactNode; req?: boolean }) => (
+  <label className="il">{children}{req && <span style={{ color:'var(--err)', marginLeft:'3px' }}>*</span>}</label>
+);
+  // const IL = ({ children }: { children: React.ReactNode }) => <label className="il">{children}</label>;
   const FG = ({ children }: { children: React.ReactNode }) => <div className="form-grid">{children}</div>;
   const SEC = ({ children }: { children: React.ReactNode }) => (
     <div style={{ fontFamily:'Cinzel,serif', fontSize:'15px', fontWeight:700, color:'var(--gold3)', marginBottom:'14px', display:'flex', alignItems:'center', gap:'8px' }}>
@@ -157,7 +161,7 @@ export default function RoleProfilePage() {
           {/*<h1 style={{ fontFamily:'Cinzel,serif', fontSize:'clamp(22px,4vw,30px)', fontWeight:700, color:'#fff', marginBottom:'10px' }}>
             I am a <span style={{ background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>{role.replace(/_/g,' ')}</span>
           </h1> */}
-          <p style={{ fontSize:'18px', color:'var(--muted)', fontWeight:300, maxWidth:'600px', lineHeight:1.8 }}>{ri.desc}</p>
+          <p style={{ fontSize:'18px', color:'var(--gold)', fontWeight:300, maxWidth:'600px', lineHeight:1.8 }}>{ri.desc}</p>
         </div>
       </div>
 
@@ -168,34 +172,38 @@ export default function RoleProfilePage() {
           <div className="gc" style={{ padding:'28px', marginBottom:'18px' }}>
             <SEC>👤 Personal Information</SEC>
             <FG>
-              <div style={mb}><IL>Full Name *</IL><input {...register('fullName', { required:'Full name is required', maxLength:{ value:100, message:'Too long' } })} className="fi" placeholder="Your Full Name" style={{ borderColor: errors.fullName ? 'var(--err)' : undefined }} />
+              <div style={mb}><IL req>Full Name</IL><input {...register('fullName', { required: 'Full name is required', maxLength:{ value:100, message:'Too long' } })} className="fi" placeholder="Your Full Name" style={{ borderColor: errors.fullName ? 'var(--err)' : undefined }} />
               <Err msg={errors.fullName?.message as string} /></div>
               <div style={mb}><IL>Date of Birth</IL><input {...register('dateOfBirth')} type="date" className="fi" /></div>
               <div style={mb}><IL>Gender</IL><select {...register('gender')} className="fi"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option></select></div>
-              <div style={mb}><IL>Mobile *</IL><input {...register('phone', { maxLength:{ value:20, message:'Too long' } })} className="fi" placeholder="+91 98765 43210" style={{ borderColor: errors.phone ? 'var(--err)' : undefined }} />
+              <div style={mb}><IL req>Mobile</IL><input {...register('phone', { required: 'Phone number is required', maxLength:{ value:20, message:'Too long' }})} className="fi" placeholder="+91 98765 43210" style={{ borderColor: errors.phone ? 'var(--err)' : undefined }} />
               <Err msg={errors.phone?.message as string} /></div>
-              <div style={mb}><IL>Email *</IL><input {...register('email')} type="email" className="fi" placeholder="you@example.com" /></div>
-              <div style={mb}><IL>City / Location</IL><input {...register('city')} className="fi" placeholder="Bengaluru, Karnataka" /></div>
+              <div style={mb}><IL req>Email</IL><input {...register('email', { required : 'Email is required' })} type="email" className="fi" placeholder="you@example.com" /></div>
+              <Err msg={errors.email?.message as string} />
+              <div style={mb}><IL req>City / Location</IL><input {...register('city', { required: 'City is required' })} className="fi" placeholder="Bengaluru, Karnataka" /></div>
+              <Err msg={errors.city?.message as string} />
               {ri.fields.map(([name, ph], i) => (
                 <div key={name} style={mb}><IL>{name}</IL><input {...register(`roleFields.rf${i}` as any)} className="fi" placeholder={ph} /></div>
               ))}
               <div style={{ ...mb, gridColumn:'span 2' }}><IL>Key Skills (comma separated)</IL><input {...register('skills')} className="fi" placeholder="Python, React, Communication…" /></div>
-              <div style={{ ...mb, gridColumn:'span 2' }}><IL>Professional Summary *</IL><textarea {...register('summary')} className="fi" style={{ minHeight:'90px' }} placeholder={`Write 3–4 lines about yourself as a ${role.replace(/_/g,' ')}…`} /></div>
+              <div style={{ ...mb, gridColumn:'span 2' }}><IL req>Professional Summary</IL><textarea {...register('summary', { required: 'Summary is required' })} className="fi" style={{ minHeight:'90px' }} placeholder={`Write 3–4 lines about yourself as a ${role.replace(/_/g,' ')}…`} /></div>
+              <Err msg={errors.summary?.message as string} />
             </FG>
-            <button onClick={handleSubmit(d=>saveMut.mutate(d))} disabled={saveMut.isPending} className="btn-gold" style={{ padding:'11px 24px', borderRadius:'50px', border:'none', cursor:'pointer', fontSize:'12px', opacity:saveMut.isPending?0.6:1 }}>
+            {/*<button onClick={handleSubmit(d=>saveMut.mutate(d))} disabled={saveMut.isPending} className="btn-gold" style={{ padding:'11px 24px', borderRadius:'50px', border:'none', cursor:'pointer', fontSize:'12px', opacity:saveMut.isPending?0.6:1 }}>
               {saveMut.isPending?'Saving…':'Save Profile'}
-            </button>
+            </button> */}
           </div>
 
           {/* Education */}
           <div className="gc" style={{ padding:'28px', marginBottom:'18px' }}>
             <SEC>🎓 Education & Qualifications</SEC>
             <FG>
-              <div style={mb}><IL>Highest Degree</IL>
+              <div style={mb}><IL req>Highest Degree</IL>
                 <select {...register('highestDegree')} className="fi">
                   <option value="">Select</option>
                   {['10th / SSLC','12th / PUC','Diploma','B.A. / B.Sc. / B.Com.','B.Tech / B.E.','MBBS','MBA / MCA / M.Tech','CA / CS','Ph.D.','Other'].map(o=><option key={o}>{o}</option>)}
                 </select>
+                <Err msg={errors.highestDegree?.message as string} />
               </div>
               <div style={mb}><IL>Specialization</IL><input {...register('specialization')} className="fi" placeholder="e.g. Computer Science" /></div>
               <div style={mb}><IL>Institution / University</IL><input {...register('institution')} className="fi" placeholder="e.g. IIT Bombay" /></div>
@@ -241,7 +249,7 @@ export default function RoleProfilePage() {
             )}
 
             {!showExpForm && experiences.length === 0 && (
-              <p style={{ fontSize:'13px', color:'var(--muted)', fontWeight:300, padding:'14px 0' }}>No entries yet. Click + Add to get started.</p>
+              <p style={{ fontSize:'13px', color:'var(--offwhite)', fontWeight:400, padding:'14px 0' }}>No entries yet. Click + Add to get started.</p>
             )}
 
             {showExpForm && (
@@ -273,7 +281,7 @@ export default function RoleProfilePage() {
                   <label key={d.key} style={{ borderRadius:'14px', padding:'18px', textAlign:'center', cursor:'pointer', border:`2px dashed ${uploaded ? 'rgba(74,222,128,0.4)' : 'rgba(212,160,23,0.3)'}`, display:'block', transition:'all 0.2s' }}>
                     <div style={{ fontSize:'28px', marginBottom:'8px' }}>{uploaded ? '✅' : d.icon}</div>
                     <div style={{ fontFamily:'Cinzel,serif', fontSize:'12px', fontWeight:700, color:'#fff', marginBottom:'3px' }}>{d.label}</div>
-                    <div style={{ fontSize:'12px', color: uploaded ? 'var(--ok)' : 'var(--muted)', fontWeight: uploaded ? 600 : 300, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
+                    <div style={{ fontSize:'12px', color: uploaded ? 'var(--ok)' : 'var(--offwhite)', fontWeight: uploaded ? 600 : 300, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>
                       {uploaded ? uploaded.filename : `${d.accept} · Max 10MB`}
                     </div>
                     {uploaded && (
@@ -288,7 +296,7 @@ export default function RoleProfilePage() {
                 );
               })}
             </div>
-            <div style={{ marginTop:'14px', borderRadius:'10px', padding:'10px', fontSize:'12px', color:'var(--offwhite)', lineHeight:1.7, background:'rgba(245,158,11,0.06)', border:'1px solid rgba(245,158,11,0.2)' }}>
+            <div style={{ marginTop:'14px', borderRadius:'10px', padding:'10px', fontSize:'12px', fontWeight:500, color:'var(--offwhite)', lineHeight:1.7, background:'rgba(245,158,11,0.06)', border:'1px solid rgba(245,158,11,0.2)' }}>
               ⚠️ Documents are visible only to you and the Admin. They will be reviewed before your profile goes live.
             </div>
           </div>
@@ -323,12 +331,12 @@ export default function RoleProfilePage() {
                   {WORK_MODE_LABELS[mode]}
                 </button>
                 ))}
-              </div> */}
+              </div> 
               {selectedModes.length === 0 && (
               <p style={{ fontSize: '11px', color: 'var(--warn)', marginTop: '6px' }}>
                 Select at least one work mode
               </p>
-              )}
+              )} */}
 
               {/* Only visible for INTERN: */}
               {role === 'INTERN' && (
@@ -340,7 +348,7 @@ export default function RoleProfilePage() {
                 </div>
               )}
 
-              <div style={mb}><IL>Market Segment *</IL>
+              <div style={mb}><IL req>Market Segment</IL>
                 <select {...register('marketSegment')} className="fi">
                   {SEGMENTS.map(s=><option key={s} value={s}>{s.replace(/_/g,' ')}</option>)}
                 </select>

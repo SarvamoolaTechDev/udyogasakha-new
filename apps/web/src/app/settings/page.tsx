@@ -120,7 +120,7 @@ export default function SettingsPage() {
             <PasswordInput {...regPwd('confirm', { required:'Please confirm your new password', validate: v => v === newPwd || 'Passwords do not match' })} className="fi" placeholder="Re-enter new password" style={{ borderColor: we.confirm ? 'var(--err)' : undefined }} />
             <Err msg={we.confirm?.message} />
           </div>
-          <div style={{ borderRadius:'10px', padding:'10px 12px', marginBottom:'14px', fontSize:'11px', color:'var(--muted)', lineHeight:1.7, background:'rgba(245,158,11,0.05)', border:'1px solid rgba(245,158,11,0.15)' }}>
+          <div style={{ borderRadius:'10px', padding:'10px 12px', marginBottom:'14px', fontSize:'13px', fontWeight:400, color:'var(--offwhite)', lineHeight:1.7, background:'rgba(245,158,11,0.05)', border:'1px solid rgba(245,158,11,0.15)' }}>
             ⚠️ Changing your password will log you out of all devices.
           </div>
           <button type="submit" disabled={changePwdMut.isPending} className="btn-gold" style={{ padding:'11px 24px', borderRadius:'50px', cursor:'pointer', fontSize:'12px', opacity:changePwdMut.isPending?0.6:1 }}>
