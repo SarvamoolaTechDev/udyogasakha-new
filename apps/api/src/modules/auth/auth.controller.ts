@@ -1,4 +1,5 @@
-import { Controller, Post, Body, UseGuards, HttpCode } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, HttpCode, Get, Query } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { Throttle, SkipThrottle } from '@nestjs/throttler';
 import { AuthService } from './auth.service';
@@ -9,6 +10,7 @@ import { JwtAuthGuard, CurrentUser } from '../../common/guards/auth.guards';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
+  private readonly logger = new Logger(AuthService.name);
   constructor(private readonly auth: AuthService) {}
 
   @Post('register')
@@ -16,6 +18,13 @@ export class AuthController {
   @ApiOperation({ summary: 'Register a new participant account' })
   register(@Body() dto: RegisterDto) {
     return this.auth.register(dto);
+  }
+
+  @Get('verify-email')
+  @ApiOperation({ summary: 'Verify email address via token link' })
+  async verifyEmail(@Query('token') token: string) {
+    await this.auth.verifyEmail(token);
+    return { message: 'Email verified successfully.' };
   }
 
   @Post('login')

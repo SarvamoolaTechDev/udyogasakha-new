@@ -6,26 +6,17 @@ export declare class ProfilesController {
     upsert(userId: string, dto: UpsertProfileDto): Promise<{
         experiences: {
             id: string;
+            displayOrder: number;
             profileId: string;
             title: string;
-            description: string | null;
             company: string;
             fromDate: string | null;
             toDate: string | null;
-            displayOrder: number;
+            description: string | null;
         }[];
     } & {
-        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
-        workMode: import(".prisma/client").$Enums.WorkMode;
-        employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: import("@prisma/client/runtime/library").JsonValue;
-        marketField: import(".prisma/client").$Enums.MarketField | null;
-        status: import(".prisma/client").$Enums.ProfileStatus;
-        reviewedById: string | null;
-        reviewedAt: Date | null;
-        rejectionReason: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
         fullName: string;
         dateOfBirth: string | null;
@@ -33,6 +24,7 @@ export declare class ProfilesController {
         phone: string | null;
         email: string | null;
         city: string | null;
+        skills: import("@prisma/client/runtime/library").JsonValue;
         summary: string | null;
         highestDegree: string | null;
         specialization: string | null;
@@ -42,34 +34,33 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
+        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
+        workMode: import(".prisma/client").$Enums.WorkMode;
+        employmentOption: import(".prisma/client").$Enums.EmpOption;
         marketSegment: import(".prisma/client").$Enums.MarketSegment;
         preferredLocation: string | null;
+        status: import(".prisma/client").$Enums.ProfileStatus;
+        rejectionReason: string | null;
+        marketField: import(".prisma/client").$Enums.MarketField | null;
         submittedAt: Date;
+        reviewedAt: Date | null;
+        reviewedById: string | null;
     }>;
     getMine(userId: string): Promise<({
         experiences: {
             id: string;
+            displayOrder: number;
             profileId: string;
             title: string;
-            description: string | null;
             company: string;
             fromDate: string | null;
             toDate: string | null;
-            displayOrder: number;
+            description: string | null;
         }[];
     } & {
-        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
-        workMode: import(".prisma/client").$Enums.WorkMode;
-        employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: import("@prisma/client/runtime/library").JsonValue;
-        marketField: import(".prisma/client").$Enums.MarketField | null;
-        status: import(".prisma/client").$Enums.ProfileStatus;
-        reviewedById: string | null;
-        reviewedAt: Date | null;
-        rejectionReason: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
         fullName: string;
         dateOfBirth: string | null;
@@ -77,6 +68,7 @@ export declare class ProfilesController {
         phone: string | null;
         email: string | null;
         city: string | null;
+        skills: import("@prisma/client/runtime/library").JsonValue;
         summary: string | null;
         highestDegree: string | null;
         specialization: string | null;
@@ -86,12 +78,30 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
+        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
+        workMode: import(".prisma/client").$Enums.WorkMode;
+        employmentOption: import(".prisma/client").$Enums.EmpOption;
         marketSegment: import(".prisma/client").$Enums.MarketSegment;
         preferredLocation: string | null;
+        status: import(".prisma/client").$Enums.ProfileStatus;
+        rejectionReason: string | null;
+        marketField: import(".prisma/client").$Enums.MarketField | null;
         submittedAt: Date;
+        reviewedAt: Date | null;
+        reviewedById: string | null;
     })[]>;
     getMineByRole(userId: string, rt: string): Promise<{
+        experiences: {
+            id: string;
+            displayOrder: number;
+            profileId: string;
+            title: string;
+            company: string;
+            fromDate: string | null;
+            toDate: string | null;
+            description: string | null;
+        }[];
         documents: {
             id: string;
             profileId: string;
@@ -103,28 +113,9 @@ export declare class ProfilesController {
             approvedAt: Date | null;
             uploadedAt: Date;
         }[];
-        experiences: {
-            id: string;
-            profileId: string;
-            title: string;
-            description: string | null;
-            company: string;
-            fromDate: string | null;
-            toDate: string | null;
-            displayOrder: number;
-        }[];
     } & {
-        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
-        workMode: import(".prisma/client").$Enums.WorkMode;
-        employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: import("@prisma/client/runtime/library").JsonValue;
-        marketField: import(".prisma/client").$Enums.MarketField | null;
-        status: import(".prisma/client").$Enums.ProfileStatus;
-        reviewedById: string | null;
-        reviewedAt: Date | null;
-        rejectionReason: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
         fullName: string;
         dateOfBirth: string | null;
@@ -132,6 +123,7 @@ export declare class ProfilesController {
         phone: string | null;
         email: string | null;
         city: string | null;
+        skills: import("@prisma/client/runtime/library").JsonValue;
         summary: string | null;
         highestDegree: string | null;
         specialization: string | null;
@@ -141,35 +133,43 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
+        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
+        workMode: import(".prisma/client").$Enums.WorkMode;
+        employmentOption: import(".prisma/client").$Enums.EmpOption;
         marketSegment: import(".prisma/client").$Enums.MarketSegment;
         preferredLocation: string | null;
+        status: import(".prisma/client").$Enums.ProfileStatus;
+        rejectionReason: string | null;
+        marketField: import(".prisma/client").$Enums.MarketField | null;
         submittedAt: Date;
+        reviewedAt: Date | null;
+        reviewedById: string | null;
     }>;
     addExp(userId: string, rt: string, dto: AddExperienceDto): Promise<{
         id: string;
+        displayOrder: number;
         profileId: string;
         title: string;
-        description: string | null;
         company: string;
         fromDate: string | null;
         toDate: string | null;
-        displayOrder: number;
+        description: string | null;
     }>;
     delExp(userId: string, id: string): Promise<{
         id: string;
+        displayOrder: number;
         profileId: string;
         title: string;
-        description: string | null;
         company: string;
         fromDate: string | null;
         toDate: string | null;
-        displayOrder: number;
+        description: string | null;
     }>;
     getPending(page?: string, limit?: string): Promise<import("../../common/pagination").Paginated<{
         user: {
-            name: string;
             email: string;
+            name: string;
         };
         documents: {
             id: string;
@@ -183,17 +183,8 @@ export declare class ProfilesController {
             uploadedAt: Date;
         }[];
     } & {
-        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
-        workMode: import(".prisma/client").$Enums.WorkMode;
-        employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: import("@prisma/client/runtime/library").JsonValue;
-        marketField: import(".prisma/client").$Enums.MarketField | null;
-        status: import(".prisma/client").$Enums.ProfileStatus;
-        reviewedById: string | null;
-        reviewedAt: Date | null;
-        rejectionReason: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
         fullName: string;
         dateOfBirth: string | null;
@@ -201,6 +192,7 @@ export declare class ProfilesController {
         phone: string | null;
         email: string | null;
         city: string | null;
+        skills: import("@prisma/client/runtime/library").JsonValue;
         summary: string | null;
         highestDegree: string | null;
         specialization: string | null;
@@ -210,28 +202,27 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
+        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
+        workMode: import(".prisma/client").$Enums.WorkMode;
+        employmentOption: import(".prisma/client").$Enums.EmpOption;
         marketSegment: import(".prisma/client").$Enums.MarketSegment;
         preferredLocation: string | null;
+        status: import(".prisma/client").$Enums.ProfileStatus;
+        rejectionReason: string | null;
+        marketField: import(".prisma/client").$Enums.MarketField | null;
         submittedAt: Date;
+        reviewedAt: Date | null;
+        reviewedById: string | null;
     }>>;
     getApproved(page?: string, limit?: string): Promise<import("../../common/pagination").Paginated<{
         user: {
-            name: string;
             email: string;
+            name: string;
         };
     } & {
-        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
-        workMode: import(".prisma/client").$Enums.WorkMode;
-        employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: import("@prisma/client/runtime/library").JsonValue;
-        marketField: import(".prisma/client").$Enums.MarketField | null;
-        status: import(".prisma/client").$Enums.ProfileStatus;
-        reviewedById: string | null;
-        reviewedAt: Date | null;
-        rejectionReason: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
         fullName: string;
         dateOfBirth: string | null;
@@ -239,6 +230,7 @@ export declare class ProfilesController {
         phone: string | null;
         email: string | null;
         city: string | null;
+        skills: import("@prisma/client/runtime/library").JsonValue;
         summary: string | null;
         highestDegree: string | null;
         specialization: string | null;
@@ -248,28 +240,27 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
+        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
+        workMode: import(".prisma/client").$Enums.WorkMode;
+        employmentOption: import(".prisma/client").$Enums.EmpOption;
         marketSegment: import(".prisma/client").$Enums.MarketSegment;
         preferredLocation: string | null;
+        status: import(".prisma/client").$Enums.ProfileStatus;
+        rejectionReason: string | null;
+        marketField: import(".prisma/client").$Enums.MarketField | null;
         submittedAt: Date;
+        reviewedAt: Date | null;
+        reviewedById: string | null;
     }>>;
     getRejected(page?: string, limit?: string): Promise<import("../../common/pagination").Paginated<{
         user: {
-            name: string;
             email: string;
+            name: string;
         };
     } & {
-        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
-        workMode: import(".prisma/client").$Enums.WorkMode;
-        employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: import("@prisma/client/runtime/library").JsonValue;
-        marketField: import(".prisma/client").$Enums.MarketField | null;
-        status: import(".prisma/client").$Enums.ProfileStatus;
-        reviewedById: string | null;
-        reviewedAt: Date | null;
-        rejectionReason: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
         fullName: string;
         dateOfBirth: string | null;
@@ -277,6 +268,7 @@ export declare class ProfilesController {
         phone: string | null;
         email: string | null;
         city: string | null;
+        skills: import("@prisma/client/runtime/library").JsonValue;
         summary: string | null;
         highestDegree: string | null;
         specialization: string | null;
@@ -286,23 +278,22 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
+        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
+        workMode: import(".prisma/client").$Enums.WorkMode;
+        employmentOption: import(".prisma/client").$Enums.EmpOption;
         marketSegment: import(".prisma/client").$Enums.MarketSegment;
         preferredLocation: string | null;
+        status: import(".prisma/client").$Enums.ProfileStatus;
+        rejectionReason: string | null;
+        marketField: import(".prisma/client").$Enums.MarketField | null;
         submittedAt: Date;
+        reviewedAt: Date | null;
+        reviewedById: string | null;
     }>>;
     approve(id: string, modId: string): Promise<{
-        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
-        workMode: import(".prisma/client").$Enums.WorkMode;
-        employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: import("@prisma/client/runtime/library").JsonValue;
-        marketField: import(".prisma/client").$Enums.MarketField | null;
-        status: import(".prisma/client").$Enums.ProfileStatus;
-        reviewedById: string | null;
-        reviewedAt: Date | null;
-        rejectionReason: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
         fullName: string;
         dateOfBirth: string | null;
@@ -310,6 +301,7 @@ export declare class ProfilesController {
         phone: string | null;
         email: string | null;
         city: string | null;
+        skills: import("@prisma/client/runtime/library").JsonValue;
         summary: string | null;
         highestDegree: string | null;
         specialization: string | null;
@@ -319,23 +311,22 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
+        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
+        workMode: import(".prisma/client").$Enums.WorkMode;
+        employmentOption: import(".prisma/client").$Enums.EmpOption;
         marketSegment: import(".prisma/client").$Enums.MarketSegment;
         preferredLocation: string | null;
+        status: import(".prisma/client").$Enums.ProfileStatus;
+        rejectionReason: string | null;
+        marketField: import(".prisma/client").$Enums.MarketField | null;
         submittedAt: Date;
+        reviewedAt: Date | null;
+        reviewedById: string | null;
     }>;
     reject(id: string, modId: string, dto: RejectProfileDto): Promise<{
-        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
-        workMode: import(".prisma/client").$Enums.WorkMode;
-        employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: import("@prisma/client/runtime/library").JsonValue;
-        marketField: import(".prisma/client").$Enums.MarketField | null;
-        status: import(".prisma/client").$Enums.ProfileStatus;
-        reviewedById: string | null;
-        reviewedAt: Date | null;
-        rejectionReason: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
         fullName: string;
         dateOfBirth: string | null;
@@ -343,6 +334,7 @@ export declare class ProfilesController {
         phone: string | null;
         email: string | null;
         city: string | null;
+        skills: import("@prisma/client/runtime/library").JsonValue;
         summary: string | null;
         highestDegree: string | null;
         specialization: string | null;
@@ -352,10 +344,18 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
+        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
+        workMode: import(".prisma/client").$Enums.WorkMode;
+        employmentOption: import(".prisma/client").$Enums.EmpOption;
         marketSegment: import(".prisma/client").$Enums.MarketSegment;
         preferredLocation: string | null;
+        status: import(".prisma/client").$Enums.ProfileStatus;
+        rejectionReason: string | null;
+        marketField: import(".prisma/client").$Enums.MarketField | null;
         submittedAt: Date;
+        reviewedAt: Date | null;
+        reviewedById: string | null;
     }>;
     remove(id: string): Promise<{
         message: string;
@@ -365,13 +365,13 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         experiences: {
             id: string;
+            displayOrder: number;
             profileId: string;
             title: string;
-            description: string | null;
             company: string;
             fromDate: string | null;
             toDate: string | null;
-            displayOrder: number;
+            description: string | null;
         }[];
         documents: {
             id: string;
@@ -380,21 +380,13 @@ export declare class ProfilesController {
             storageKey: string;
         }[];
         user: {
-            name: string;
-            createdAt: Date;
             phone: string;
             email: string;
+            name: string;
+            createdAt: Date;
         };
-        payment: import(".prisma/client").$Enums.PaymentType;
         id: string;
         userId: string;
-        workMode: import(".prisma/client").$Enums.WorkMode;
-        employmentOption: import(".prisma/client").$Enums.EmpOption;
-        marketField: import(".prisma/client").$Enums.MarketField | null;
-        status: import(".prisma/client").$Enums.ProfileStatus;
-        reviewedById: string | null;
-        reviewedAt: Date | null;
-        rejectionReason: string | null;
         roleType: import(".prisma/client").$Enums.RoleType;
         fullName: string;
         dateOfBirth: string | null;
@@ -410,23 +402,22 @@ export declare class ProfilesController {
         grade: string | null;
         appliedFor: string;
         appliedAt: string;
-        certificate: import(".prisma/client").$Enums.CertOpt;
-        marketSegment: import(".prisma/client").$Enums.MarketSegment;
-        preferredLocation: string | null;
-        submittedAt: Date;
-    }>;
-    reactivate(id: string): Promise<{
         payment: import(".prisma/client").$Enums.PaymentType;
-        id: string;
-        userId: string;
+        certificate: import(".prisma/client").$Enums.CertOpt;
         workMode: import(".prisma/client").$Enums.WorkMode;
         employmentOption: import(".prisma/client").$Enums.EmpOption;
-        skills: import("@prisma/client/runtime/library").JsonValue;
-        marketField: import(".prisma/client").$Enums.MarketField | null;
+        marketSegment: import(".prisma/client").$Enums.MarketSegment;
+        preferredLocation: string | null;
         status: import(".prisma/client").$Enums.ProfileStatus;
-        reviewedById: string | null;
-        reviewedAt: Date | null;
         rejectionReason: string | null;
+        marketField: import(".prisma/client").$Enums.MarketField | null;
+        submittedAt: Date;
+        reviewedAt: Date | null;
+        reviewedById: string | null;
+    }>;
+    reactivate(id: string): Promise<{
+        id: string;
+        userId: string;
         roleType: import(".prisma/client").$Enums.RoleType;
         fullName: string;
         dateOfBirth: string | null;
@@ -434,6 +425,7 @@ export declare class ProfilesController {
         phone: string | null;
         email: string | null;
         city: string | null;
+        skills: import("@prisma/client/runtime/library").JsonValue;
         summary: string | null;
         highestDegree: string | null;
         specialization: string | null;
@@ -443,9 +435,17 @@ export declare class ProfilesController {
         roleFields: import("@prisma/client/runtime/library").JsonValue;
         appliedFor: string;
         appliedAt: string;
+        payment: import(".prisma/client").$Enums.PaymentType;
         certificate: import(".prisma/client").$Enums.CertOpt;
+        workMode: import(".prisma/client").$Enums.WorkMode;
+        employmentOption: import(".prisma/client").$Enums.EmpOption;
         marketSegment: import(".prisma/client").$Enums.MarketSegment;
         preferredLocation: string | null;
+        status: import(".prisma/client").$Enums.ProfileStatus;
+        rejectionReason: string | null;
+        marketField: import(".prisma/client").$Enums.MarketField | null;
         submittedAt: Date;
+        reviewedAt: Date | null;
+        reviewedById: string | null;
     }>;
 }

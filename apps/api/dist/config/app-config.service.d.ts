@@ -15,6 +15,7 @@ export declare class AppConfigService {
     get webUrl(): string;
     get azureCommunicationConnectionString(): string;
     get azureEmailSenderAddress(): string;
+    get emailVerificationEnabled(): boolean;
     get razorpayKeyId(): string;
     get razorpayKeySecret(): string;
     get razorpayWebhookSecret(): string;

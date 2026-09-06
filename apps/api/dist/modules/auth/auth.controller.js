@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthController = void 0;
 const common_1 = require("@nestjs/common");
+const common_2 = require("@nestjs/common");
 const swagger_1 = require("@nestjs/swagger");
 const throttler_1 = require("@nestjs/throttler");
 const auth_service_1 = require("./auth.service");
@@ -23,9 +24,14 @@ const auth_guards_1 = require("../../common/guards/auth.guards");
 let AuthController = class AuthController {
     constructor(auth) {
         this.auth = auth;
+        this.logger = new common_2.Logger(auth_service_1.AuthService.name);
     }
     register(dto) {
         return this.auth.register(dto);
+    }
+    async verifyEmail(token) {
+        await this.auth.verifyEmail(token);
+        return { message: 'Email verified successfully.' };
     }
     login(dto) {
         return this.auth.login(dto);
@@ -57,6 +63,14 @@ __decorate([
     __metadata("design:paramtypes", [auth_dto_1.RegisterDto]),
     __metadata("design:returntype", void 0)
 ], AuthController.prototype, "register", null);
+__decorate([
+    (0, common_1.Get)('verify-email'),
+    (0, swagger_1.ApiOperation)({ summary: 'Verify email address via token link' }),
+    __param(0, (0, common_1.Query)('token')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", Promise)
+], AuthController.prototype, "verifyEmail", null);
 __decorate([
     (0, common_1.Post)('login'),
     (0, common_1.HttpCode)(200),

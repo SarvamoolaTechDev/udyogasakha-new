@@ -1,7 +1,8 @@
-import { Injectable, ConflictException, UnauthorizedException, BadRequestException } from '@nestjs/common';
+import { Injectable, ConflictException, UnauthorizedException, BadRequestException, Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import * as crypto from 'crypto';
+import { randomBytes } from 'crypto';
 import { PrismaService } from '../../prisma/prisma.service';
 import { AppConfigService } from '../../config/app-config.service';
 import { AuditService } from '../audit/audit.service';
@@ -11,6 +12,7 @@ import { UserRole } from '../../common/user-role.enum';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   constructor(
     private readonly prisma:  PrismaService,
     private readonly jwt:     JwtService,
@@ -21,8 +23,13 @@ export class AuthService {
   ) {}
 
   async register(dto: { email: string; password: string; name: string; phone?: string }) {
+    console.log('REGISTER START');
+    try {
     if (await this.prisma.user.findUnique({ where: { email: dto.email } })) {
       throw new ConflictException('Email already registered');
+    }
+    if (dto.phone && await this.prisma.user.findUnique({ where: { phone: dto.phone } })) {
+      throw new ConflictException('Mobile number already registered');
     }
     const hash = await bcrypt.hash(dto.password, 12);
     const user = await this.prisma.user.create({
@@ -38,6 +45,7 @@ export class AuthService {
         data: { userId: user.id, currentLevel: 'L0' },
       }),
     ]);
+  
 
     // Create wallet with temporary signup bonus
     // ⚠️ TEMPORARY: bonus should trigger on 2nd approved profile, not registration.
@@ -53,7 +61,61 @@ export class AuthService {
       newState:   { email: user.email, name: user.name, roles: user.roles },
     });
 
-    return this.issue(user);
+    console.log('REGISTER - before issue');
+    const tokens = await this.issue(user);
+    
+    console.log('REGISTER - tokens issued');
+    if (this.config.emailVerificationEnabled) {
+      this.sendVerificationEmail(user.id).catch(err =>
+        this.logger.warn(`Verification email failed: ${err.message}`)
+      );
+    }
+    console.log('REGISTER - returning tokens');
+
+    return tokens;
+    } catch (e) {
+        console.error('REGISTER ERROR:', e);
+        throw e;
+    }
+  }
+
+    async sendVerificationEmail(userId: string): Promise<void> {
+    console.log('SENDING VERIFICATION EMAIL to userId:', userId);
+    const token   = randomBytes(32).toString('hex');
+    const expiry  = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+    await this.prisma.user.update({
+      where: { id: userId },
+      data:  { emailVerifyToken: token, emailVerifyExpiry: expiry },
+    });
+
+    const user = await this.prisma.user.findUnique({ where: { id: userId } });
+    const link = `${this.config.webUrl}/verify-email?token=${token}`;
+
+    await this.notify.send({
+      userId,
+      subject: 'Verify Your Email — Sarvamoola Udyoga Sakha',
+      body:    `Please verify your email address by clicking the link below. This link expires in 24 hours.\n\n${link}`,
+      email:   user?.email ?? undefined,
+      link,
+      linkLabel: 'Verify Email',
+    });
+  }
+
+  async verifyEmail(token: string): Promise<void> {
+    const user = await this.prisma.user.findFirst({
+      where: {
+        emailVerifyToken:  token,
+        emailVerifyExpiry: { gt: new Date() },
+      },
+    });
+
+    if (!user) throw new BadRequestException('Invalid or expired verification link.');
+
+    await this.prisma.user.update({
+      where: { id: user.id },
+      data:  { emailVerified: true, emailVerifyToken: null, emailVerifyExpiry: null },
+    });
   }
 
   async login(dto: { email: string; password: string }) {

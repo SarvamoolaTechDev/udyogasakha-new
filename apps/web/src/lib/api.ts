@@ -32,6 +32,7 @@ api.interceptors.response.use(
 // ── Auth ───────────────────────────────────────────────────────────────────────
 export const authApi = {
   register:       (dto: any)  => api.post('/auth/register', dto).then(r => r.data),
+  verifyEmail:    (token: string) => api.get(`/auth/verify-email`, { params: { token } }).then(r => r.data),
   login:          (dto: any)  => api.post('/auth/login', dto).then(r => r.data),
   logout:         ()          => api.post('/auth/logout').then(r => r.data),
   changePassword: (dto: any)  => api.post('/auth/change-password', dto).then(r => r.data),

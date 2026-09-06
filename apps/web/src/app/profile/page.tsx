@@ -114,6 +114,29 @@ function ProfileCard({ p, single }: { p: any; single: boolean }) {
       {p.appliedFor && (
         <div>
           <div style={{ fontSize:'10px', fontWeight:700, color:'var(--gold3)', letterSpacing:'1px', textTransform:'uppercase', marginBottom:'6px' }}>Looking For</div>
+
+          {/* Contact preference — Recruiter / Hiring Manager */}
+          {(p.roleType === 'RECRUITER' || p.roleType === 'HIRING_MANAGER') &&
+            (p.roleFields?.contactTime || p.roleFields?.contactDays) && (
+            <div>
+              <div style={{ fontSize:'10px', fontWeight:700, color:'var(--gold3)', letterSpacing:'1px', textTransform:'uppercase', marginBottom:'8px' }}>
+                How to Contact
+              </div>
+              <div style={{ display:'flex', flexDirection:'column', gap:'6px' }}>
+                {p.roleFields?.contactTime && (
+                  <div style={{ fontSize:'13px', color:'var(--offwhite)' }}>
+                    🕐 {p.roleFields.contactTime}
+                  </div>
+                )}
+                {p.roleFields?.contactDays && (
+                  <div style={{ fontSize:'13px', color:'var(--offwhite)' }}>
+                    📅 {p.roleFields.contactDays}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
           <div style={{ fontSize:'13px', color:'var(--offwhite)' }}>{p.appliedFor}</div>
         </div>
       )}

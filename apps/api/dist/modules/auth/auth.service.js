@@ -8,19 +8,21 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var AuthService_1;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AuthService = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_1 = require("@nestjs/jwt");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
+const crypto_1 = require("crypto");
 const prisma_service_1 = require("../../prisma/prisma.service");
 const app_config_service_1 = require("../../config/app-config.service");
 const audit_service_1 = require("../audit/audit.service");
 const notifications_service_1 = require("../notifications/notifications.service");
 const wallet_service_1 = require("../wallet/wallet.service");
 const user_role_enum_1 = require("../../common/user-role.enum");
-let AuthService = class AuthService {
+let AuthService = AuthService_1 = class AuthService {
     constructor(prisma, jwt, config, audit, notify, wallet) {
         this.prisma = prisma;
         this.jwt = jwt;
@@ -28,37 +30,92 @@ let AuthService = class AuthService {
         this.audit = audit;
         this.notify = notify;
         this.wallet = wallet;
+        this.logger = new common_1.Logger(AuthService_1.name);
     }
     async register(dto) {
-        if (await this.prisma.user.findUnique({ where: { email: dto.email } })) {
-            throw new common_1.ConflictException('Email already registered');
+        console.log('REGISTER START');
+        try {
+            if (await this.prisma.user.findUnique({ where: { email: dto.email } })) {
+                throw new common_1.ConflictException('Email already registered');
+            }
+            if (dto.phone && await this.prisma.user.findUnique({ where: { phone: dto.phone } })) {
+                throw new common_1.ConflictException('Mobile number already registered');
+            }
+            const hash = await bcrypt.hash(dto.password, 12);
+            const user = await this.prisma.user.create({
+                data: { email: dto.email, name: dto.name, phone: dto.phone, passwordHash: hash, roles: [user_role_enum_1.UserRole.PARTICIPANT] },
+            });
+            // Create account-level profile and trust stub in the same transaction
+            await this.prisma.$transaction([
+                this.prisma.userProfile.create({
+                    data: { userId: user.id, fullName: dto.name, participantType: 'INDIVIDUAL' },
+                }),
+                this.prisma.trustRecord.create({
+                    data: { userId: user.id, currentLevel: 'L0' },
+                }),
+            ]);
+            // Create wallet with temporary signup bonus
+            // ⚠️ TEMPORARY: bonus should trigger on 2nd approved profile, not registration.
+            // Replace this once client has reviewed design doc — see WalletService.createForUser().
+            await this.wallet.createForUser(user.id);
+            await this.audit.log({
+                entityType: 'user',
+                entityId: user.id,
+                action: 'REGISTERED',
+                actorId: user.id,
+                actorEmail: user.email,
+                newState: { email: user.email, name: user.name, roles: user.roles },
+            });
+            console.log('REGISTER - before issue');
+            const tokens = await this.issue(user);
+            console.log('REGISTER - tokens issued');
+            if (this.config.emailVerificationEnabled) {
+                this.sendVerificationEmail(user.id).catch(err => this.logger.warn(`Verification email failed: ${err.message}`));
+            }
+            console.log('REGISTER - returning tokens');
+            // Behind feature flag — set ENABLE_EMAIL_VERIFICATION=true to activate
+            if (process.env.ENABLE_EMAIL_VERIFICATION === 'true') {
+                this.sendVerificationEmail(user.id).catch(err => this.logger.warn(`Verification email failed: ${err.message}`));
+            }
+            return tokens;
         }
-        const hash = await bcrypt.hash(dto.password, 12);
-        const user = await this.prisma.user.create({
-            data: { email: dto.email, name: dto.name, phone: dto.phone, passwordHash: hash, roles: [user_role_enum_1.UserRole.PARTICIPANT] },
+        catch (e) {
+            console.error('REGISTER ERROR:', e);
+            throw e;
+        }
+    }
+    async sendVerificationEmail(userId) {
+        console.log('SENDING VERIFICATION EMAIL to userId:', userId);
+        const token = (0, crypto_1.randomBytes)(32).toString('hex');
+        const expiry = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+        await this.prisma.user.update({
+            where: { id: userId },
+            data: { emailVerifyToken: token, emailVerifyExpiry: expiry },
         });
-        // Create account-level profile and trust stub in the same transaction
-        await this.prisma.$transaction([
-            this.prisma.userProfile.create({
-                data: { userId: user.id, fullName: dto.name, participantType: 'INDIVIDUAL' },
-            }),
-            this.prisma.trustRecord.create({
-                data: { userId: user.id, currentLevel: 'L0' },
-            }),
-        ]);
-        // Create wallet with temporary signup bonus
-        // ⚠️ TEMPORARY: bonus should trigger on 2nd approved profile, not registration.
-        // Replace this once client has reviewed design doc — see WalletService.createForUser().
-        await this.wallet.createForUser(user.id);
-        await this.audit.log({
-            entityType: 'user',
-            entityId: user.id,
-            action: 'REGISTERED',
-            actorId: user.id,
-            actorEmail: user.email,
-            newState: { email: user.email, name: user.name, roles: user.roles },
+        const user = await this.prisma.user.findUnique({ where: { id: userId } });
+        const link = `${this.config.webUrl}/verify-email?token=${token}`;
+        await this.notify.send({
+            userId,
+            subject: 'Verify Your Email — Sarvamoola Udyoga Sakha',
+            body: `Please verify your email address by clicking the link below. This link expires in 24 hours.\n\n${link}`,
+            email: user?.email ?? undefined,
+            link,
+            linkLabel: 'Verify Email',
         });
-        return this.issue(user);
+    }
+    async verifyEmail(token) {
+        const user = await this.prisma.user.findFirst({
+            where: {
+                emailVerifyToken: token,
+                emailVerifyExpiry: { gt: new Date() },
+            },
+        });
+        if (!user)
+            throw new common_1.BadRequestException('Invalid or expired verification link.');
+        await this.prisma.user.update({
+            where: { id: user.id },
+            data: { emailVerified: true, emailVerifyToken: null, emailVerifyExpiry: null },
+        });
     }
     async login(dto) {
         const user = await this.prisma.user.findUnique({ where: { email: dto.email } });
@@ -208,7 +265,7 @@ let AuthService = class AuthService {
     }
 };
 exports.AuthService = AuthService;
-exports.AuthService = AuthService = __decorate([
+exports.AuthService = AuthService = AuthService_1 = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         jwt_1.JwtService,

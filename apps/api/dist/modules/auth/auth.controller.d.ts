@@ -3,11 +3,15 @@ import { RegisterDto, LoginDto, RefreshTokenDto, ForgotPasswordDto, ResetPasswor
 import { ChangePasswordDto } from './dto/change-password.dto';
 export declare class AuthController {
     private readonly auth;
+    private readonly logger;
     constructor(auth: AuthService);
     register(dto: RegisterDto): Promise<{
         accessToken: string;
         refreshToken: string;
         expiresIn: number;
+    }>;
+    verifyEmail(token: string): Promise<{
+        message: string;
     }>;
     login(dto: LoginDto): Promise<{
         accessToken: string;

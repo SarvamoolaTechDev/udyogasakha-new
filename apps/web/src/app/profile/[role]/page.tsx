@@ -59,6 +59,17 @@ export default function RoleProfilePage() {
     );
   };
 
+  const CONTACT_TIMES = ['Morning (9am–12pm)', 'Afternoon (12pm–4pm)', 'Evening (4pm–8pm)', 'Custom'];
+  const [customTimes, setCustomTimes] = useState([{ startH:'', startM:'', startP:'AM', endH:'', endM:'', endP:'AM' }]);
+  const CONTACT_DAYS  = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+  const [contactTimes, setContactTimes] = useState<string[]>([]);
+  const [contactDays,  setContactDays]  = useState<string[]>([]);
+
+  const toggleContact = (arr: string[], setArr: (v: string[]) => void, val: string) =>
+    setArr(arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val]);
+
+
   const { register, handleSubmit, formState:{ errors }, reset, setValue, watch } = useForm<Record<string, any>>({ defaultValues:{ roleType:role } });
   const expForm = useForm<Record<string, any>>();
 
@@ -301,6 +312,121 @@ export default function RoleProfilePage() {
             </div>
           </div>
 
+          {/* Recruiter and Hiring Manager can enter custom time-slots */}
+          {(role === 'RECRUITER' || role === 'HIRING_MANAGER') && (
+                <div className="gc" style={{marginBottom:'18px', padding:'15px' }}>
+                  <div style={{ padding:'24px', textAlign:'center', maxWidth:'520px', width:'100%'}}>
+                    <div style={{ textAlign:'center', marginBottom:'16px' }}>
+                      <div style={{ fontFamily:'Cinzel,serif', fontSize:'18px', fontWeight:700, color:'var(--gold3)', marginBottom:'4px' }}>
+                        How to Contact Me
+                      </div>
+                      <div style={{ fontSize:'13px', fontWeight:400, color:'var(--muted)' }}>
+                        Let job aspirants know the best time to reach you
+                      </div>
+                    </div>
+                  
+
+                  <div style={{ marginBottom:'16px' }}>
+                    <IL>Preferred Time of Day</IL>
+                    <div style={{ display:'flex', flexWrap:'wrap', gap:'8px', marginTop:'8px', justifyContent:'center' }}>
+                      {CONTACT_TIMES.map(t => (
+                        <button key={t} type="button" onClick={() => toggleContact(contactTimes, setContactTimes, t)}
+                          style={{
+                            padding:'7px 14px', borderRadius:'50px', fontSize:'12px', fontWeight:600,
+                            cursor:'pointer', border:'1px solid',
+                            background:  contactTimes.includes(t) ? 'rgba(200,146,10,0.12)' : 'transparent',
+                            borderColor: contactTimes.includes(t) ? 'var(--border)' : 'var(--bf)',
+                            color:       contactTimes.includes(t) ? 'var(--gold3)'  : 'var(--muted)',
+                          }}>
+                          {t}
+                        </button>
+                      ))}
+                    </div>
+
+                    {contactTimes.includes('Custom') && (
+                      <div style={{ marginTop:'12px', display:'flex', flexDirection:'column', gap:'12px', margin:'12px auto 0', maxWidth:'500px' }}>
+                        <IL>Select custom time{customTimes.length > 1 ? 's' : ''}</IL>
+                        {customTimes.map((slot, slotIdx) => {
+                          const update = (field: string, val: string) =>
+                            setCustomTimes(prev => prev.map((s, i) => i !== slotIdx ? s : { ...s, [field]: val }));
+                          const mins = Array.from({length:60}, (_, n) => String(n).padStart(2,'0'));
+                          const hrs  = Array.from({length:12}, (_, n) => String(n+1).padStart(2,'0'));
+                          const sel  = (val: string, field: string, opts: string[], placeholder: string, w = '64px', noBlank = false ) => (
+                            <select value={val} onChange={e => update(field, e.target.value)}
+                              className="fi" style={{ flex:'none', width:w, padding:'8px 4px'}}>
+                                {!noBlank && <option value="">{placeholder}</option>}
+                              
+                                {opts.map(o => <option key={o} value={o}>{o}</option>)}
+                            </select>
+                          );
+                          return (
+                            <div key={slotIdx} style={{ display:'flex', flexDirection:'column', gap:'6px' }}>
+                              {customTimes.length > 1 && (
+                                <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+                                  <span style={{ fontSize:'10px', fontWeight:700, color:'var(--gold3)', letterSpacing:'1px', textTransform:'uppercase' }}>
+                                    Slot {slotIdx + 1}
+                                  </span>
+                                  <button type="button"
+                                    onClick={() => setCustomTimes(prev => prev.filter((_,i) => i !== slotIdx))}
+                                    style={{ background:'none', border:'none', cursor:'pointer', color:'var(--err)', fontSize:'12px', fontWeight:600 }}>
+                                    Remove
+                                  </button>
+                                </div>
+                              )}
+                              <div style={{ display:'flex', alignItems:'center', gap:'4px', flexWrap:'wrap', justifyContent:'center' }}>
+                                {/* Start time */}
+                                {sel(slot.startH, 'startH', hrs, 'Hr')}
+                                <span style={{ color:'var(--muted)', fontSize:'13px' }}>:</span>
+                                {sel(slot.startM, 'startM', mins, 'Min')}
+                                {sel(slot.startP, 'startP', ['AM','PM'], 'AM', '60px', true)}
+
+                                <span style={{ color:'var(--muted)', fontSize:'12px', fontWeight:600, margin:'0 4px' }}>–</span>
+
+                                {/* End time */}
+                                {sel(slot.endH, 'endH', hrs, 'Hr')}
+                                <span style={{ color:'var(--muted)', fontSize:'13px' }}>:</span>
+                                {sel(slot.endM, 'endM', mins, 'Min')}
+                                {sel(slot.endP, 'endP', ['AM','PM'], 'AM', '60px', true)}
+                              </div>
+                            </div>
+                          );
+                        })}
+                        {customTimes.length < 3 && (
+                          <button type="button"
+                            onClick={() => setCustomTimes(prev => [...prev,
+                              { startH:'', startM:'', startP:'AM', endH:'', endM:'', endP:'AM' }
+                            ])}
+                            style={{ alignSelf:'center', background:'transparent', border:'1px solid var(--border)', borderRadius:'50px', padding:'5px 14px', fontSize:'12px', fontWeight:600, color:'var(--gold3)', cursor:'pointer' }}>
+                            + Add More
+                          </button>
+                        )}
+                      </div>
+                    )}
+                              
+                  </div>
+
+                  <div>
+                    <IL>Preferred Days</IL>
+                    <div style={{ display:'flex', flexWrap:'wrap', gap:'8px', marginTop:'8px', justifyContent:'center' }}>
+                      {CONTACT_DAYS.map(d => (
+                        <button key={d} type="button" onClick={() => toggleContact(contactDays, setContactDays, d)}
+                          style={{
+                            width:'46px', height:'46px', borderRadius:'50%', fontSize:'12px', fontWeight:700,
+                            cursor:'pointer', border:'1px solid',
+                            background:  contactDays.includes(d) ? 'rgba(200,146,10,0.12)' : 'transparent',
+                            borderColor: contactDays.includes(d) ? 'var(--border)' : 'var(--bf)',
+                            color:       contactDays.includes(d) ? 'var(--gold3)'  : 'var(--muted)',
+                          }}>
+                          {d}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                </div>
+              )}
+
+
           {/* Submission details */}
           <div className="gc" style={{ padding:'28px' }}>
             <SEC>⬛ Submission Details</SEC>
@@ -360,7 +486,21 @@ export default function RoleProfilePage() {
                 </select>
               </div>
             </FG>
-            <button onClick={handleSubmit( d => submitMut.mutate({...d, workMode: selectedModes[0] ?? 'WFH' }))} disabled={submitMut.isPending} className="btn-gold" style={{ width:'100%', padding:'14px', fontSize:'14px', borderRadius:'12px', border:'none', cursor:'pointer', opacity:submitMut.isPending?0.6:1, marginTop:'8px' }}>
+            <button  onClick={handleSubmit(d => submitMut.mutate({
+                              ...d,
+                              workMode: selectedModes[0] ?? 'WFH',
+                              roleFields: {
+                              ...d.roleFields,
+                              ...(contactTimes.length > 0 && { contactTime: contactTimes.includes('Custom')
+                                                                ? [...contactTimes.filter(t => t !== 'Custom'),
+                                                                    ...customTimes
+                                                                      .filter(s => s.startH && s.startM && s.endH && s.endM)
+                                                                      .map(s => `${s.startH}:${s.startM} ${s.startP} – ${s.endH}:${s.endM} ${s.endP}`)
+                                                                    ].join(', ')
+                                                                  : contactTimes.join(', ') }),
+                              },
+                            }))}
+                disabled={submitMut.isPending} className="btn-gold" style={{ width:'100%', padding:'14px', fontSize:'14px', borderRadius:'12px', border:'none', cursor:'pointer', opacity:submitMut.isPending?0.6:1, marginTop:'8px' }}>
               {submitMut.isPending ? 'Submitting…' : '✦ Submit for Moderator Review ✦'}
             </button>
           </div>

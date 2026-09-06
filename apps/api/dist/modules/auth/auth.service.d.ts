@@ -11,6 +11,7 @@ export declare class AuthService {
     private readonly audit;
     private readonly notify;
     private readonly wallet;
+    private readonly logger;
     constructor(prisma: PrismaService, jwt: JwtService, config: AppConfigService, audit: AuditService, notify: NotificationsService, wallet: WalletService);
     register(dto: {
         email: string;
@@ -22,6 +23,8 @@ export declare class AuthService {
         refreshToken: string;
         expiresIn: number;
     }>;
+    sendVerificationEmail(userId: string): Promise<void>;
+    verifyEmail(token: string): Promise<void>;
     login(dto: {
         email: string;
         password: string;
@@ -57,15 +60,18 @@ export declare class AuthService {
     }>;
     logout(userId: string): Promise<void>;
     validateUser(userId: string): Promise<{
-        name: string;
         id: string;
-        createdAt: Date;
-        updatedAt: Date;
-        phone: string;
         email: string;
-        city: string | null;
+        phone: string;
+        emailVerified: boolean;
+        emailVerifyToken: string | null;
+        emailVerifyExpiry: Date | null;
+        name: string;
         passwordHash: string;
         roles: import("@prisma/client/runtime/library").JsonValue;
+        city: string | null;
+        createdAt: Date;
+        updatedAt: Date;
     }>;
     private issue;
 }

@@ -26,6 +26,11 @@ export class AppConfigService {
     return this.c.get<string>('AZURE_EMAIL_SENDER_ADDRESS', 'DoNotReply@udyogasakha.in');
   }
 
+  // Email verification 
+  get emailVerificationEnabled(): boolean {
+    return this.c.get<string>('ENABLE_EMAIL_VERIFICATION') === 'true';
+  }
+
   // ── Razorpay ─────────────────────────────────────────────────────────────────
   // Standard Checkout surfaces UPI, Cards, Netbanking, Wallets, EMI and Pay
   // Later automatically based on what's enabled in the Razorpay Dashboard —
