@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuthStore } from '@/store/auth.store';
 
-const INACTIVE_MS  = 10 * 60 * 1000;  // 10 minutes idle before warning
+const INACTIVE_MS  = 2 * 60 * 1000;  // 10 minutes idle before warning
 const COUNTDOWN_S  = 120;              // 2-minute countdown before logout
 
 export function InactivityTimer() {
@@ -50,7 +50,10 @@ export function InactivityTimer() {
     if (!isAuthenticated) return;
 
     const events = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll'];
-    const handler = () => resetTimer();
+    const handler = () => {
+      if (visible) return; // popup is showing — only explicit buttons can dismiss it
+      resetTimer();
+    };
 
     events.forEach(e => window.addEventListener(e, handler, { passive: true }));
     resetTimer();
@@ -60,7 +63,7 @@ export function InactivityTimer() {
       clearTimeout(warningTimer.current);
       clearInterval(countdownRef.current);
     };
-  }, [isAuthenticated, resetTimer]);
+  }, [isAuthenticated, resetTimer, visible]);
 
   if (!visible || !isAuthenticated) return null;
 

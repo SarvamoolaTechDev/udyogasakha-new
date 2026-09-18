@@ -309,7 +309,7 @@ export default function PostJobPage() {
               </div>
             )}
 
-            <button onClick={handleSubmit(d => mut.mutate({d}))} disabled={mut.isPending} className="btn-gold"
+            <button type="submit" disabled={mut.isPending} className="btn-gold"
               style={{ width:'100%', padding:'14px', fontSize:'14px', borderRadius:'12px', border:'none', cursor:'pointer', opacity:mut.isPending?0.6:1, marginTop:'8px' }}>
               {mut.isPending ? 'Submitting…' : '✦ Submit for Moderator Review ✦'}
             </button>

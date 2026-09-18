@@ -1,5 +1,3 @@
 {
-  "/moderation/page": "app/moderation/page.js",
-  "/users/page": "app/users/page.js",
-  "/users/[id]/page": "app/users/[id]/page.js"
+  "/moderation/page": "app/moderation/page.js"
 }

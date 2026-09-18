@@ -55,6 +55,7 @@ let ProfilesService = class ProfilesService {
             ...dto, userId, skills,
             certificate: dto.certificate ?? 'NO',
             appliedAt: dto.appliedAt ?? '', // optional field — defaults to empty string
+            appliedFor: dto.appliedFor ?? '', // optional field
             marketField, // set on submission, not on approval
             status: client_1.ProfileStatus.PENDING, submittedAt: new Date(),
             reviewedAt: null, reviewedById: null, rejectionReason: null,
@@ -155,7 +156,7 @@ let ProfilesService = class ProfilesService {
         // marketField is already set from the candidate's own submission — just flip status
         const after = await this.prisma.candidateProfile.update({
             where: { id },
-            data: { status: client_1.ProfileStatus.APPROVED, reviewedById: modId, reviewedAt: new Date() },
+            data: { status: client_1.ProfileStatus.APPROVED, reviewedById: null, reviewedAt: new Date() },
         });
         // Credit 1000 points bonus for 1st and 2nd approved profiles
         await this.wallet.creditProfileBonus(before.userId);
@@ -201,7 +202,7 @@ let ProfilesService = class ProfilesService {
             throw new common_1.NotFoundException('Profile not found');
         const after = await this.prisma.candidateProfile.update({
             where: { id },
-            data: { status: client_1.ProfileStatus.REJECTED, rejectionReason: reason, reviewedById: modId, reviewedAt: new Date() },
+            data: { status: client_1.ProfileStatus.REJECTED, rejectionReason: reason, reviewedById: null, reviewedAt: new Date() },
         });
         await this.audit.log({
             entityType: 'profile', entityId: id, action: 'REJECTED', actorId: modId,

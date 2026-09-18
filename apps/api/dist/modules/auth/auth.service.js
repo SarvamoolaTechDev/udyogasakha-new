@@ -73,10 +73,6 @@ let AuthService = AuthService_1 = class AuthService {
                 this.sendVerificationEmail(user.id).catch(err => this.logger.warn(`Verification email failed: ${err.message}`));
             }
             console.log('REGISTER - returning tokens');
-            // Behind feature flag — set ENABLE_EMAIL_VERIFICATION=true to activate
-            if (process.env.ENABLE_EMAIL_VERIFICATION === 'true') {
-                this.sendVerificationEmail(user.id).catch(err => this.logger.warn(`Verification email failed: ${err.message}`));
-            }
             return tokens;
         }
         catch (e) {

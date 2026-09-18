@@ -131,11 +131,36 @@ let ListingsService = class ListingsService {
             contactPhone: l.contactPhone,
         };
     }
-    async findSimilar(id, role, limit = 3) {
-        return this.prisma.jobListing.findMany({
-            where: { id: { not: id }, status: client_1.ProfileStatus.APPROVED, targetRoleType: role },
-            take: limit, orderBy: { postedAt: 'desc' },
+    async findSimilar(id, role) {
+        // Get the source listing to match against
+        const source = await this.prisma.jobListing.findUnique({
+            where: { id },
+            select: { marketField: true, experienceRequired: true, listingType: true, targetRoleType: true },
         });
+        if (!source)
+            return [];
+        // Try strict match first: same field + type + experience
+        const strict = await this.prisma.jobListing.findMany({
+            where: {
+                id: { not: id }, status: 'APPROVED',
+                marketField: source.marketField,
+                listingType: source.listingType,
+                experienceRequired: source.experienceRequired,
+            },
+            take: 2, orderBy: { postedAt: 'desc' },
+        });
+        if (strict.length >= 2)
+            return strict;
+        // Fallback: relax to just field + type (ignore exp)
+        const relaxed = await this.prisma.jobListing.findMany({
+            where: {
+                id: { not: id }, status: 'APPROVED',
+                marketField: source.marketField,
+                listingType: source.listingType,
+            },
+            take: 2, orderBy: { postedAt: 'desc' },
+        });
+        return relaxed;
     }
     async findPending(rawPage, rawLimit) {
         const p = (0, pagination_1.parsePage)(rawPage, rawLimit);

@@ -1,6 +1,6 @@
 'use client';
 import { INDIAN_CITIES } from '@/components/ui/LocationSelect';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -44,6 +44,8 @@ const WORK_MODE_LABELS: Record<string, string> = { WFH: 'WFH', ON_SITE: 'On-Site
 export default function RoleProfilePage() {
   const { role }    = useParams<{ role:string }>();
   const router      = useRouter();
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [redirectCountdown, setRedirectCountdown] = useState(5);
   const { toast }   = useToast();
   const qc          = useQueryClient();
   const ri          = ROLE_INFO[role] ?? ROLE_INFO['JOB_SEEKER'];
@@ -81,7 +83,7 @@ export default function RoleProfilePage() {
     onSuccess: (p: any) => {
       // Pre-fill the form with existing data
       if (!p) return;
-      const fields = ['fullName','dateOfBirth','gender','phone','email','city','skills','summary',
+      const fields = ['fullName','dateOfBirth','phone','email','city','skills','summary',
         'highestDegree','specialization','institution','yearOfPassing','grade',
         'appliedFor','appliedAt','payment','certificate','workMode','employmentOption','marketSegment','preferredLocation'] as const;
       fields.forEach(f => { if ((p as any)[f] !== undefined) setValue(f as any, (p as any)[f]); });
@@ -109,7 +111,7 @@ export default function RoleProfilePage() {
 
   const submitMut = useMutation({
     mutationFn: (d: any) => profilesApi.upsert({ ...d, roleType:role }),
-    onSuccess:  ()       => { toast('Submitted for Moderator review! 🎉', 'ok'); qc.invalidateQueries({ queryKey:['myprofile',role] }); qc.invalidateQueries({ queryKey:['my-profiles'] }); },
+    onSuccess:  ()       => { setShowSuccessModal(true); qc.invalidateQueries({ queryKey: ['myprofile', role] }); },
     onError:    ()       => toast('Submission failed', 'err'),
   });
 
@@ -159,7 +161,18 @@ export default function RoleProfilePage() {
     </div>
   );
 
+    useEffect(() => {
+      if (!showSuccessModal) return;
+      if (redirectCountdown <= 0) {
+        router.push('/profile');
+        return;
+      }
+      const timer = setTimeout(() => setRedirectCountdown(c => c - 1), 1000);
+      return () => clearTimeout(timer);
+    }, [showSuccessModal, redirectCountdown, router]);
+
   return (
+    <>
     <div style={{ minHeight:'calc(100vh - 68px)' }}>
       {/* Banner */}
       <div style={{ padding:'56px 4% 40px', background:'linear-gradient(135deg,rgba(13,30,90,0.9),rgba(6,13,42,0.95))', borderBottom:'1px solid var(--border)' }}>
@@ -186,12 +199,39 @@ export default function RoleProfilePage() {
               <div style={mb}><IL req>Full Name</IL><input {...register('fullName', { required: 'Full name is required', maxLength:{ value:100, message:'Too long' } })} className="fi" placeholder="Your Full Name" style={{ borderColor: errors.fullName ? 'var(--err)' : undefined }} />
               <Err msg={errors.fullName?.message as string} /></div>
               <div style={mb}><IL>Date of Birth</IL><input {...register('dateOfBirth')} type="date" className="fi" /></div>
-              <div style={mb}><IL>Gender</IL><select {...register('gender')} className="fi"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option></select></div>
-              <div style={mb}><IL req>Mobile</IL><input {...register('phone', { required: 'Phone number is required', maxLength:{ value:20, message:'Too long' }})} className="fi" placeholder="+91 98765 43210" style={{ borderColor: errors.phone ? 'var(--err)' : undefined }} />
-              <Err msg={errors.phone?.message as string} /></div>
+              <div style={mb}><IL req>Mobile</IL>
+                <input
+                  {...register('phone', {
+                    required: 'Mobile number is required',
+                    pattern: {
+                      value: /^[0-9]{10}$/,
+                      message: 'Mobile number must be exactly 10 digits'
+                    },
+                    onChange: (e) => {
+                      // Strip non-digits
+                      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                    }
+                  })}
+                  type="tel" maxLength={10} className="fi" placeholder="10-digit mobile number"
+                  style={{ borderColor: errors.phone ? 'var(--err)' : undefined, transition:'border-color 0.2s' }}
+                />
+                  {errors.phone && (
+                    <p style={{ color:'var(--err)', fontSize:'11px', marginTop:'4px' }}>
+                      {errors.phone.message as string}
+                    </p>
+                  )}
+              </div>
+              {/* <div style={mb}><IL req>Mobile</IL><input {...register('phone', { required: 'Phone number is required', maxLength:{ value:20, message:'Too long' }})} className="fi" placeholder="+91 98765 43210" style={{ borderColor: errors.phone ? 'var(--err)' : undefined }} /> */}
+              { /*<Err msg={errors.phone?.message as string} /></div> */}
               <div style={mb}><IL req>Email</IL><input {...register('email', { required : 'Email is required' })} type="email" className="fi" placeholder="you@example.com" /></div>
               <Err msg={errors.email?.message as string} />
-              <div style={mb}><IL req>City / Location</IL><input {...register('city', { required: 'City is required' })} className="fi" placeholder="Bengaluru, Karnataka" /></div>
+
+              <div style={mb}><IL>Select City</IL>
+                <select {...register('city')} className="fi">
+                  <option value="">Select city</option>
+                  {INDIAN_CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
               <Err msg={errors.city?.message as string} />
               {ri.fields.map(([name, ph], i) => (
                 <div key={name} style={mb}><IL>{name}</IL><input {...register(`roleFields.rf${i}` as any)} className="fi" placeholder={ph} /></div>
@@ -219,7 +259,10 @@ export default function RoleProfilePage() {
               <div style={mb}><IL>Specialization</IL><input {...register('specialization')} className="fi" placeholder="e.g. Computer Science" /></div>
               <div style={mb}><IL>Institution / University</IL><input {...register('institution')} className="fi" placeholder="e.g. IIT Bombay" /></div>
               <div style={mb}><IL>Year of Passing</IL><input {...register('yearOfPassing', { valueAsNumber: true })} type="number" className="fi" placeholder="e.g. 2027" /></div>
-              <div style={mb}><IL>Grade / CGPA / %</IL><input {...register('grade')} className="fi" placeholder="e.g. 8.4 CGPA" /></div>
+
+              {(role === 'INTERN' || role === 'FRESHER' || role === 'JOB_SEEKER') && (
+                <div style={mb}><IL>Grade / CGPA / %</IL><input {...register('grade')} className="fi" placeholder="e.g. 8.4 CGPA" /></div> 
+              )}
             </FG>
           </div>
 
@@ -436,7 +479,7 @@ export default function RoleProfilePage() {
               <div style={mb}><IL>Payment Type</IL>
                 <select {...register('payment')} className="fi"><option value="PAID">Paid</option><option value="STIPEND">Stipend</option><option value="NEGOTIABLE">Negotiable</option></select>
               </div>
-              {(role === 'INTERN' || role === 'FRESHER') && (
+              {(role === 'INTERN') && (
               <div style={mb}><IL>Certificate Provided</IL>
                 <select {...register('certificate')} className="fi"><option value="YES">Yes</option><option value="NO">No</option></select>
               </div>
@@ -468,8 +511,8 @@ export default function RoleProfilePage() {
               {role === 'INTERN' && (
                 <div style={mb}><IL>Post-Internship Employment</IL>
                   <select {...register('employmentOption')} className="fi">
-                    <option value="NOT_EXISTS">No (internship only)</option>
-                    <option value="EXISTS">Yes (PPO possible)</option>
+                    <option value="NOT_EXISTS">No (Internship Only)</option>
+                    <option value="EXISTS">Yes (Full-time opportunity possible)</option>
                   </select>
                 </div>
               )}
@@ -486,20 +529,39 @@ export default function RoleProfilePage() {
                 </select>
               </div>
             </FG>
-            <button  onClick={handleSubmit(d => submitMut.mutate({
-                              ...d,
-                              workMode: selectedModes[0] ?? 'WFH',
-                              roleFields: {
+            <button  onClick={handleSubmit(d => {
+                          // Convert skills string to array
+                          const skillsArray = typeof d.skills === 'string'
+                            ? d.skills.split(',').map((s: string) => s.trim()).filter(Boolean)
+                            : d.skills ?? [];
+
+                          // Strip empty strings — don't send empty optional fields
+                          const clean = Object.fromEntries(
+                            Object.entries(d).filter(([, v]) => v !== '' && v !== null && v !== undefined)
+                          );
+
+                          // Build contact time string
+                          const contactTimeVal = contactTimes.length > 0
+                            ? contactTimes.includes('Custom')
+                              ? [...contactTimes.filter(t => t !== 'Custom'),
+                                ...customTimes
+                                  .filter(s => s.startH && s.startM && s.endH && s.endM)
+                                  .map(s => `${s.startH}:${s.startM} ${s.startP} – ${s.endH}:${s.endM} ${s.endP}`)
+                                ].join(', ')
+                              : contactTimes.join(', ')
+                            : undefined;
+
+                          submitMut.mutate({
+                            ...clean,
+                            skills:   skillsArray,
+                            workMode: selectedModes[0] ?? 'WFH',
+                            roleFields: {
                               ...d.roleFields,
-                              ...(contactTimes.length > 0 && { contactTime: contactTimes.includes('Custom')
-                                                                ? [...contactTimes.filter(t => t !== 'Custom'),
-                                                                    ...customTimes
-                                                                      .filter(s => s.startH && s.startM && s.endH && s.endM)
-                                                                      .map(s => `${s.startH}:${s.startM} ${s.startP} – ${s.endH}:${s.endM} ${s.endP}`)
-                                                                    ].join(', ')
-                                                                  : contactTimes.join(', ') }),
-                              },
-                            }))}
+                              ...(contactTimeVal && { contactTime: contactTimeVal }),
+                              ...(contactDays.length > 0 && { contactDays: contactDays.join(', ') }),
+                            },
+                          });
+                        })}
                 disabled={submitMut.isPending} className="btn-gold" style={{ width:'100%', padding:'14px', fontSize:'14px', borderRadius:'12px', border:'none', cursor:'pointer', opacity:submitMut.isPending?0.6:1, marginTop:'8px' }}>
               {submitMut.isPending ? 'Submitting…' : '✦ Submit for Moderator Review ✦'}
             </button>
@@ -547,7 +609,7 @@ export default function RoleProfilePage() {
 
           {/* Role guide */}
           <div className="gc" style={{ padding:'20px', marginBottom:'18px' }}>
-            <div style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'#fff', marginBottom:'12px' }}>📖 Role Guide</div>
+            <div style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'var(--offwhite)', marginBottom:'12px' }}>📖 Role Guide</div>
             <p style={{ fontSize:'12px', color:'var(--muted)', lineHeight:1.8, fontWeight:300 }}>{ri.desc}</p>
             <div style={{ marginTop:'12px', paddingTop:'12px', borderTop:'1px solid var(--bf)' }}>
               <div style={{ fontSize:'10px', fontWeight:700, color:'var(--gold3)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'8px' }}>Role-Specific Fields</div>
@@ -559,7 +621,7 @@ export default function RoleProfilePage() {
 
           {/* What happens next */}
           <div className="gc" style={{ padding:'20px' }}>
-            <div style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'#fff', marginBottom:'12px' }}>🔍 What Happens Next?</div>
+            <div style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'var(--offwhite)', marginBottom:'12px' }}>🔍 What Happens Next?</div>
             <div style={{ display:'flex', flexDirection:'column', gap:'10px' }}>
               {['Moderator validates all profile details','Market Mapping assigned — IT / Non-IT / Services','Profile activated and published on portal','Visible to recruiters and organisations'].map((s,i)=>(
                 <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:'10px' }}>
@@ -572,5 +634,29 @@ export default function RoleProfilePage() {
         </div>
       </div>
     </div>
+
+    {showSuccessModal && (
+      <div style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.6)', zIndex:99999, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}>
+        <div style={{ background:'#fff', borderRadius:'20px', border:'1px solid rgba(74,222,128,0.3)', padding:'36px 32px', maxWidth:'400px', width:'100%', textAlign:'center', boxShadow:'0 20px 60px rgba(0,0,0,0.3)' }}>
+          <div style={{ fontSize:'52px', marginBottom:'14px' }}>✅</div>
+          <h3 style={{ fontFamily:'Cinzel,serif', fontSize:'19px', fontWeight:700, color:'var(--offwhite)', marginBottom:'10px' }}>
+            Profile Submitted!
+          </h3>
+          <p style={{ fontSize:'13px', color:'var(--muted)', lineHeight:1.75, marginBottom:'24px' }}>
+            Your profile has been sent for moderator review. You'll be notified once it's approved.
+          </p>
+          <div style={{ fontSize:'12px', color:'var(--muted)', marginBottom:'16px' }}>
+            Redirecting to your profiles in <span style={{ fontWeight:700, color:'var(--gold3)' }}>{redirectCountdown}</span>…
+          </div>
+          <button
+            onClick={() => router.push('/profile')}
+            className="btn-gold"
+            style={{ padding:'12px 28px', borderRadius:'50px', border:'none', cursor:'pointer', fontSize:'12px', fontFamily:'Raleway,sans-serif', fontWeight:700 }}>
+            Go Now →
+          </button>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

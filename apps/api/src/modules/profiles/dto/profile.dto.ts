@@ -81,7 +81,7 @@ export class UpsertProfileDto {
   // ── Submission details ────────────────────────────────────────────────────
 
   @ApiProperty({ example: 'Senior Software Engineer' })
-  @IsString() @IsNotEmpty() @MaxLength(200)
+  @IsOptional() @IsString() @MaxLength(200)
   appliedFor: string;
 
   @ApiPropertyOptional({ example: 'TCS Digital' })
@@ -104,7 +104,7 @@ export class UpsertProfileDto {
   workMode: WorkMode;
 
   @ApiProperty({ enum: EmpOption })
-  @IsEnum(EmpOption)
+  @IsOptional() @IsEnum(EmpOption)
   employmentOption: EmpOption;
 
   @ApiProperty({ enum: MarketSegment })

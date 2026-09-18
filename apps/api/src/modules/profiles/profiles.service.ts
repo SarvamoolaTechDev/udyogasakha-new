@@ -48,6 +48,7 @@ export class ProfilesService {
       ...dto, userId, skills,
       certificate: dto.certificate ?? 'NO',
       appliedAt: dto.appliedAt ?? '',  // optional field — defaults to empty string
+      appliedFor: dto.appliedFor ?? '', // optional field
       marketField,                  // set on submission, not on approval
       status: ProfileStatus.PENDING, submittedAt: new Date(),
       reviewedAt: null, reviewedById: null, rejectionReason: null,
@@ -158,7 +159,7 @@ export class ProfilesService {
     // marketField is already set from the candidate's own submission — just flip status
     const after = await this.prisma.candidateProfile.update({
       where: { id },
-      data: { status: ProfileStatus.APPROVED, reviewedById: modId, reviewedAt: new Date() },
+      data: { status: ProfileStatus.APPROVED, reviewedById: null, reviewedAt: new Date() },
     });
 
     // Credit 1000 points bonus for 1st and 2nd approved profiles
@@ -211,7 +212,7 @@ export class ProfilesService {
 
     const after = await this.prisma.candidateProfile.update({
       where: { id },
-      data: { status: ProfileStatus.REJECTED, rejectionReason: reason, reviewedById: modId, reviewedAt: new Date() },
+      data: { status: ProfileStatus.REJECTED, rejectionReason: reason, reviewedById: null, reviewedAt: new Date() },
     });
 
     await this.audit.log({

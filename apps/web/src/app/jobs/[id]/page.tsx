@@ -91,8 +91,8 @@ export default function JobDetailPage() {
         {/* Header */}
         <div className="gc" style={{ padding:'28px', marginBottom:'18px' }}>
           <div style={{ width:'60px', height:'60px', borderRadius:'16px', display:'flex', alignItems:'center', justifyContent:'center', fontSize:'28px', background:'linear-gradient(135deg,rgba(212,160,23,0.15),rgba(212,160,23,0.05))', border:'1px solid var(--border)', marginBottom:'16px' }}>{job.icon||'💼'}</div>
-          <div style={{ fontSize:'12px', color:'var(--muted)', marginBottom:'4px' }}>{job.organisationName}</div>
-          <h1 style={{ fontFamily:'Cinzel,serif', fontSize:'clamp(18px,3vw,28px)', fontWeight:700, color:'#fff', marginBottom:'14px' }}>{job.title}</h1>
+          <div style={{ fontSize:'12px', fontWeight:500, color:'var(--offwhite)', marginBottom:'4px' }}>{job.organisationName}</div>
+          <h1 style={{ fontFamily:'Cinzel,serif', fontSize:'clamp(18px,3vw,28px)', fontWeight:500, color:'var(--offwhite)', marginBottom:'14px' }}>{job.title}</h1>
           <div style={{ display:'flex', flexWrap:'wrap', gap:'8px', marginBottom:'16px' }}>
             <Row icon="📍" val={job.location} />
             <Row icon="⏱️" val={EXP[job.experienceRequired]??job.experienceRequired} />
@@ -111,6 +111,7 @@ export default function JobDetailPage() {
         </div>
 
         {/* Submission details */}
+        {/*
         <div style={{ borderRadius:'14px', padding:'18px', marginBottom:'18px', background:'linear-gradient(135deg,rgba(212,160,23,0.07),rgba(212,160,23,0.03))', border:'1px solid var(--border)' }}>
           <div style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'var(--gold3)', marginBottom:'14px' }}>⬛ Submission Details</div>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:'12px' }}>
@@ -122,6 +123,7 @@ export default function JobDetailPage() {
             ))}
           </div>
         </div>
+        */}
 
         {/* Experience required */}
         <div className="gc" style={{ padding:'22px', marginBottom:'18px' }}>
@@ -174,9 +176,9 @@ export default function JobDetailPage() {
       </div>
 
       {/* Right sidebar */}
-      <div className="layout-sidebar-col">
+      <div className="layout-sidebar-col" style={{ position:'sticky', top:'86px', alignSelf:'flex-start' }}>
         {/* Unlock / Contact card */}
-        <div className="gc" style={{ padding:'24px', marginBottom:'18px', position:'sticky', top:'86px' }}>
+        <div className="gc" style={{ padding:'24px', marginBottom:'18px', top:'86px' }}>
           {isUnlocked ? (
             // ── Contact details revealed after unlock ──────────────────────
             <>
@@ -243,7 +245,8 @@ export default function JobDetailPage() {
             <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'var(--offwhite)', marginBottom:'14px', padding:'0 2px' }}>Similar Listings</div>
             {(similar as any[]).map((s:any)=>(
               <Link key={s.id} href={`/jobs/${s.id}`} style={{ textDecoration:'none', display:'block' }}>
-                <div className="gc gc-hover" style={{ padding:'14px', marginBottom:'10px', cursor:'pointer' }}>
+                {/*div classname if we wish to add hover/scroll: className="gc gc-hover"*/}
+                <div style={{ padding:'14px', marginBottom:'10px', cursor:'pointer' }}>
                   <div style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'var(--offwhite)', marginBottom:'3px' }}>{s.title}</div>
                   <div style={{ fontSize:'10px', color:'var(--muted)' }}>{s.organisationName} · {s.workMode?.replace('_',' ')}</div>
                   <div style={{ fontFamily:'Cinzel,serif', fontSize:'11px', fontWeight:700, background:'linear-gradient(135deg,var(--gold),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text', marginTop:'6px' }}>{s.salary||'Competitive'}</div>

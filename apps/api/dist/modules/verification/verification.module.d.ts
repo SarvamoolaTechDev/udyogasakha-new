@@ -15,9 +15,9 @@ export declare class VerificationService {
     requestVerification(userId: string, dto: RequestVerificationDto): Promise<{
         id: string;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        createdAt: Date;
         documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
@@ -25,24 +25,24 @@ export declare class VerificationService {
     getMyRequests(userId: string): Promise<{
         id: string;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        createdAt: Date;
         documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
     }[]>;
     getPending(rawPage?: string, rawLimit?: string): Promise<import("../../common/pagination").Paginated<{
         user: {
-            email: string;
             name: string;
+            email: string;
         };
     } & {
         id: string;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        createdAt: Date;
         documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
@@ -50,9 +50,9 @@ export declare class VerificationService {
     approve(id: string, modId: string, dto: ReviewVerificationDto): Promise<{
         id: string;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        createdAt: Date;
         documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
@@ -60,9 +60,9 @@ export declare class VerificationService {
     reject(id: string, modId: string, dto: ReviewVerificationDto): Promise<{
         id: string;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        createdAt: Date;
         documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
@@ -74,9 +74,9 @@ export declare class VerificationController {
     request(userId: string, dto: RequestVerificationDto): Promise<{
         id: string;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        createdAt: Date;
         documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
@@ -84,24 +84,24 @@ export declare class VerificationController {
     getMy(userId: string): Promise<{
         id: string;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        createdAt: Date;
         documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
     }[]>;
     getPending(page?: string, limit?: string): Promise<import("../../common/pagination").Paginated<{
         user: {
-            email: string;
             name: string;
+            email: string;
         };
     } & {
         id: string;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        createdAt: Date;
         documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
@@ -109,9 +109,9 @@ export declare class VerificationController {
     approve(id: string, modId: string, dto: ReviewVerificationDto): Promise<{
         id: string;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        createdAt: Date;
         documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;
@@ -119,9 +119,9 @@ export declare class VerificationController {
     reject(id: string, modId: string, dto: ReviewVerificationDto): Promise<{
         id: string;
         userId: string;
+        createdAt: Date;
         status: import(".prisma/client").$Enums.VerificationStatus;
         reviewedAt: Date | null;
-        createdAt: Date;
         documentIds: import("@prisma/client/runtime/library").JsonValue;
         reviewNote: string | null;
         reviewerId: string | null;

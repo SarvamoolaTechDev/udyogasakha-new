@@ -121,8 +121,8 @@ __decorate([
 ], UpsertProfileDto.prototype, "roleFields", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ example: 'Senior Software Engineer' }),
+    (0, class_validator_2.IsOptional)(),
     (0, class_validator_2.IsString)(),
-    (0, class_validator_2.IsNotEmpty)(),
     (0, class_validator_2.MaxLength)(200),
     __metadata("design:type", String)
 ], UpsertProfileDto.prototype, "appliedFor", void 0);
@@ -153,6 +153,7 @@ __decorate([
 ], UpsertProfileDto.prototype, "workMode", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ enum: client_1.EmpOption }),
+    (0, class_validator_2.IsOptional)(),
     (0, class_validator_2.IsEnum)(client_1.EmpOption),
     __metadata("design:type", String)
 ], UpsertProfileDto.prototype, "employmentOption", void 0);

@@ -66,8 +66,20 @@ export default function RegisterPage() {
               <label className="il">Mobile</label>
               <input {...register('phone', {
                 required: 'Mobile number is required',
-                pattern: { value: /^[+]?[0-9]{10,15}$/, message: 'Enter a valid mobile number' },
-              })} type="tel" className="fi" placeholder="+91 98765 43210" style={{ borderColor: errors.phone ? 'var(--err)' : undefined }} />
+                pattern: { value: /^[+]?[0-9]{10}$/, message: 'Enter a valid mobile number' },
+                onChange: (e) => {
+                  // Strip non-digits
+                  e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                }
+                })}
+                type="tel" maxLength={10} className="fi" placeholder="10-digit mobile number"
+                style={{ borderColor: errors.phone ? 'var(--err)' : undefined, transition:'border-color 0.2s' }}
+              />
+              {errors.phone && (
+                <p style={{ color:'var(--err)', fontSize:'11px', marginTop:'4px' }}>
+                  {errors.phone.message as string}
+                </p>
+            )}
               <Err msg={errors.phone?.message} />
             </div>
             <div>
