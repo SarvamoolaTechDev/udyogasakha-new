@@ -59,11 +59,11 @@ export class CreateListingDto {
   workMode: WorkMode;
 
   @ApiProperty({ enum: CertOpt })
-  @IsEnum(CertOpt)
+  @IsOptional() @IsEnum(CertOpt)
   certificateProvided: CertOpt;
 
   @ApiProperty({ enum: EmpOption })
-  @IsEnum(EmpOption)
+  @IsOptional() @IsEnum(EmpOption)
   employmentOption: EmpOption;
 
   @ApiProperty({ enum: ExperienceLevel })

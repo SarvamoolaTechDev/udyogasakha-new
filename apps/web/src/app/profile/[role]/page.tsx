@@ -45,7 +45,7 @@ export default function RoleProfilePage() {
   const { role }    = useParams<{ role:string }>();
   const router      = useRouter();
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [redirectCountdown, setRedirectCountdown] = useState(5);
+  const [redirectCountdown, setRedirectCountdown] = useState(10);
   const { toast }   = useToast();
   const qc          = useQueryClient();
   const ri          = ROLE_INFO[role] ?? ROLE_INFO['JOB_SEEKER'];

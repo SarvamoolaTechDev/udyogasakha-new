@@ -33,6 +33,9 @@ let ListingsController = class ListingsController {
     getPending(page, limit) {
         return this.svc.findPending(page, limit);
     }
+    getFullById(id) {
+        return this.svc.getFullById(id);
+    }
     findOne(id) {
         return this.svc.findById(id);
     }
@@ -110,6 +113,17 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], ListingsController.prototype, "getPending", null);
+__decorate([
+    (0, common_1.Get)(':id/full'),
+    (0, common_1.UseGuards)(auth_guards_1.JwtAuthGuard, auth_guards_1.RolesGuard),
+    (0, auth_guards_1.Roles)('MODERATOR', 'ADMIN'),
+    (0, swagger_1.ApiOperation)({ summary: 'Full listing detail for moderation' }),
+    (0, swagger_1.ApiBearerAuth)(),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ListingsController.prototype, "getFullById", null);
 __decorate([
     (0, common_1.Get)(':id'),
     (0, swagger_1.ApiOperation)({ summary: 'Get a single listing by ID (public teaser — contact fields excluded)' }),

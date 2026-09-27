@@ -111,6 +111,18 @@ let ListingsService = class ListingsService {
         return l;
     }
     /**
+     * Full listing detail for moderation — includes poster's contact info.
+     */
+    async getFullById(id) {
+        const listing = await this.prisma.jobListing.findUnique({
+            where: { id },
+            include: { postedBy: { select: { name: true, email: true, phone: true } } },
+        });
+        if (!listing)
+            throw new common_1.NotFoundException('Listing not found');
+        return listing;
+    }
+    /**
      * Returns the sensitive contact fields (phone, email, contactPerson) for a listing.
      * Requires the calling user to have an active ListingUnlock record.
      * The unlock itself (point deduction + record creation) is handled by WalletService.
@@ -179,7 +191,7 @@ let ListingsService = class ListingsService {
             throw new common_1.NotFoundException('Listing not found');
         const after = await this.prisma.jobListing.update({
             where: { id },
-            data: { status: client_1.ProfileStatus.APPROVED, reviewedById: moderatorId, reviewedAt: new Date() },
+            data: { status: client_1.ProfileStatus.APPROVED, reviewedById: null, reviewedAt: new Date() },
         });
         await this.audit.log({
             entityType: 'listing', entityId: id, action: 'APPROVED', actorId: moderatorId,
@@ -255,7 +267,7 @@ let ListingsService = class ListingsService {
             throw new common_1.NotFoundException('Listing not found');
         const after = await this.prisma.jobListing.update({
             where: { id },
-            data: { status: client_1.ProfileStatus.REJECTED, rejectionReason: reason, reviewedById: moderatorId, reviewedAt: new Date() },
+            data: { status: client_1.ProfileStatus.REJECTED, rejectionReason: reason, reviewedById: null, reviewedAt: new Date() },
         });
         await this.audit.log({
             entityType: 'listing', entityId: id, action: 'REJECTED', actorId: moderatorId,

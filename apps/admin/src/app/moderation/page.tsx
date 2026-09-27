@@ -190,6 +190,134 @@ function ProfileDetailModal({ sel, onClose, onApprove, onReject, onRemove }: {
   );
 }
 
+// ── Listing Detail Modal ──────────────────────────────────────────────────────
+function ListingDetailModal({ sel, onClose, onApprove, onReject }: {
+  sel: any; onClose: () => void;
+  onApprove: () => void; onReject: () => void;
+}) {
+  const { data, isLoading } = useQuery({
+    queryKey: ['listing-detail', sel.id],
+    queryFn:  () => listingsApi.getFullById(sel.id),
+  });
+  const d = data as any;
+
+  return (
+    <div onClick={onClose} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.75)', zIndex:600, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}>
+      <div onClick={e=>e.stopPropagation()} style={{ borderRadius:'22px', width:'100%', maxWidth:'680px', maxHeight:'88vh', overflowY:'auto', background:'#FFFFFF', border:'1px solid var(--border)', boxShadow:'0 40px 100px rgba(0,0,0,0.8)', position:'relative' }}>
+        <div style={{ position:'absolute', top:0, left:0, right:0, height:'3px', borderRadius:'22px 22px 0 0', background:'linear-gradient(90deg,transparent,var(--gold),var(--gold3),var(--gold),transparent)' }} />
+        <button onClick={onClose} style={{ position:'absolute', top:'14px', right:'14px', width:'30px', height:'30px', borderRadius:'50%', border:'1px solid var(--bf)', background:'rgba(255,255,255,0.06)', color:'var(--muted)', cursor:'pointer', fontSize:'14px', zIndex:10 }}>✕</button>
+
+        <div style={{ padding:'26px' }}>
+          {/* Header */}
+          <div style={{ display:'flex', alignItems:'flex-start', gap:'16px', marginBottom:'20px', paddingBottom:'16px', borderBottom:'1px solid var(--bf)' }}>
+            <div style={{ flex:1 }}>
+              <div style={{ fontFamily:'Cinzel,serif', fontSize:'18px', fontWeight:700, color:'var(--offwhite)', marginBottom:'4px' }}>{sel.title}</div>
+              <div style={{ fontSize:'12px', color:'var(--muted)', marginBottom:'6px' }}>
+                {sel.organisationName} · {sel.location} · Posted {sel.createdAt ? new Date(sel.createdAt).toLocaleDateString('en-IN') : '—'}
+              </div>
+              <span style={{ padding:'2px 10px', borderRadius:'50px', fontSize:'10px', fontWeight:700, background:'rgba(200,146,10,0.08)', color:'var(--gold3)', border:'1px solid rgba(200,146,10,0.2)' }}>
+                {sel.listingType?.replace(/_/g,' ')} · {sel.industry?.replace(/_/g,' ')}
+              </span>
+            </div>
+          </div>
+
+          {/* Detail sections */}
+          {isLoading ? (
+            <div style={{ textAlign:'center', padding:'32px', color:'var(--muted)', fontSize:'13px' }}>Loading full details…</div>
+          ) : d ? (
+            <div style={{ display:'flex', flexDirection:'column', gap:'16px', marginBottom:'20px' }}>
+
+              <DS title="Posted By">
+                <DG2>
+                  <DF l="Name"  v={d.postedBy?.name} />
+                  <DF l="Email" v={d.postedBy?.email} />
+                  <DF l="Phone" v={d.postedBy?.phone} />
+                </DG2>
+              </DS>
+
+              <DS title="Listing Details">
+                <DG2>
+                  <DF l="Target Role"          v={d.targetRoleType?.replace(/_/g,' ')} />
+                  <DF l="Work Mode"            v={d.workMode?.replace(/_/g,' ')} />
+                  <DF l="Payment"              v={d.payment} />
+                  <DF l="Salary"               v={d.salary} />
+                  <DF l="Experience Required"  v={d.experienceRequired?.replace(/_/g,' ')} />
+                  <DF l="Duration"             v={d.duration?.replace(/_/g,' ')} />
+                   {/*{d.experienceDetail && (
+                    <div style={{ marginTop:'8px', padding:'10px 12px', background:'rgba(200,146,10,0.05)', borderRadius:'8px', border:'1px solid rgba(200,146,10,0.15)' }}>
+                      <div style={{ fontSize:'10px', fontWeight:700, color:'var(--gold3)', textTransform:'uppercase', letterSpacing:'1px', marginBottom:'3px' }}>Custom Details</div>
+                      <div style={{ fontSize:'13px', color:'var(--offwhite)' }}>{d.experienceDetail}</div>
+                    </div>
+                    )} */}
+                   {d.listingType === 'INTERNSHIP' && (
+                    <>
+                      <DF l="Certificate Provided" v={d.certificateProvided} />
+                      <DF l="Employment Option"    v={d.employmentOption?.replace(/_/g,' ')} />
+                    </>
+                   )} 
+                </DG2>
+                {d.experienceDetail && <DF l="Experience Detail" v={d.experienceDetail} />}
+                {d.description && <DF l="Description" v={d.description} />}
+              </DS>
+
+              {d.requirements?.length > 0 && (
+                <DS title="Requirements">
+                  <div style={{ display:'flex', flexDirection:'column', gap:'4px' }}>
+                    {d.requirements.map((r: string, i: number) => (
+                      <div key={i} style={{ fontSize:'13px', color:'var(--offwhite)' }}>✦ {r}</div>
+                    ))}
+                  </div>
+                </DS>
+              )}
+
+              {d.facilities?.length > 0 && (
+                <DS title="Facilities & Benefits">
+                  <div style={{ display:'flex', flexWrap:'wrap', gap:'6px' }}>
+                    {d.facilities.filter((f: string) => f.trim()).map((f: string) => (
+                      <span key={f} style={{ padding:'4px 12px', borderRadius:'50px', fontSize:'12px', background:'rgba(200,146,10,0.07)', border:'1px solid var(--border)', color:'var(--muted)' }}>{f.trim()}</span>
+                    ))}
+                  </div>
+                </DS>
+              )}
+
+              {d.skills?.length > 0 && (
+                <DS title="Key Skills">
+                  <div style={{ display:'flex', flexWrap:'wrap', gap:'6px' }}>
+                    {(Array.isArray(d.skills) ? d.skills : String(d.skills).split(',')).map((s: string) => (
+                      <span key={s} style={{ padding:'4px 12px', borderRadius:'50px', fontSize:'12px', background:'rgba(96,165,250,0.08)', border:'1px solid rgba(96,165,250,0.2)', color:'var(--info)' }}>{s.trim()}</span>
+                    ))}
+                  </div>
+                </DS>
+              )}
+
+              <DS title="Contact Information">
+                <DG2>
+                  <DF l="Contact Person" v={d.contactPerson} />
+                  <DF l="Contact Email"  v={d.contactEmail} />
+                  <DF l="Contact Phone"  v={d.contactPhone} />
+                </DG2>
+              </DS>
+            </div>
+          ) : null}
+
+          {/* Action buttons */}
+          <div style={{ display:'flex', gap:'10px', paddingTop:'16px', borderTop:'1px solid var(--bf)' }}>
+            <button onClick={onApprove} style={{ flex:1, padding:'12px', borderRadius:'11px', border:'none', cursor:'pointer', fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'#FFFFFF', background:'linear-gradient(135deg,var(--ok),#16A34A)' }}>
+              Approve
+            </button>
+            <button onClick={onReject} style={{ flex:1, padding:'12px', borderRadius:'11px', cursor:'pointer', fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'var(--err)', background:'rgba(255,107,107,0.1)', border:'1px solid rgba(255,107,107,0.3)' }}>
+              Reject
+            </button>
+            <button onClick={onClose} style={{ flex:1, padding:'12px', borderRadius:'11px', cursor:'pointer', fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'var(--muted)', background:'transparent', border:'1px solid var(--bf)' }}>
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Tiny layout helpers for the modal ─────────────────────────────────────────
 const DS = ({ title, children }: { title: string; children: React.ReactNode }) => (
   <div>
@@ -207,6 +335,7 @@ const DF = ({ l, v }: { l: string; v: any }) => v ? (
 export default function ModerationPage() {
   const [tab,  setTab]  = useState<Tab>('pending');
   const [sel,  setSel]  = useState<any>(null);
+  const [selPost, setSelPost] = useState<any>(null);
   const [pPage, setPPage] = useState(1);
   const [aPage, setAPage] = useState(1);
   const [rPage, setRPage] = useState(1);
@@ -230,7 +359,7 @@ export default function ModerationPage() {
   const rejMut  = useMutation({ mutationFn:({id,r}:{id:string;r:string})=>profilesApi.reject(id,r), onSuccess:()=>{ toast('Profile rejected.','ok'); inv(); } });
   const reactMut= useMutation({ mutationFn:(id:string)=>profilesApi.reactivate(id),              onSuccess:()=>{ toast('Re-opened.','ok'); inv(); } });
   const appPost = useMutation({ mutationFn:(id:string)=>listingsApi.approve(id),                 onSuccess:()=>{ toast('Post approved!','ok'); qc.invalidateQueries({ queryKey:['mod','posts'] }); } });
-
+  const rejPost = useMutation({ mutationFn:({id,reason}:{id:string;reason:string})=>listingsApi.reject(id,reason), onSuccess:()=>{ toast('Post rejected.','ok'); qc.invalidateQueries({ queryKey:['mod','posts'] }); } });
   const removeMut = useMutation({ mutationFn:(id:string)=>profilesApi.remove(id), onSuccess:()=>{ toast('Profile removed.','ok'); inv(); } });
 
   const doRemove = (p: any) => {
@@ -411,6 +540,7 @@ export default function ModerationPage() {
                           <td style={{ fontSize:'13px' }}>{p.payment}</td>
                           <td>
                             <div style={{ display:'flex', gap:'4px' }}>
+                                <button onClick={()=>setSelPost(p)} style={{ padding:'5px 10px', borderRadius:'50px', fontSize:'10px', fontWeight:700, cursor:'pointer', background:'rgba(96,165,250,0.1)', border:'1px solid rgba(96,165,250,0.25)', color:'var(--info)' }}>View More</button>
                               <button onClick={()=>appPost.mutate(p.id)} style={{ padding:'5px 10px', borderRadius:'50px', fontSize:'10px', fontWeight:700, cursor:'pointer', background:'rgba(74,222,128,0.12)', border:'1px solid rgba(74,222,128,0.3)', color:'var(--ok)' }}>Approve</button>
                             </div>
                           </td>
@@ -446,6 +576,7 @@ export default function ModerationPage() {
 
       {/* Profile detail modal */}
       {sel && <ProfileDetailModal key={sel.id} sel={sel} onClose={()=>setSel(null)} onApprove={()=>{appMut.mutate(sel.id); setSel(null);}} onReject={()=>{doReject(sel); setSel(null);}} onRemove={()=>{doRemove(sel); setSel(null);}} />}
+      {selPost && <ListingDetailModal key={selPost.id} sel={selPost} onClose={()=>setSelPost(null)} onApprove={()=>{appPost.mutate(selPost.id); setSelPost(null);}} onReject={()=>{ const r = prompt(`Reason for rejecting "${selPost.title}":`); if (r) { rejPost.mutate({ id: selPost.id, reason: r }); setSelPost(null); } }} />}
     </div>
   );
 }

@@ -34,12 +34,14 @@ let NotificationsService = NotificationsService_1 = class NotificationsService {
      */
     async send(dto) {
         // In-app notification — written to DB by the processor
-        await this.queue.add(queues_1.NOTIFICATION_JOBS.SEND_IN_APP, {
-            userId: dto.userId,
-            subject: dto.subject,
-            body: dto.body,
-            link: dto.link ?? null,
-        });
+        if (this.queue) {
+            await this.queue.add(queues_1.NOTIFICATION_JOBS.SEND_IN_APP, {
+                userId: dto.userId,
+                subject: dto.subject,
+                body: dto.body,
+                link: dto.link ?? null,
+            });
+        }
         // Email stub — dispatched separately so a failed email never
         // prevents the in-app notification from being delivered
         if (dto.email) {

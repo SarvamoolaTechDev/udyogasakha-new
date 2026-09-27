@@ -91,11 +91,13 @@ __decorate([
 ], CreateListingDto.prototype, "workMode", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ enum: client_1.CertOpt }),
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsEnum)(client_1.CertOpt),
     __metadata("design:type", String)
 ], CreateListingDto.prototype, "certificateProvided", void 0);
 __decorate([
     (0, swagger_1.ApiProperty)({ enum: client_1.EmpOption }),
+    (0, class_validator_1.IsOptional)(),
     (0, class_validator_1.IsEnum)(client_1.EmpOption),
     __metadata("design:type", String)
 ], CreateListingDto.prototype, "employmentOption", void 0);

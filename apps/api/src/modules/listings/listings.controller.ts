@@ -53,6 +53,15 @@ export class ListingsController {
     return this.svc.findPending(page, limit);
   }
 
+  @Get(':id/full')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('MODERATOR', 'ADMIN')
+  @ApiOperation({ summary: 'Full listing detail for moderation' })
+  @ApiBearerAuth()
+  getFullById(@Param('id') id: string) {
+    return this.svc.getFullById(id);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get a single listing by ID (public teaser — contact fields excluded)' })
   findOne(@Param('id') id: string) {

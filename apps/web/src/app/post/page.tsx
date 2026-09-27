@@ -2,7 +2,7 @@
 import { INDIAN_CITIES } from '@/components/ui/LocationSelect';
 import { useState } from 'react';
 import Link from 'next/link';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { listingsApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
@@ -26,7 +26,11 @@ export default function PostJobPage() {
   const { toast } = useToast();
   const { startPayment } = useRazorpayCheckout();
 
-  const { register, handleSubmit, formState: { errors }, reset, setValue, watch } = useForm<Record<string, any>>();
+  const { register, handleSubmit, formState: { errors }, reset, setValue, watch, control } = useForm<Record<string, any>>();
+
+  const listingTypeVal      = useWatch({ control, name: 'listingType' });
+  const experienceReqVal    = useWatch({ control, name: 'experienceRequired' });
+  const durationVal         = useWatch({ control, name: 'duration' });
 
   const mut = useMutation({
     mutationFn: (d: any) => listingsApi.post({
@@ -158,7 +162,17 @@ export default function PostJobPage() {
           </p>
         </div>
 
-        <form onSubmit={handleSubmit(d => mut.mutate(d))}>
+        <form onSubmit={handleSubmit(d => {
+          const finalData = {
+            ...d,
+            experienceRequired: d.experienceRequired === 'CUSTOM' ? 'ANY' : d.experienceRequired,
+            duration:           d.duration === 'CUSTOM' ? 'PROJECT_BASED' : d.duration,
+            experienceDetail:   [customExp, customDur].filter(Boolean).join(' · ') || d.experienceDetail,
+          };
+          mut.mutate(finalData);
+        })}>
+
+        {/*</form><form onSubmit={handleSubmit(d => mut.mutate(d))}>*/}
           {/* Organisation details */}
           <div className="gc" style={{ padding:'28px', marginBottom:'18px' }}>
             <S>🏢 Organisation Details</S>
@@ -240,7 +254,7 @@ export default function PostJobPage() {
                   <option value="WFH">WFH</option><option value="ON_SITE">On-Site</option><option value="HYBRID">Hybrid</option>
                 </select>
               </div>
-              {watch('listingType') === 'INTERNSHIP' && (
+              {listingTypeVal === 'INTERNSHIP' && (
               <div style={mb}>
                 <L>Certificate Provided</L>
                   <select {...register('certificateProvided')} className="fi">
@@ -249,7 +263,7 @@ export default function PostJobPage() {
                   </select>
               </div>
               )}
-              {watch('listingType') === 'INTERNSHIP' && (
+              {watch('listingTypeVal') === 'INTERNSHIP' && (
               <div style={mb}>
                 <L>Post-Internship Employment Option</L>
                 <select {...register('employmentOption')} className="fi">
@@ -262,27 +276,27 @@ export default function PostJobPage() {
                 <L>Experience Required</L>
                 <select {...register('experienceRequired')} className="fi">
                   <option value="ANY">Any</option><option value="FRESHER_0_1">Fresher / 0–1 yr</option><option value="EXP_1_3">1–3 yrs</option><option value="EXP_3_5">3–5 yrs</option><option value="EXP_5_8">5–8 yrs</option><option value="EXP_8_PLUS">8+ yrs</option><option value="CUSTOM">Custom (specify below)</option>
-                  {watch('experienceRequired') === 'CUSTOM' && (
-                  <div style={mb}>
+                </select>  
+                  {watch('experienceReqVal') === 'CUSTOM' && (
+                  <div style={{ ...mb, marginTop:'10px' }}>
                     <L>Specify Experience Required</L>
                       <input value={customExp} onChange={e => setCustomExp(e.target.value)}
                     className="fi" placeholder="e.g. 4–6 years, 10+ years" />
                   </div>
                   )}
-                </select>
               </div>
               <div style={mb}>
                 <L>Duration</L>
                 <select {...register('duration')} className="fi">
                   <option value="PERMANENT">Permanent</option><option value="SHORT_TERM">Short Term</option><option value="MEDIUM_TERM">Medium Term</option><option value="LONG_TERM">Long Term</option><option value="PROJECT_BASED">Project Based</option><option value="CUSTOM">Custom (specify below)</option>
-                  {watch('duration') === 'CUSTOM' && (
-                  <div style={mb}>
+                </select>
+                  {watch('durationVal') === 'CUSTOM' && (
+                  <div style={{ ...mb, marginTop:'10px' }}>
                     <L>Specify Duration</L>
                       <input value={customDur} onChange={e => setCustomDur(e.target.value)}
                         className="fi" placeholder="e.g. 18 months, 2 years" />
                   </div>
                   )}
-                </select>
               </div>
               <div style={{ ...mb, gridColumn:'span 2' }}>
                 <L>Key Skills (comma separated)</L>

@@ -109,6 +109,18 @@ export class ListingsService {
   }
 
   /**
+   * Full listing detail for moderation — includes poster's contact info.
+   */
+  async getFullById(id: string) {
+    const listing = await this.prisma.jobListing.findUnique({
+      where: { id },
+      include: { postedBy: { select: { name: true, email: true, phone: true } } },
+    });
+    if (!listing) throw new NotFoundException('Listing not found');
+    return listing;
+  }
+
+  /**
    * Returns the sensitive contact fields (phone, email, contactPerson) for a listing.
    * Requires the calling user to have an active ListingUnlock record.
    * The unlock itself (point deduction + record creation) is handled by WalletService.
@@ -181,7 +193,7 @@ export class ListingsService {
 
     const after = await this.prisma.jobListing.update({
       where: { id },
-      data:  { status: ProfileStatus.APPROVED, reviewedById: moderatorId, reviewedAt: new Date() },
+      data:  { status: ProfileStatus.APPROVED, reviewedById: null, reviewedAt: new Date() },
     });
 
     await this.audit.log({
@@ -267,7 +279,7 @@ export class ListingsService {
 
     const after = await this.prisma.jobListing.update({
       where: { id },
-      data:  { status: ProfileStatus.REJECTED, rejectionReason: reason, reviewedById: moderatorId, reviewedAt: new Date() },
+      data:  { status: ProfileStatus.REJECTED, rejectionReason: reason, reviewedById: null, reviewedAt: new Date() },
     });
 
     await this.audit.log({

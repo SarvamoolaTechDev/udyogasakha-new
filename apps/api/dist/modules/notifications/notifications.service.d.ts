@@ -23,12 +23,12 @@ export declare class NotificationsService {
      */
     send(dto: SendNotificationDto): Promise<void>;
     getForUser(userId: string, unreadOnly: boolean, rawPage?: string, rawLimit?: string): Promise<import("../../common/pagination").Paginated<{
-        link: string | null;
-        subject: string;
-        body: string;
         id: string;
         userId: string;
+        subject: string;
+        body: string;
         read: boolean;
+        link: string | null;
         createdAt: Date;
     }>>;
     getUnreadCount(userId: string): Promise<{

@@ -46,6 +46,7 @@ export const profilesApi = {
 
 export const listingsApi = {
   getPending: (params?: any)              => api.get('/listings/pending', { params }).then(r => r.data),
+  getFullById: (id: string)               => api.get(`/listings/${id}/full`).then(r => r.data),
   approve:    (id: string)                => api.patch(`/listings/${id}/approve`).then(r => r.data),
   reject:     (id: string, reason: string) => api.patch(`/listings/${id}/reject`, { reason }).then(r => r.data),
 };
