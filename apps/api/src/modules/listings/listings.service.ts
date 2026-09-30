@@ -133,6 +133,13 @@ export class ListingsService {
       throw new BadRequestException('This listing has not been unlocked. Use POST /wallet/unlock-listing/:id first.');
     }
     const l = await this.prisma.jobListing.findUnique({ where: { id } });
+    if (l.postedById === userId) {
+      return {
+        contactPerson: l.contactPerson,
+        contactEmail:  l.contactEmail,
+        contactPhone:  l.contactPhone,
+      };
+    }
     if (!l) throw new NotFoundException('Listing not found');
     return {
       contactPerson: l.contactPerson,

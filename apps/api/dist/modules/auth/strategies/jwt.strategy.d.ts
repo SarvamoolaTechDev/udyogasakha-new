@@ -12,18 +12,18 @@ export declare class JwtStrategy extends JwtStrategy_base {
         sub: string;
         isAdmin?: boolean;
     }): Promise<{
+        name: string;
         id: string;
         createdAt: Date;
-        name: string;
+        updatedAt: Date;
+        phone: string;
         email: string;
+        city: string | null;
         emailVerified: boolean;
         emailVerifyToken: string | null;
         emailVerifyExpiry: Date | null;
-        phone: string;
         passwordHash: string;
         roles: import("@prisma/client/runtime/library").JsonValue;
-        city: string | null;
-        updatedAt: Date;
     } | {
         id: string;
         email: string;

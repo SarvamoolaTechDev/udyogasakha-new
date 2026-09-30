@@ -16,20 +16,20 @@ export declare class VerificationService {
         id: string;
         userId: string;
         createdAt: Date;
-        documentIds: import("@prisma/client/runtime/library").JsonValue;
         status: import(".prisma/client").$Enums.VerificationStatus;
-        reviewNote: string | null;
         reviewedAt: Date | null;
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
+        reviewNote: string | null;
         reviewerId: string | null;
     }>;
     getMyRequests(userId: string): Promise<{
         id: string;
         userId: string;
         createdAt: Date;
-        documentIds: import("@prisma/client/runtime/library").JsonValue;
         status: import(".prisma/client").$Enums.VerificationStatus;
-        reviewNote: string | null;
         reviewedAt: Date | null;
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
+        reviewNote: string | null;
         reviewerId: string | null;
     }[]>;
     getPending(rawPage?: string, rawLimit?: string): Promise<import("../../common/pagination").Paginated<{
@@ -41,30 +41,30 @@ export declare class VerificationService {
         id: string;
         userId: string;
         createdAt: Date;
-        documentIds: import("@prisma/client/runtime/library").JsonValue;
         status: import(".prisma/client").$Enums.VerificationStatus;
-        reviewNote: string | null;
         reviewedAt: Date | null;
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
+        reviewNote: string | null;
         reviewerId: string | null;
     }>>;
     approve(id: string, modId: string, dto: ReviewVerificationDto): Promise<{
         id: string;
         userId: string;
         createdAt: Date;
-        documentIds: import("@prisma/client/runtime/library").JsonValue;
         status: import(".prisma/client").$Enums.VerificationStatus;
-        reviewNote: string | null;
         reviewedAt: Date | null;
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
+        reviewNote: string | null;
         reviewerId: string | null;
     }>;
     reject(id: string, modId: string, dto: ReviewVerificationDto): Promise<{
         id: string;
         userId: string;
         createdAt: Date;
-        documentIds: import("@prisma/client/runtime/library").JsonValue;
         status: import(".prisma/client").$Enums.VerificationStatus;
-        reviewNote: string | null;
         reviewedAt: Date | null;
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
+        reviewNote: string | null;
         reviewerId: string | null;
     }>;
 }
@@ -75,20 +75,20 @@ export declare class VerificationController {
         id: string;
         userId: string;
         createdAt: Date;
-        documentIds: import("@prisma/client/runtime/library").JsonValue;
         status: import(".prisma/client").$Enums.VerificationStatus;
-        reviewNote: string | null;
         reviewedAt: Date | null;
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
+        reviewNote: string | null;
         reviewerId: string | null;
     }>;
     getMy(userId: string): Promise<{
         id: string;
         userId: string;
         createdAt: Date;
-        documentIds: import("@prisma/client/runtime/library").JsonValue;
         status: import(".prisma/client").$Enums.VerificationStatus;
-        reviewNote: string | null;
         reviewedAt: Date | null;
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
+        reviewNote: string | null;
         reviewerId: string | null;
     }[]>;
     getPending(page?: string, limit?: string): Promise<import("../../common/pagination").Paginated<{
@@ -100,30 +100,30 @@ export declare class VerificationController {
         id: string;
         userId: string;
         createdAt: Date;
-        documentIds: import("@prisma/client/runtime/library").JsonValue;
         status: import(".prisma/client").$Enums.VerificationStatus;
-        reviewNote: string | null;
         reviewedAt: Date | null;
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
+        reviewNote: string | null;
         reviewerId: string | null;
     }>>;
     approve(id: string, modId: string, dto: ReviewVerificationDto): Promise<{
         id: string;
         userId: string;
         createdAt: Date;
-        documentIds: import("@prisma/client/runtime/library").JsonValue;
         status: import(".prisma/client").$Enums.VerificationStatus;
-        reviewNote: string | null;
         reviewedAt: Date | null;
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
+        reviewNote: string | null;
         reviewerId: string | null;
     }>;
     reject(id: string, modId: string, dto: ReviewVerificationDto): Promise<{
         id: string;
         userId: string;
         createdAt: Date;
-        documentIds: import("@prisma/client/runtime/library").JsonValue;
         status: import(".prisma/client").$Enums.VerificationStatus;
-        reviewNote: string | null;
         reviewedAt: Date | null;
+        documentIds: import("@prisma/client/runtime/library").JsonValue;
+        reviewNote: string | null;
         reviewerId: string | null;
     }>;
 }

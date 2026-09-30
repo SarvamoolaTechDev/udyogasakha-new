@@ -42,6 +42,12 @@ let NotificationsService = NotificationsService_1 = class NotificationsService {
                 link: dto.link ?? null,
             });
         }
+        else {
+            // Redis not available — write the in-app notification directly
+            await this.prisma.notification.create({
+                data: { userId: dto.userId, subject: dto.subject, body: dto.body, link: dto.link ?? null },
+            });
+        }
         // Email stub — dispatched separately so a failed email never
         // prevents the in-app notification from being delivered
         if (dto.email) {

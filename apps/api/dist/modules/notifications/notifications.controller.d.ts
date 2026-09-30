@@ -3,12 +3,12 @@ export declare class NotificationsController {
     private readonly svc;
     constructor(svc: NotificationsService);
     getAll(userId: string, unread?: string, page?: string, limit?: string): Promise<import("../../common/pagination").Paginated<{
-        id: string;
-        userId: string;
+        link: string | null;
         subject: string;
         body: string;
+        id: string;
+        userId: string;
         read: boolean;
-        link: string | null;
         createdAt: Date;
     }>>;
     getUnreadCount(userId: string): Promise<{

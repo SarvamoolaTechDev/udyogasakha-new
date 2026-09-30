@@ -24,7 +24,7 @@ const DUR_LABEL: Record<string,string> = {
   PERMANENT:'Permanent', PROJECT_BASED:'Project',
 };
 
-export function JobCard({ job }: { job: Job }) {
+export function JobCard({ job, isOwner }: { job: Job, isOwner?: boolean}) {
   const desc = (job.description || '').slice(0, 110);
   const wfh  = job.workMode === 'WFH';
 
@@ -40,7 +40,14 @@ export function JobCard({ job }: { job: Job }) {
             border:'1px solid var(--border)',
           }}>{job.icon || '💼'}</div>
           <div style={{ flex:1, minWidth:0 }}>
-            <div style={{ fontSize:'13px', fontStyle:'bold', color:'var(--muted)', fontWeight:700, marginBottom:'2px' }}>{job.organisationName}</div>
+            <div style={{ fontSize:'13px', fontStyle:'bold', color:'var(--muted)', fontWeight:700, marginBottom:'2px' }}>
+              {job.organisationName}
+              {isOwner && (
+                <span style={{ marginLeft:'8px', padding:'1px 8px', borderRadius:'50px', fontSize:'9px', fontWeight:700, background:'rgba(200,146,10,0.1)', color:'var(--gold3)', border:'1px solid rgba(200,146,10,0.25)' }}>
+                  Your listing
+                </span>
+              )}
+            </div>
             <div style={{ fontFamily:'Cinzel,serif', fontSize:'14px', fontWeight:700, color:'var(--muted)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>{job.title}</div>
           </div>
           <div style={{ fontSize:'12px', color:'var(--offwhite)', whiteSpace:'nowrap', flexShrink:0 }}>
@@ -74,7 +81,7 @@ export function JobCard({ job }: { job: Job }) {
             {job.salary || 'Competitive'}
           </div>
           <span className="btn-gold" style={{ padding:'7px 14px', borderRadius:'50px', fontSize:'10px', cursor:'pointer' }}>
-            View & Apply →
+            {isOwner ? 'View' : 'View and Apply →'}
           </span>
         </div>
       </div>

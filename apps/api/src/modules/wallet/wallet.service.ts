@@ -124,6 +124,9 @@ export class WalletService {
       }
 
       const listing = await tx.jobListing.findUnique({ where: { id: listingId } });
+      if (listing.postedById === userId) {
+        throw new BadRequestException('You cannot unlock your own listing.');
+      }
       if (!listing) throw new NotFoundException('Listing not found');
 
       const updatedWallet = await tx.wallet.update({

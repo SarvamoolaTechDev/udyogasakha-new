@@ -60,18 +60,18 @@ export declare class AuthService {
     }>;
     logout(userId: string): Promise<void>;
     validateUser(userId: string): Promise<{
+        name: string;
         id: string;
         createdAt: Date;
-        name: string;
+        updatedAt: Date;
+        phone: string;
         email: string;
+        city: string | null;
         emailVerified: boolean;
         emailVerifyToken: string | null;
         emailVerifyExpiry: Date | null;
-        phone: string;
         passwordHash: string;
         roles: import("@prisma/client/runtime/library").JsonValue;
-        city: string | null;
-        updatedAt: Date;
     }>;
     private issue;
 }

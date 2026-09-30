@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { Skeleton, SkeletonCard } from '@/components/ui/Skeleton';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { listingsApi, walletApi } from '@/lib/api';
+import { listingsApi, usersApi, walletApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
 import { useWallet, UNLOCK_COST, LOW_BALANCE, TopUpModal, LowBalanceModal } from '@/components/wallet/WalletComponents';
 
@@ -25,6 +25,8 @@ export default function JobDetailPage() {
 
   const { data:job, isLoading } = useQuery({ queryKey:['listing',id], queryFn:()=>listingsApi.getById(id), enabled:!!id });
   const { data:similar=[] }    = useQuery({ queryKey:['similar',id,(job as any)?.targetRoleType], queryFn:()=>listingsApi.getSimilar(id,(job as any).targetRoleType), enabled:!!job });
+  const { data: me } = useQuery({ queryKey:['me'], queryFn:()=>usersApi.getMe(), enabled:isAuthenticated });
+  const isOwner = !!me && !!job && (me as any).id === (job as any).postedById;
   const { data:unlockStatus }  = useQuery({
     queryKey: ['listing-unlock', id],
     queryFn:  () => walletApi.listingStatus([id]).then((r:any) => r[id]),
@@ -179,7 +181,64 @@ export default function JobDetailPage() {
       <div className="layout-sidebar-col" style={{ position:'sticky', top:'86px', alignSelf:'flex-start' }}>
         {/* Unlock / Contact card */}
         <div className="gc" style={{ padding:'24px', marginBottom:'18px', top:'86px' }}>
-          {isUnlocked ? (
+          {isOwner ? (
+              // ── Owner view: status + contact info, no unlock, no apply ────────────────────────────
+              <>
+                <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'14px' }}>
+                  <span style={{ fontSize:'18px' }}>📋</span>
+                  <span style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'var(--offwhite)' }}>Your Listing</span>
+                </div>
+              {(() => {
+                const st: Record<string, { bg:string; border:string; color:string; label:string }> = {
+                  PENDING:  { bg:'rgba(245,158,11,0.1)',  border:'rgba(245,158,11,0.3)',  color:'var(--warn)', label:'⏳ Pending Review' },
+                  APPROVED: { bg:'rgba(74,222,128,0.1)',  border:'rgba(74,222,128,0.3)',  color:'var(--ok)',   label:'✅ Live'            },
+                  REJECTED: { bg:'rgba(255,107,107,0.1)', border:'rgba(255,107,107,0.3)', color:'var(--err)',  label:'❌ Needs Changes'   },
+                };
+                const s = st[(job as any).status] ?? st.PENDING;
+                return (
+                  <span style={{ display:'inline-block', padding:'4px 12px', borderRadius:'50px', fontSize:'11px', fontWeight:700, background:s.bg, border:`1px solid ${s.border}`, color:s.color, marginBottom:'16px' }}>
+                    {s.label}
+                  </span>
+                );
+              })()}
+
+              <div style={{ display:'flex', flexDirection:'column', gap:'10px', marginBottom:'16px' }}>
+                <div>
+                  <div style={{ fontSize:'10px', color:'var(--muted)', marginBottom:'2px', textTransform:'uppercase', letterSpacing:'0.8px' }}>Organisation</div>
+                  <div style={{ fontSize:'13px', fontWeight:600, color:'var(--offwhite)' }}>{(job as any).organisationName}</div>
+                </div>
+                <div>
+                  <div style={{ fontSize:'10px', color:'var(--muted)', marginBottom:'2px', textTransform:'uppercase', letterSpacing:'0.8px' }}>Posted</div>
+                  <div style={{ fontSize:'13px', fontWeight:600, color:'var(--offwhite)' }}>
+                    {(job as any).postedAt ? new Date((job as any).postedAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '—'}
+                  </div>
+                </div>
+              </div>
+              {[
+                  details?.contactPerson && ['Contact', details.contactPerson],
+                  details?.contactEmail  && ['Email',   details.contactEmail],
+                  details?.contactPhone  && ['Phone',   details.contactPhone],
+                ].filter(Boolean).length > 0 ? (
+                  <div style={{ paddingTop:'14px', borderTop:'1px solid var(--bf)' }}>
+                    <div style={{ fontSize:'10px', fontWeight:700, color:'var(--gold3)', letterSpacing:'1px', textTransform:'uppercase', marginBottom:'10px' }}>Contact Details</div>
+                    {[
+                      details?.contactPerson && ['Contact', details.contactPerson],
+                      details?.contactEmail  && ['Email',   details.contactEmail],
+                      details?.contactPhone  && ['Phone',   details.contactPhone],
+                    ].filter(Boolean).map(([label, val]: any) => (
+                      <div key={label} style={{ marginBottom:'10px' }}>
+                        <div style={{ fontSize:'10px', color:'var(--muted)', marginBottom:'2px', textTransform:'uppercase', letterSpacing:'0.8px' }}>{label}</div>
+                        <div style={{ fontSize:'13px', fontWeight:600, color:'var(--offwhite)' }}>{val}</div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p style={{ fontSize:'11px', color:'var(--faint)', fontStyle:'italic', paddingTop:'14px', borderTop:'1px solid var(--bf)' }}>
+                    No contact details were added to this listing.
+                  </p>
+                )}
+              </>
+            ) : isUnlocked ? (
             // ── Contact details revealed after unlock ──────────────────────
             <>
               <div style={{ display:'flex', alignItems:'center', gap:'8px', marginBottom:'14px' }}>

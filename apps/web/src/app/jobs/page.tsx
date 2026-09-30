@@ -1,9 +1,10 @@
 'use client';
 import { useState, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { listingsApi } from '@/lib/api';
+import { listingsApi, usersApi } from '@/lib/api';
 import { JobCard } from '@/components/ui/JobCard';
 import { SkeletonCard } from '@/components/ui/Skeleton';
+import { useAuthStore } from '@/store/auth.store';
 
 const ROLES    = [['INTERN','🎓 Intern'],['FRESHER','🌱 Fresher'],['JOB_SEEKER','🔍 Job Seeker'],['FREELANCER','💻 Freelancer'],['CONSULTANT','🧑‍💼 Consultant'],['TRAINER','📚 Trainer'],['RFP_PROVIDER','📋 RFP']];
 const MARKETS  = [['IT_FIELD','🌐 IT Field'],['NON_IT_FIELD','🎨 Non-IT'],['SERVICES','🤝 Services']];
@@ -20,6 +21,7 @@ function Pill({ label, active, onClick }: { label:string; active:boolean; onClic
 }
 
 export default function JobsPage() {
+  const { isAuthenticated } = useAuthStore();
   const [search, setSearch]   = useState('');
   const [view, setView]       = useState<'grid'|'list'>('grid');
   const [page, setPage]         = useState(1);
@@ -32,6 +34,8 @@ export default function JobsPage() {
     queryFn:  () => listingsApi.browse({ ...filters, page, limit:20 }),
     placeholderData: (prev: any) => prev,
   });
+
+  const { data: me } = useQuery({ queryKey:['me'], queryFn:()=>usersApi.getMe(), enabled:isAuthenticated });
 
   const listings   = data?.data ?? [];
   const total      = data?.total ?? 0;
@@ -117,7 +121,7 @@ export default function JobsPage() {
             </div>
           ) : (
             <div style={{ display:view==='grid'?'grid':'flex', gridTemplateColumns:'repeat(auto-fill,minmax(300px,1fr))', flexDirection:'column', gap:'16px' }}>
-              {listings.map((j: any) => <JobCard key={j.id} job={j} />)}
+              {listings.map((j: any) => <JobCard key={j.id} job={j} isOwner={!!me && (me as any).id === j.postedById} />)}
             </div>
           )}
 
