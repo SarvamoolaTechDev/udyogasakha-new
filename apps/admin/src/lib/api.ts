@@ -75,4 +75,6 @@ export const paymentsApi = {
 export const analyticsApi = {
   getDashboard: (period: string = 'month') =>
     api.get('/analytics', { params: { period } }).then(r => r.data),
+    getDaily: (days: number = 30) =>
+      api.get('/analytics/daily', { params: { days } }).then(r => r.data),
 };

@@ -20,4 +20,12 @@ export class AnalyticsController {
     const p: Period = validPeriods.includes(period as Period) ? (period as Period) : 'month';
     return this.svc.getDashboard(p);
   }
+
+  @Get('daily')
+  @ApiOperation({ summary: 'Per-day transaction breakdown for the last N days' })
+  @ApiQuery({ name: 'days', required: false, description: 'Number of days to look back (default 30)' })
+  getDailyTransactions(@Query('days') days?: string) {
+    const n = Math.min(Math.max(parseInt(days ?? '30', 10) || 30, 1), 90);
+    return this.svc.getDailyTransactions(n);
+  }
 }

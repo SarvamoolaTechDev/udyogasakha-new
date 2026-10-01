@@ -136,7 +136,7 @@ export default function CreateEditAdPage() {
 
         {/* Contact details */}
         <div style={{ background:'rgba(200,146,10,0.04)', border:'1px solid rgba(200,146,10,0.15)', borderRadius:'12px', padding:'16px' }}>
-          <div style={{ fontSize:'11px', fontWeight:700, color:'var(--gold3)', marginBottom:'12px' }}>Contact Details (hidden until viewer pays 30 pts)</div>
+          <div style={{ fontSize:'11px', fontWeight:700, color:'var(--gold3)', marginBottom:'12px' }}>Contact Details (visible to anyone who views this ad)</div>
           <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'12px' }}>
             {inp('Contact Phone', 'contactPhone', 'tel', 'Separate number for this ad')}
             {inp('Contact Email', 'contactEmail', 'email', 'Separate email if preferred')}

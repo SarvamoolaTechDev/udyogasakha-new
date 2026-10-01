@@ -11,6 +11,7 @@ const NAV = [
   { href:'/',        label:'Home'        },
   { href:'/jobs',    label:'Browse Jobs' },
   { href:'/talent',  label:'Find Talent' },
+  { href:'/ads',     label:'Ad Manager'  },
   { href:'/post',    label:'Post a Job'  },
   { href:'/profile', label:'My Profile'  },
 ];

@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { analyticsApi } from '@/lib/api';
 import {
-  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell,
+  BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, Legend,
 } from 'recharts';
 
 // ── Types ──────────────────────────────────────────────────────────────────────
@@ -20,6 +20,17 @@ const ROLE_LABELS: Record<string, string> = {
   JOB_SEEKER: 'Job Seeker', INTERN: 'Intern', FRESHER: 'Fresher',
   CONSULTANT: 'Consultant', HIRING_MANAGER: 'Hiring Mgr', RECRUITER: 'Recruiter',
   TRAINER: 'Trainer', VENDOR: 'Vendor', RFP_PROVIDER: 'RFP Provider',
+};
+
+const TXN_LABELS: Record<string,string> = {
+  JOB_UNLOCK: 'Job Unlock', PROFILE_UNLOCK: 'Profile Unlock',
+  AD_CONTACT_UNLOCK: 'Ad Contact', AD_EXTEND: 'Ad Extend',
+  TOPUP: 'Top-Up', ADMIN_ADJUSTMENT: 'Admin Adj.', SIGNUP_BONUS: 'Bonus',
+};
+const TXN_COLORS: Record<string,string> = {
+  JOB_UNLOCK: '#1A3A6B', PROFILE_UNLOCK: '#2563EB',
+  AD_CONTACT_UNLOCK: '#D97706', AD_EXTEND: '#C8920A',
+  TOPUP: '#16A34A', ADMIN_ADJUSTMENT: '#7C3AED', SIGNUP_BONUS: '#DB2777',
 };
 
 const MARKET_LABELS: Record<string, string> = {
@@ -141,6 +152,13 @@ export default function AnalyticsDashboard() {
     staleTime:       60 * 60 * 1000,
   });
 
+  const { data: dailyData, isLoading: dailyLoading } = useQuery({
+    queryKey:        ['analytics-daily', 30],
+    queryFn:         () => analyticsApi.getDaily(30),
+    refetchInterval: 2.5 * 60 * 60 * 1000,
+    staleTime:       60 * 60 * 1000,
+  });
+
   const lastRefreshed = dataUpdatedAt
     ? new Date(dataUpdatedAt).toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' })
     : null;
@@ -246,6 +264,33 @@ export default function AnalyticsDashboard() {
                 })}
               </tbody>
             </table>
+          </div>
+
+          {/* ── Section 3.5: Daily Transactions ──────────────────────────── */}
+          <SectionTitle>Daily Transactions (Last 30 Days)</SectionTitle>
+          <div className="gc" style={{ padding:'22px', marginBottom:'36px' }}>
+            {dailyLoading ? (
+              <div style={{ color:'var(--faint)', fontSize:'12px', textAlign:'center', padding:'40px' }}>Loading…</div>
+            ) : !dailyData || (dailyData as any[]).length === 0 ? (
+              <div style={{ color:'var(--faint)', fontSize:'12px', textAlign:'center', padding:'40px' }}>No transactions in the last 30 days</div>
+            ) : (
+              <ResponsiveContainer width="100%" height={340}>
+                <BarChart data={dailyData as any[]} margin={{ left:0, right:24, top:8, bottom:0 }}>
+                  <XAxis dataKey="day" tick={{ fontSize:9, fill:'var(--muted)' }}
+                    tickFormatter={(v: string) => new Date(v).toLocaleDateString('en-IN', { day:'numeric', month:'short' })} />
+                  <YAxis tick={{ fontSize:10, fill:'var(--muted)' }} />
+                  <Tooltip
+                    labelFormatter={(v: string) => new Date(v).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}
+                    formatter={(v: any, name: string) => [v, TXN_LABELS[name] ?? name]}
+                    contentStyle={{ fontSize:'11px', borderRadius:'8px', border:'1px solid var(--border)' }}
+                  />
+                  <Legend wrapperStyle={{ fontSize:'10px' }} formatter={(v: string) => TXN_LABELS[v] ?? v} />
+                  {Object.keys(TXN_LABELS).map(key => (
+                    <Bar key={key} dataKey={key} stackId="txns" fill={TXN_COLORS[key]} radius={key === 'SIGNUP_BONUS' ? [4,4,0,0] : undefined} />
+                  ))}
+                </BarChart>
+              </ResponsiveContainer>
+            )}
           </div>
 
           {/* ── Section 4: Breakdown ──────────────────────────────────────── */}

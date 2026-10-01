@@ -116,7 +116,6 @@ export default function AdDetailPage() {
             {a.isOwner && (
               <div style={{ display:'flex', gap:'20px', paddingTop:'16px', borderTop:'1px solid var(--bf)', fontSize:'12px', color:'var(--muted)' }}>
                 <span>👁 {a.viewCount} views</span>
-                <span>🔓 {a.unlockCount} contact unlocks</span>
               </div>
             )}
           </div>

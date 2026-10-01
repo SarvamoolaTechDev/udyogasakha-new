@@ -45,7 +45,7 @@ export default function BrowseAdsPage() {
           <h1 style={{ fontFamily:'Cinzel,serif', fontSize:'clamp(22px,3vw,38px)', fontWeight:700, color:'var(--offwhite)', marginTop:'6px', marginBottom:'6px' }}>
             Browse <span style={{ background:'linear-gradient(135deg,var(--gold2),var(--gold3))', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>Ads</span>
           </h1>
-          <p style={{ fontSize:'12px', color:'var(--muted)' }}>{total} active ads · Click an ad to view full details · 30 pts to unlock contact</p>
+          <p style={{ fontSize:'12px', color:'var(--muted)' }}>{total} active ads · Click an ad to view full details</p>
         </div>
         <Link href="/ads/create" className="btn-gold" style={{ padding:'10px 22px', borderRadius:'50px', textDecoration:'none', fontSize:'12px' }}>+ Post My Ad</Link>
       </div>
@@ -114,7 +114,7 @@ export default function BrowseAdsPage() {
                 </div>
 
                 <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', paddingTop:'10px', borderTop:'1px solid var(--bf)', fontSize:'10px', color:'var(--faint)' }}>
-                  <span>👁 {ad.viewCount} views · 🔓 {ad.unlockCount} contacts</span>
+                  <span>👁 {ad.viewCount} views · 📇 {ad.unlockCount} contact views</span>
                   <span style={{ color:'var(--gold3)', fontWeight:600 }}>View →</span>
                 </div>
               </div>

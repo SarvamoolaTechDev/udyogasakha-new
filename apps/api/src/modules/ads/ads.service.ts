@@ -4,11 +4,12 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { WalletService } from '../wallet/wallet.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { AdStatus, ProfileStatus, RoleType, WorkMode, MarketField, TransactionType } from '@prisma/client';
 import { parsePage, paginate } from '../../common/pagination';
 
 const MAX_ACTIVE_ADS  = 2;
-const AD_UNLOCK_COST  = 30;  // points to unlock contact details
+//const AD_UNLOCK_COST  = 30;  // points to unlock contact details
 const AD_EXTEND_COST  = 30;  // points to extend an ad by 30 days
 const MAX_DURATION    = 30;  // max days an ad can run
 
@@ -29,6 +30,7 @@ export class AdsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly wallet: WalletService,
+    private readonly notify: NotificationsService,
   ) {}
 
   // ── Browse (public — any logged-in user) ──────────────────────────────────
@@ -127,14 +129,13 @@ export class AdsService {
 
   // ── Create ad ─────────────────────────────────────────────────────────────
   async create(userId: string, dto: CreateAdDto) {
-    // Must have at least one approved JOB_SEEKER profile
-    // Interns and Freshers can also post ads — they are also job-seeking roles
-    const AD_ELIGIBLE_ROLES = [RoleType.JOB_SEEKER, RoleType.INTERN, RoleType.FRESHER];
+    // Must have at least one approved profile
+    //const AD_ELIGIBLE_ROLES = [RoleType.JOB_SEEKER, RoleType.INTERN, RoleType.FRESHER];
     const profile = await this.prisma.candidateProfile.findFirst({
-      where: { userId, roleType: { in: AD_ELIGIBLE_ROLES as any[] }, status: ProfileStatus.APPROVED },
+      where: { userId, status: ProfileStatus.APPROVED },
     });
     if (!profile) {
-      throw new ForbiddenException('Only Job Seekers, Interns, and Freshers with an approved profile can post ads.');
+      throw new ForbiddenException('You need atleast 1 approved profile to post ads.');
     }
 
     // Max 2 active ads
@@ -157,7 +158,7 @@ export class AdsService {
         location:     dto.location,
         salaryExpect: dto.salaryExpect,
         workMode:     dto.workMode,
-        marketField:  profile.marketField ?? MarketField.IT_FIELD,
+        marketField:  profile.marketField, // ?? MarketField.IT_FIELD,
         contactPhone: dto.contactPhone,
         contactEmail: dto.contactEmail,
         durationDays,
@@ -235,54 +236,35 @@ export class AdsService {
     });
   }
 
-  // ── Unlock contact (costs AD_UNLOCK_COST points) ──────────────────────────
+  // ── Unlock contact ──────────────────────────
   async unlockContact(adId: string, viewerUserId: string) {
     const ad = await this.prisma.advertisement.findUnique({ where: { id: adId } });
     if (!ad || ad.status === AdStatus.DELETED) throw new NotFoundException('Ad not found');
     if (ad.userId === viewerUserId) throw new BadRequestException('You cannot unlock your own ad contact');
     if (ad.expiresAt < new Date()) throw new BadRequestException('This ad has expired');
 
-    // Idempotent check
+    // Idempotent — if already unlocked, just return the contact details again
     const existing = await this.prisma.adContactUnlock.findUnique({
       where: { adId_userId: { adId, userId: viewerUserId } },
     });
-    if (existing) {
-      const balance = await this.wallet.getBalance(viewerUserId);
-      return { alreadyUnlocked: true, balance, contactPhone: ad.contactPhone, contactEmail: ad.contactEmail };
+
+    if (!existing) {
+      await this.prisma.adContactUnlock.create({ data: { adId, userId: viewerUserId } });
+
+      // Notify the ad owner that someone unlocked their contact — best-effort, never blocks the unlock
+      const viewer = await this.prisma.user.findUnique({ where: { id: viewerUserId }, select: { name: true } });
+      await this.notify.send({
+        userId:  ad.userId,
+        subject: 'Someone Viewed Your Contact Details',
+        body:    `${viewer?.name ?? 'Someone'} viewed your contact details for "${ad.title}". Check your Ad Manager to see all responses.`,
+        link:    `/ads/my`,
+      }).catch(() => {});
     }
-
-    const wallet = await this.prisma.wallet.findUnique({ where: { userId: viewerUserId } });
-    if (!wallet || wallet.balance < AD_UNLOCK_COST) {
-      throw new BadRequestException(`You need ${AD_UNLOCK_COST} points to unlock contact details. Current balance: ${wallet?.balance ?? 0}`);
-    }
-
-    const result = await this.prisma.$transaction(async tx => {
-      await tx.adContactUnlock.create({ data: { adId, userId: viewerUserId } });
-
-      const updatedWallet = await tx.wallet.update({
-        where: { userId: viewerUserId },
-        data:  { balance: { decrement: AD_UNLOCK_COST } },
-      });
-
-      await tx.pointTransaction.create({
-        data: {
-          walletId:    wallet.id,
-          amount:      -AD_UNLOCK_COST,
-          type:        TransactionType.AD_CONTACT_UNLOCK,
-          referenceId: adId,
-          note:        `Unlocked contact for ad: ${ad.title}`,
-        },
-      });
-
-      return updatedWallet.balance;
-    });
 
     return {
-      alreadyUnlocked: false,
-      balance:      result,
-      lowBalance:   result <= 200,
-      contactPhone: ad.contactPhone,
-      contactEmail: ad.contactEmail,
+      alreadyUnlocked: !!existing,
+      contactPhone:    ad.contactPhone,
+      contactEmail:    ad.contactEmail,
     };
   }
 

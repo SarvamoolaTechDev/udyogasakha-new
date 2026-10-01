@@ -135,4 +135,42 @@ export class AnalyticsService {
       totalUnlocks:      listingUnlocks + profileUnlocks,
     };
   }
+
+  // ── Daily transaction breakdown — for the admin analytics chart ──────────
+  async getDailyTransactions(days: number) {
+    const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+
+    const rows = await this.prisma.$queryRaw<{ day: string; type: string; count: bigint; totalPoints: bigint }[]>`
+      SELECT
+        DATE(created_at) AS day,
+        type,
+        COUNT(*) AS count,
+        SUM(ABS(amount)) AS totalPoints
+      FROM point_transactions
+      WHERE created_at >= ${since}
+      GROUP BY DATE(created_at), type
+      ORDER BY day ASC
+    `;
+
+    // Reshape into { day, JOB_UNLOCK, PROFILE_UNLOCK, AD_CONTACT_UNLOCK, AD_EXTEND, TOPUP, ADMIN_ADJUSTMENT, SIGNUP_BONUS, total }
+    const byDay: Record<string, any> = {};
+    for (const r of rows) {
+      const day = r.day;
+      if (!byDay[day]) {
+        byDay[day] = {
+          day,
+          JOB_UNLOCK: 0, PROFILE_UNLOCK: 0, AD_CONTACT_UNLOCK: 0, AD_EXTEND: 0,
+          TOPUP: 0, ADMIN_ADJUSTMENT: 0, SIGNUP_BONUS: 0,
+          totalTransactions: 0, totalPoints: 0,
+        };
+      }
+      const count  = Number(r.count);
+      const points = Number(r.totalPoints);
+      byDay[day][r.type]          = count;
+      byDay[day].totalTransactions += count;
+      byDay[day].totalPoints       += points;
+    }
+
+    return Object.values(byDay);
+  }
 }
