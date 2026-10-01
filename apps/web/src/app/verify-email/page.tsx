@@ -1,10 +1,10 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { authApi } from '@/lib/api';
 
-export default function VerifyEmailPage() {
+function VerifyEmailInner() {
   const params  = useSearchParams();
   const token   = params.get('token');
   const [status, setStatus] = useState<'loading'|'success'|'error'>('loading');
@@ -45,5 +45,17 @@ export default function VerifyEmailPage() {
         </>
       )}
     </div>
+  );
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ minHeight:'70vh', display:'flex', alignItems:'center', justifyContent:'center' }}>
+        <div style={{ fontSize:'48px' }}>⏳</div>
+      </div>
+    }>
+      <VerifyEmailInner />
+    </Suspense>
   );
 }
