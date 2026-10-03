@@ -121,7 +121,7 @@ export default function HomePage() {
             border: '1px solid var(--border)', background: 'rgba(200,146,10,0.06)',
           }}>
             <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: 'var(--gold2)', boxShadow: '0 0 8px var(--goldglow)', animation: 'pulse 2s ease infinite' }} />
-            India's Unified Employment Ecosystem
+            A Unified Employment Ecosystem
           </div>
 
           <h1 style={{ fontFamily: 'Cinzel,serif', fontSize: 'clamp(28px,5vw,62px)', lineHeight: 1.1, fontWeight: 700, color: 'var(--offwhite)', marginBottom: '14px' }}>
@@ -280,7 +280,7 @@ export default function HomePage() {
             <div style={{ fontFamily: 'Cinzel,serif', fontSize: '12px', fontWeight: 700, color: '#fff', lineHeight: 1.5, marginBottom: '10px' }}>
               Sarvamoola<br /><span style={{ background: 'linear-gradient(135deg,var(--gold2),var(--gold3))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>Udyoga Sakha</span>
             </div>
-            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, fontWeight: 300, maxWidth: '240px' }}>India's unified employment ecosystem connecting talent across 9 roles with verified opportunities.</p>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)', lineHeight: 1.8, fontWeight: 300, maxWidth: '240px' }}>A unified employment ecosystem connecting talent across 9 roles with verified opportunities.</p>
           </div>
           {[
             {
