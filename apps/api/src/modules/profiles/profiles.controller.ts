@@ -46,6 +46,14 @@ export class ProfilesController {
     return this.svc.deleteExperience(userId, id);
   }
 
+  // Self-delete of profile
+  @Delete('me/:id')
+  @ApiOperation({ summary: 'Delete your own profile' })
+  @ApiBearerAuth()
+  deleteOwnProfile(@Param('id') id: string, @CurrentUser('id') userId: string) {
+    return this.svc.deleteOwnProfile(id, userId);
+  }
+
   // ── Moderator routes ──────────────────────────────────────────────────────
 
   @Get('pending')
@@ -101,6 +109,7 @@ export class ProfilesController {
     return this.svc.reject(id, modId, dto.reason);
   }
 
+  // Admin delete of user profile
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('MODERATOR', 'ADMIN')

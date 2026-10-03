@@ -38,6 +38,10 @@ let ProfilesController = class ProfilesController {
     delExp(userId, id) {
         return this.svc.deleteExperience(userId, id);
     }
+    // Self-delete of profile
+    deleteOwnProfile(id, userId) {
+        return this.svc.deleteOwnProfile(id, userId);
+    }
     // ── Moderator routes ──────────────────────────────────────────────────────
     getPending(page, limit) {
         return this.svc.getPending(page, limit);
@@ -54,6 +58,7 @@ let ProfilesController = class ProfilesController {
     reject(id, modId, dto) {
         return this.svc.reject(id, modId, dto.reason);
     }
+    // Admin delete of user profile
     remove(id) {
         return this.svc.remove(id);
     }
@@ -110,6 +115,16 @@ __decorate([
     __metadata("design:paramtypes", [String, String]),
     __metadata("design:returntype", void 0)
 ], ProfilesController.prototype, "delExp", null);
+__decorate([
+    (0, common_1.Delete)('me/:id'),
+    (0, swagger_1.ApiOperation)({ summary: 'Delete your own profile' }),
+    (0, swagger_1.ApiBearerAuth)(),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, auth_guards_1.CurrentUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], ProfilesController.prototype, "deleteOwnProfile", null);
 __decorate([
     (0, common_1.Get)('pending'),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),

@@ -8,6 +8,9 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ProfilesService = void 0;
 const common_1 = require("@nestjs/common");
@@ -18,6 +21,8 @@ const audit_service_1 = require("../audit/audit.service");
 const notifications_service_1 = require("../notifications/notifications.service");
 const wallet_service_1 = require("../wallet/wallet.service");
 const search_service_1 = require("../search/search.service");
+const common_2 = require("@nestjs/common");
+const storage_interface_1 = require("../../common/storage/storage.interface");
 /**
  * Derives the three-bucket market field from the candidate's own segment selection.
  * This is deterministic — no moderator input required.
@@ -35,12 +40,13 @@ function deriveMarketField(segment) {
     return client_1.MarketField.NON_IT_FIELD;
 }
 let ProfilesService = class ProfilesService {
-    constructor(prisma, audit, notify, search, wallet) {
+    constructor(prisma, audit, notify, search, wallet, storage) {
         this.prisma = prisma;
         this.audit = audit;
         this.notify = notify;
         this.search = search;
         this.wallet = wallet;
+        this.storage = storage;
     }
     async upsert(userId, dto) {
         const existing = await this.prisma.candidateProfile.findUnique({
@@ -247,6 +253,9 @@ let ProfilesService = class ProfilesService {
         await this.search.removeProfile(id);
         return after;
     }
+    /**
+     * Admin removes the profile from admin portal
+     */
     async remove(id) {
         const profile = await this.prisma.candidateProfile.findUnique({ where: { id } });
         if (!profile)
@@ -261,6 +270,34 @@ let ProfilesService = class ProfilesService {
             metadata: { roleType: profile.roleType, userId: profile.userId },
         });
         return { message: 'Profile removed' };
+    }
+    /**
+     * Self-service profile deletion — the owner deletes their own profile.
+     * Distinct from remove() which is moderator/admin only.
+     */
+    async deleteOwnProfile(profileId, userId) {
+        const profile = await this.prisma.candidateProfile.findUnique({
+            where: { id: profileId },
+            include: { documents: true },
+        });
+        if (!profile)
+            throw new common_1.NotFoundException('Profile not found');
+        if (profile.userId !== userId)
+            throw new common_2.ForbiddenException('You do not own this profile');
+        // Clean up uploaded document files from blob storage before the DB cascade removes the rows
+        for (const doc of profile.documents) {
+            await this.storage.delete(doc.storageKey).catch(() => { });
+        }
+        // Remove from search index if it was live
+        if (profile.status === client_1.ProfileStatus.APPROVED) {
+            await this.search.removeProfile(profileId).catch(() => { });
+        }
+        await this.prisma.candidateProfile.delete({ where: { id: profileId } });
+        await this.audit.log({
+            entityType: 'profile', entityId: profileId, action: 'PROFILE_SELF_DELETED', actorId: userId,
+            metadata: { roleType: profile.roleType },
+        });
+        return { message: 'Profile deleted' };
     }
     /**
      * Returns the full profile with all submitted fields and experience entries.
@@ -289,10 +326,11 @@ let ProfilesService = class ProfilesService {
 exports.ProfilesService = ProfilesService;
 exports.ProfilesService = ProfilesService = __decorate([
     (0, common_1.Injectable)(),
+    __param(5, (0, common_2.Inject)(storage_interface_1.STORAGE_SERVICE)),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         audit_service_1.AuditService,
         notifications_service_1.NotificationsService,
         search_service_1.SearchService,
-        wallet_service_1.WalletService])
+        wallet_service_1.WalletService, Object])
 ], ProfilesService);
 //# sourceMappingURL=profiles.service.js.map

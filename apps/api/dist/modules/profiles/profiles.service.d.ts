@@ -4,13 +4,15 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { WalletService } from '../wallet/wallet.service';
 import { SearchService } from '../search/search.service';
 import { UpsertProfileDto, AddExperienceDto } from './dto/profile.dto';
+import { IStorageService } from '../../common/storage/storage.interface';
 export declare class ProfilesService {
     private readonly prisma;
     private readonly audit;
     private readonly notify;
     private readonly search;
     private readonly wallet;
-    constructor(prisma: PrismaService, audit: AuditService, notify: NotificationsService, search: SearchService, wallet: WalletService);
+    private readonly storage;
+    constructor(prisma: PrismaService, audit: AuditService, notify: NotificationsService, search: SearchService, wallet: WalletService, storage: IStorageService);
     upsert(userId: string, dto: UpsertProfileDto): Promise<{
         experiences: {
             id: string;
@@ -398,7 +400,17 @@ export declare class ProfilesService {
         preferredLocation: string | null;
         submittedAt: Date;
     }>;
+    /**
+     * Admin removes the profile from admin portal
+     */
     remove(id: string): Promise<{
+        message: string;
+    }>;
+    /**
+     * Self-service profile deletion — the owner deletes their own profile.
+     * Distinct from remove() which is moderator/admin only.
+     */
+    deleteOwnProfile(profileId: string, userId: string): Promise<{
         message: string;
     }>;
     /**

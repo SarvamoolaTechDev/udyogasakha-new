@@ -44,9 +44,12 @@ export const authApi = {
 export const usersApi = {
   getMe:    ()               => api.get('/users/me').then(r => r.data),
   updateMe: (dto: any)       => api.patch('/users/me', dto).then(r => r.data),
+  deleteMe: (password: string) => api.delete('/users/me', { data: { password } }).then(r => r.data),
+
   // Admin only
   list:     (params?: any)   => api.get('/users', { params }).then(r => r.data),
   getById:  (id: string)     => api.get(`/users/${id}`).then(r => r.data),
+  deleteByAdmin: (id: string)  => api.delete(`/users/${id}`).then(r => r.data),
 };
 
 // ── Listings ───────────────────────────────────────────────────────────────────
@@ -76,6 +79,7 @@ export const profilesApi = {
   approve:      (id: string, marketField: string)   => api.patch(`/profiles/${id}/approve`, { marketField }).then(r => r.data),
   reject:       (id: string, reason: string)        => api.patch(`/profiles/${id}/reject`, { reason }).then(r => r.data),
   reactivate:   (id: string)                        => api.patch(`/profiles/${id}/reactivate`).then(r => r.data),
+  deleteOwnProfile: (id: string) => api.delete(`/profiles/me/${id}`).then(r => r.data),
 };
 
 // ── Documents ──────────────────────────────────────────────────────────────────

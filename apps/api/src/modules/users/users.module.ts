@@ -1,9 +1,15 @@
-import { Controller, Get, Patch, Param, Body, Query, UseGuards, Module } from '@nestjs/common';
+import { Controller, Get, Patch, Delete, Param, Body, Query, UseGuards, Module } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/user.dto';
 import { JwtAuthGuard, RolesGuard, Roles, CurrentUser } from '../../common/guards/auth.guards';
 import { UserRole } from '../../common/user-role.enum';
+import { EmailModule } from '../../common/email/email.module';
+import { SearchModule } from '../search/search.module';
+
+class DeleteAccountDto {
+  password: string;
+}
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -22,6 +28,23 @@ export class UsersController {
   @ApiOperation({ summary: 'Update my name, phone, city' })
   updateMe(@CurrentUser('id') id: string, @Body() dto: UpdateUserDto) {
     return this.svc.updateMe(id, dto);
+  }
+
+  @Delete('me')
+  @ApiOperation({ summary: 'Delete my own account permanently — requires password confirmation' })
+  deleteMe(@CurrentUser('id') id: string, @Body() dto: DeleteAccountDto) {
+    return this.svc.deleteMe(id, dto.password);
+  }
+
+  @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles(UserRole.ADMIN)
+  @ApiOperation({ summary: '[Admin] Delete a user account permanently' })
+  deleteByAdmin(
+    @Param('id') id: string,
+    @CurrentUser('id') adminId: string,
+  ) {
+    return this.svc.deleteByAdmin(id, adminId);
   }
 
   @Get()
@@ -48,5 +71,9 @@ export class UsersController {
   }
 }
 
-@Module({ controllers: [UsersController], providers: [UsersService] })
+@Module({ 
+  imports:     [EmailModule, SearchModule],
+  controllers: [UsersController],
+  providers:   [UsersService],
+})
 export class UsersModule {}

@@ -1,8 +1,10 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { usersApi, authApi } from '@/lib/api';
+import { useAuthStore } from '@/store/auth.store';
 import { useToast } from '@/components/ui/Toast';
 import { PasswordInput } from '@/components/ui/PasswordInput';
 import { Skeleton } from '@/components/ui/Skeleton';
@@ -12,6 +14,11 @@ const Err = ({ msg }: { msg?: string }) =>
 
 export default function SettingsPage() {
   const { toast } = useToast();
+  const router = useRouter();
+  const { clearAuth } = useAuthStore();
+  const [showDeleteAccount, setShowDeleteAccount] = useState(false);
+  const [deletePassword, setDeletePassword] = useState('');
+  const [deleteError, setDeleteError] = useState('');
 
   const { data: me, isLoading } = useQuery({ queryKey:['me'], queryFn: usersApi.getMe });
 
@@ -39,6 +46,15 @@ export default function SettingsPage() {
       authApi.changePassword?.({ currentPassword, newPassword }) ?? Promise.reject('Not implemented'),
     onSuccess: () => { toast('Password changed. Please log in again.', 'ok'); resetPwd(); },
     onError:   (e: any) => toast(e?.response?.data?.message ?? 'Change failed', 'err'),
+  });
+
+  const deleteAccountMut = useMutation({
+    mutationFn: (password: string) => usersApi.deleteMe(password),
+    onSuccess: () => {
+      clearAuth();
+      router.push('/');
+    },
+    onError: (e: any) => setDeleteError(e?.response?.data?.message ?? 'Incorrect password'),
   });
 
   const mb: React.CSSProperties = { marginBottom:'16px' };
@@ -128,6 +144,64 @@ export default function SettingsPage() {
           </button>
         </form>
       </div>
+
+      {/* Danger Zone */}
+      <div style={{ marginTop:'18px', borderRadius:'18px', border:'1px solid rgba(220,38,38,0.25)', overflow:'hidden' }}>
+        <div style={{ padding:'24px' }}>
+          {/*<div style={{ fontFamily:'Cinzel,serif', fontSize:'13px', fontWeight:700, color:'var(--err)', marginBottom:'6px' }}>Danger Zone</div>*/}
+          <p style={{ fontSize:'13px', fontWeight: 500, color:'var(--muted)', lineHeight:1.7, marginBottom:'16px' }}>
+            Permanently delete your account, all your profiles, wallet balance, and activity. This cannot be undone.
+          </p>
+          <button
+            onClick={() => setShowDeleteAccount(true)}
+            style={{ padding:'10px 22px', borderRadius:'50px', border:'1px solid rgba(220,38,38,0.4)', background:'transparent', color:'var(--err)', cursor:'pointer', fontSize:'12px', fontFamily:'Raleway,sans-serif', fontWeight:700 }}
+          >
+            Delete My Account
+          </button>
+        </div>
+      </div>
+
+      {/* Delete account confirmation */}
+      {showDeleteAccount && (
+        <div onClick={() => { setShowDeleteAccount(false); setDeletePassword(''); setDeleteError(''); }} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.6)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'18px', border:'1px solid rgba(220,38,38,0.3)', padding:'28px', maxWidth:'420px', width:'100%' }}>
+            <div style={{ fontSize:'36px', marginBottom:'12px', textAlign:'center' }}>⚠️</div>
+            <h3 style={{ fontFamily:'Cinzel,serif', fontSize:'17px', fontWeight:700, color:'var(--offwhite)', marginBottom:'10px', textAlign:'center' }}>
+              Delete your account permanently?
+            </h3>
+            <p style={{ fontSize:'13px', color:'var(--muted)', lineHeight:1.75, marginBottom:'18px', textAlign:'center' }}>
+              This removes every profile, your wallet balance, and all activity. This cannot be undone.
+            </p>
+            <label style={{ fontSize:'11px', fontWeight:700, color:'var(--muted)', display:'block', marginBottom:'6px' }}>
+              Enter your password to confirm
+            </label>
+            <PasswordInput
+              value={deletePassword}
+              onChange={(e: any) => { setDeletePassword(e.target.value); setDeleteError(''); }}
+              className="fi"
+              placeholder="••••••••"
+              style={{ borderColor: deleteError ? 'var(--err)' : undefined }}
+            />
+            {deleteError && <p style={{ color:'var(--err)', fontSize:'11px', marginTop:'4px' }}>{deleteError}</p>}
+            <div style={{ display:'flex', flexDirection:'column', gap:'8px', marginTop:'18px' }}>
+              <button
+                disabled={!deletePassword || deleteAccountMut.isPending}
+                onClick={() => deleteAccountMut.mutate(deletePassword)}
+                style={{
+                  padding:'12px', borderRadius:'50px', border:'none', cursor: deletePassword ? 'pointer' : 'not-allowed',
+                  fontSize:'12px', fontFamily:'Raleway,sans-serif', fontWeight:700, color:'#fff',
+                  background: deletePassword ? 'var(--err)' : 'rgba(220,38,38,0.3)',
+                }}
+              >
+                {deleteAccountMut.isPending ? 'Deleting…' : 'Yes, Delete My Account'}
+              </button>
+              <button onClick={() => { setShowDeleteAccount(false); setDeletePassword(''); setDeleteError(''); }} style={{ padding:'10px', background:'transparent', border:'none', cursor:'pointer', fontSize:'12px', color:'var(--muted)' }}>
+                No, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }

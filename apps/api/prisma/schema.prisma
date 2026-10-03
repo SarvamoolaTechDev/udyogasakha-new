@@ -522,7 +522,7 @@ enum PaymentMethod {
 
 model Payment {
   id                   String         @id @default(uuid())
-  userId               String         @map("user_id")
+  userId               String?        @map("user_id")
   purpose              PaymentPurpose
   referenceId          String?        @map("reference_id")
   amountPaise          Int            @map("amount_paise")
@@ -538,7 +538,7 @@ model Payment {
   createdAt            DateTime       @default(now()) @map("created_at")
   updatedAt            DateTime       @updatedAt @map("updated_at")
 
-  user User @relation(fields: [userId], references: [id])
+  user User? @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([status])

@@ -1,5 +1,8 @@
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/user.dto';
+declare class DeleteAccountDto {
+    password: string;
+}
 export declare class UsersController {
     private readonly svc;
     constructor(svc: UsersService);
@@ -22,6 +25,12 @@ export declare class UsersController {
         email: string;
         city: string;
         roles: import("@prisma/client/runtime/library").JsonValue;
+    }>;
+    deleteMe(id: string, dto: DeleteAccountDto): Promise<{
+        message: string;
+    }>;
+    deleteByAdmin(id: string, adminId: string): Promise<{
+        message: string;
     }>;
     findAll(search?: string, page?: string, limit?: string): Promise<import("../../common/pagination").Paginated<{
         name: string;
@@ -51,3 +60,4 @@ export declare class UsersController {
 }
 export declare class UsersModule {
 }
+export {};

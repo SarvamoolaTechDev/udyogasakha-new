@@ -68,6 +68,15 @@ export class EmailService {
     this.logger.debug(`Email sent to ${to} — ACS messageId: ${result.id}`);
   }
 
+  // Send farewell email before deleting account
+  async sendAccountDeletedEmail(to: string, name: string): Promise<void> {
+    await this.send({
+      to,
+      subject: 'We are Sorry to See You Go',
+      body: `Dear ${name},\n\nYour Sarvamoola UdyogaSakha account has been permanently deleted, along with all associated profiles, wallet balance, and activity.\n\nIf this was a mistake or you'd like to rejoin us in the future, you're always welcome to create a new account.\n\nThank you for being part of our community.\n\nWarm regards,\nTeam Sarvamoola UdyogaSakha`,
+    }).catch(() => {}); // never block account deletion on email failure
+  }
+
   /**
    * Branded HTML email template — Sarvamoola Udyoga Sakha
    * Works in Gmail, Outlook, Apple Mail, and mobile email clients.

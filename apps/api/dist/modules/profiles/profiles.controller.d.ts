@@ -166,6 +166,9 @@ export declare class ProfilesController {
         toDate: string | null;
         displayOrder: number;
     }>;
+    deleteOwnProfile(id: string, userId: string): Promise<{
+        message: string;
+    }>;
     getPending(page?: string, limit?: string): Promise<import("../../common/pagination").Paginated<{
         user: {
             name: string;

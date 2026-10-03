@@ -58,8 +58,9 @@ export const marketApi = {
 };
 
 export const usersApi = {
-  list:    (params?: any) => api.get('/users',    { params }).then(r => r.data),
-  getById: (id: string)   => api.get(`/users/${id}`).then(r => r.data),
+  list:    (params?: any)      => api.get('/users',    { params }).then(r => r.data),
+  getById: (id: string)        => api.get(`/users/${id}`).then(r => r.data),
+  deleteByAdmin: (id: string)  => api.delete(`/users/${id}`).then(r => r.data),
 };
 
 export const auditApi = {

@@ -7,6 +7,8 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { WalletService }       from '../wallet/wallet.service';
 import { SearchService }        from '../search/search.service';
 import { UpsertProfileDto, AddExperienceDto } from './dto/profile.dto';
+import { Inject, ForbiddenException } from '@nestjs/common';
+import { IStorageService, STORAGE_SERVICE } from '../../common/storage/storage.interface';
 
 /**
  * Derives the three-bucket market field from the candidate's own segment selection.
@@ -31,6 +33,7 @@ export class ProfilesService {
     private readonly notify:  NotificationsService,
     private readonly search:  SearchService,
     private readonly wallet:  WalletService,
+    @Inject(STORAGE_SERVICE) private readonly storage: IStorageService,
   ) {}
 
   async upsert(userId: string, dto: UpsertProfileDto) {
@@ -267,6 +270,9 @@ export class ProfilesService {
     return after;
   }
 
+  /**
+   * Admin removes the profile from admin portal
+   */
   async remove(id: string) {
     const profile = await this.prisma.candidateProfile.findUnique({ where: { id } });
     if (!profile) throw new NotFoundException('Profile not found');
@@ -286,6 +292,38 @@ export class ProfilesService {
     return { message: 'Profile removed' };
   }
 
+  /**
+   * Self-service profile deletion — the owner deletes their own profile.
+   * Distinct from remove() which is moderator/admin only.
+   */
+  async deleteOwnProfile(profileId: string, userId: string) {
+    const profile = await this.prisma.candidateProfile.findUnique({
+      where:   { id: profileId },
+      include: { documents: true },
+    });
+
+    if (!profile) throw new NotFoundException('Profile not found');
+    if (profile.userId !== userId) throw new ForbiddenException('You do not own this profile');
+
+    // Clean up uploaded document files from blob storage before the DB cascade removes the rows
+    for (const doc of profile.documents) {
+      await this.storage.delete(doc.storageKey).catch(() => {});
+    }
+
+    // Remove from search index if it was live
+    if (profile.status === ProfileStatus.APPROVED) {
+      await this.search.removeProfile(profileId).catch(() => {});
+    }
+
+    await this.prisma.candidateProfile.delete({ where: { id: profileId } });
+
+    await this.audit.log({
+      entityType: 'profile', entityId: profileId, action: 'PROFILE_SELF_DELETED', actorId: userId,
+      metadata: { roleType: profile.roleType },
+    });
+
+    return { message: 'Profile deleted' };
+  }
 
   /**
    * Returns the full profile with all submitted fields and experience entries.

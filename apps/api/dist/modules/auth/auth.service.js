@@ -69,8 +69,17 @@ let AuthService = AuthService_1 = class AuthService {
             console.log('REGISTER - before issue');
             const tokens = await this.issue(user);
             console.log('REGISTER - tokens issued');
+            { /*if (this.config.emailVerificationEnabled) {
+              this.sendVerificationEmail(user.id).catch(err =>
+                this.logger.warn(`Verification email failed: ${err.message}`)
+              );
+            }*/
+            }
             if (this.config.emailVerificationEnabled) {
-                this.sendVerificationEmail(user.id).catch(err => this.logger.warn(`Verification email failed: ${err.message}`));
+                this.logger.log(`Triggering verification email for user ${user.id}`);
+                this.sendVerificationEmail(user.id)
+                    .then(() => this.logger.log(`Verification email sent successfully to user ${user.id}`))
+                    .catch(err => this.logger.error(`Verification email failed: ${err.message}`, err.stack));
             }
             console.log('REGISTER - returning tokens');
             return tokens;

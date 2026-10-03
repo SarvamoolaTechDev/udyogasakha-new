@@ -1,8 +1,6 @@
 {
-  "/page": "app/page.js",
-  "/notifications/page": "app/notifications/page.js",
   "/login/page": "app/login/page.js",
-  "/ads/create/page": "app/ads/create/page.js",
-  "/ads/page": "app/ads/page.js",
-  "/ads/[id]/page": "app/ads/[id]/page.js"
+  "/profile/page": "app/profile/page.js",
+  "/profile/[role]/page": "app/profile/[role]/page.js",
+  "/settings/page": "app/settings/page.js"
 }

@@ -19,6 +19,10 @@ const users_service_1 = require("./users.service");
 const user_dto_1 = require("./dto/user.dto");
 const auth_guards_1 = require("../../common/guards/auth.guards");
 const user_role_enum_1 = require("../../common/user-role.enum");
+const email_module_1 = require("../../common/email/email.module");
+const search_module_1 = require("../search/search.module");
+class DeleteAccountDto {
+}
 let UsersController = class UsersController {
     constructor(svc) {
         this.svc = svc;
@@ -28,6 +32,12 @@ let UsersController = class UsersController {
     }
     updateMe(id, dto) {
         return this.svc.updateMe(id, dto);
+    }
+    deleteMe(id, dto) {
+        return this.svc.deleteMe(id, dto.password);
+    }
+    deleteByAdmin(id, adminId) {
+        return this.svc.deleteByAdmin(id, adminId);
     }
     findAll(search, page, limit) {
         return this.svc.findAll(search, page, limit);
@@ -54,6 +64,26 @@ __decorate([
     __metadata("design:paramtypes", [String, user_dto_1.UpdateUserDto]),
     __metadata("design:returntype", void 0)
 ], UsersController.prototype, "updateMe", null);
+__decorate([
+    (0, common_1.Delete)('me'),
+    (0, swagger_1.ApiOperation)({ summary: 'Delete my own account permanently — requires password confirmation' }),
+    __param(0, (0, auth_guards_1.CurrentUser)('id')),
+    __param(1, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, DeleteAccountDto]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "deleteMe", null);
+__decorate([
+    (0, common_1.Delete)(':id'),
+    (0, common_1.UseGuards)(auth_guards_1.RolesGuard),
+    (0, auth_guards_1.Roles)(user_role_enum_1.UserRole.ADMIN),
+    (0, swagger_1.ApiOperation)({ summary: '[Admin] Delete a user account permanently' }),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, auth_guards_1.CurrentUser)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:returntype", void 0)
+], UsersController.prototype, "deleteByAdmin", null);
 __decorate([
     (0, common_1.Get)(),
     (0, common_1.UseGuards)(auth_guards_1.RolesGuard),
@@ -90,6 +120,10 @@ let UsersModule = class UsersModule {
 };
 exports.UsersModule = UsersModule;
 exports.UsersModule = UsersModule = __decorate([
-    (0, common_1.Module)({ controllers: [UsersController], providers: [users_service_1.UsersService] })
+    (0, common_1.Module)({
+        imports: [email_module_1.EmailModule, search_module_1.SearchModule],
+        controllers: [UsersController],
+        providers: [users_service_1.UsersService],
+    })
 ], UsersModule);
 //# sourceMappingURL=users.module.js.map

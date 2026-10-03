@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { profilesApi } from '@/lib/api';
 import { useAuthStore } from '@/store/auth.store';
 import { useRouter } from 'next/navigation';
@@ -35,9 +35,16 @@ const ALL_ROLES = [
   { slug:'RFP_PROVIDER',   icon:'📋', name:'RFP Provider',   sub:'Tender · Publisher · Org'            },
 ];
 
-function ProfileCard({ p, single }: { p: any; single: boolean }) {
+const ENABLE_SELF_PROFILE_DELETE = false;
+
+function ProfileCard({ p, single, onDeleted }: { p: any; single: boolean; onDeleted: () => void }) {
   const st = STATUS[p.status] ?? STATUS.PENDING;
   const skills = Array.isArray(p.skills) ? p.skills : [];
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const deleteMut = useMutation({
+    mutationFn: () => profilesApi.deleteOwnProfile(p.id),
+    onSuccess: () => { setShowDeleteConfirm(false); onDeleted(); },
+  });
 
   return (
     <div className="gc" style={{
@@ -150,26 +157,64 @@ function ProfileCard({ p, single }: { p: any; single: boolean }) {
       )}
 
       {/* Footer */}
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', paddingTop:'12px', borderTop:'1px solid var(--bf)', marginTop:'auto' }}>
+
+      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', paddingTop:'12px', borderTop:'1px solid var(--bf)', marginTop:'auto', flexWrap:'wrap', gap:'8px' }}>
         <span style={{ fontSize:'11px', color:'var(--muted)' }}>
           Submitted {p.submittedAt ? new Date(p.submittedAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '—'}
         </span>
-        {p.status === 'REJECTED' && (
-          <Link href={`/profile/${p.roleType}`} style={{
-            padding:'7px 16px', borderRadius:'50px', fontSize:'11px', fontWeight:700,
-            background:'rgba(220,38,38,0.08)', border:'1px solid rgba(220,38,38,0.3)',
-            color:'#DC2626', textDecoration:'none',
-          }}>
-            Edit & Resubmit →
-          </Link>
-        )}
-        {p.status === 'APPROVED' && (
-          <span style={{ fontSize:'11px', color:'#16A34A', fontWeight:600 }}>Live on Platform</span>
-        )}
-        {p.status === 'PENDING' && (
-          <span style={{ fontSize:'11px', color:'#D97706', fontWeight:600 }}>Awaiting Review</span>
-        )}
+        <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
+          {p.status === 'REJECTED' && (
+            <Link href={`/profile/${p.roleType}`} style={{
+              padding:'7px 16px', borderRadius:'50px', fontSize:'11px', fontWeight:700,
+              background:'rgba(220,38,38,0.08)', border:'1px solid rgba(220,38,38,0.3)',
+              color:'#DC2626', textDecoration:'none',
+            }}>
+              Edit & Resubmit →
+            </Link>
+          )}
+          {p.status === 'APPROVED' && (
+            <span style={{ fontSize:'11px', color:'#16A34A', fontWeight:600 }}>Live on Platform</span>
+          )}
+          {p.status === 'PENDING' && (
+            <span style={{ fontSize:'11px', color:'#D97706', fontWeight:600 }}>Awaiting Review</span>
+          )}
+          { ENABLE_SELF_PROFILE_DELETE && (
+          <button
+            onClick={() => setShowDeleteConfirm(true)}
+            style={{ background:'transparent', border:'none', cursor:'pointer', fontSize:'11px', color:'var(--faint)', textDecoration:'underline' }}
+          >
+            Delete Profile
+          </button>
+          )}
+        </div>
       </div>
+
+      {/* Delete profile confirmation */}
+      {showDeleteConfirm && (
+        <div onClick={() => setShowDeleteConfirm(false)} style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:9999, display:'flex', alignItems:'center', justifyContent:'center', padding:'20px' }}>
+          <div onClick={e => e.stopPropagation()} style={{ background:'#fff', borderRadius:'20px', border:'1px solid rgba(220,38,38,0.3)', padding:'28px', maxWidth:'380px', width:'100%', textAlign:'center' }}>
+            <div style={{ fontSize:'36px', marginBottom:'12px' }}>🗑️</div>
+            <h3 style={{ fontFamily:'Cinzel,serif', fontSize:'17px', fontWeight:700, color:'var(--offwhite)', marginBottom:'10px' }}>
+              Delete your {ROLE_LABEL[p.roleType] ?? p.roleType} profile?
+            </h3>
+            <p style={{ fontSize:'13px', color:'var(--muted)', lineHeight:1.75, marginBottom:'20px' }}>
+              This cannot be undone.
+            </p>
+            <div style={{ display:'flex', flexDirection:'column', gap:'8px' }}>
+              <button
+                onClick={() => deleteMut.mutate()}
+                disabled={deleteMut.isPending}
+                style={{ padding:'12px', borderRadius:'50px', border:'none', cursor:'pointer', fontSize:'12px', fontFamily:'Raleway,sans-serif', fontWeight:700, background:'var(--err)', color:'#fff' }}
+              >
+                {deleteMut.isPending ? 'Deleting…' : 'Yes, Delete This Profile'}
+              </button>
+              <button onClick={() => setShowDeleteConfirm(false)} style={{ padding:'10px', background:'transparent', border:'none', cursor:'pointer', fontSize:'12px', color:'var(--muted)' }}>
+                No, Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -185,6 +230,8 @@ function Info({ label, value }: { label: string; value: string }) {
 
 export default function MyProfilePage() {
   const { isAuthenticated } = useAuthStore();
+  const qc = useQueryClient();
+
 
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ['my-profiles'],
@@ -297,10 +344,10 @@ export default function MyProfilePage() {
 
         </div>
       ) : single ? (
-        <ProfileCard p={list[0]} single={true} />
+        <ProfileCard p={list[0]} single={true} onDeleted={() => qc.invalidateQueries({ queryKey: ['my-profiles'] })} />
       ) : (
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(420px,1fr))', gap:'20px' }}>
-          {list.map((p: any) => <ProfileCard key={p.id} p={p} single={false} />)}
+          {list.map((p: any) => <ProfileCard key={p.id} p={p} single={false} onDeleted={() => qc.invalidateQueries({ queryKey: ['my-profiles'] })} />)}
         </div>
       )}
     </div>
